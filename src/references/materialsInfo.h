@@ -11,3 +11,23 @@ const float CANVAS_GALLERY_DENSITY = 0.0061;
 const float GLASS_DENSITY   = 0.0098;
 const float MIRROR_DENSITY  = 0.0191;
 const float PATIENT_BOARD_DENSITY  = 0.0347;
+
+
+// available materials (should match above)
+enum MaterialType {
+	ACOUSTIC_PANEL,
+	ACOUSTIC_PANEL_FRAMED,
+	ACRYLIC,
+	CANVAS_FRAMED,
+	CANVAS_GALLERY,
+	GLASS,
+    MIRROR,
+    PATIENT_BOARD
+};
+
+
+enum GlazingType {
+	GLAZING_ACRYLIC,
+	GLAZING_GLASS,
+	GLAZING_NONE
+};
