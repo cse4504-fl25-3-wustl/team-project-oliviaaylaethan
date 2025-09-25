@@ -1,6 +1,6 @@
 #pragma once
 #include "item.h"
-#include "packingSpecs.h"
+#include "references/packingSpecs.h"
 #include <vector>
 
 class PackingCalculator {
@@ -18,7 +18,7 @@ public:
     // Add an item
     void addItem(Item item);
 
-    // --- Counts ---
+    // --- COUNTS AND WEIGHTS ---
     // Boxes
     int getStandardBoxCount();
     int getLargeBoxCount();
@@ -27,11 +27,22 @@ public:
     // Crates
     int getTotalCrateCount();
 
-    // Pallet
-    int getPalletCount();
-
     // Weight
     int getPackagingWeight();
 
+    // --- PALLETS ---
+    // under requirements portion
+    int getStandardPalletCount();
+    int getOversizedPalletCount();
+    int getTotalPalletCount();
 
+    // under final dimensions portion
+    PalletSpec getPalletList();
+
+    // --- HARDWARE CALCULATION ---
+    std::string getLineItemHWSummary();
+    int getWallHardwareCount();
+    int getDrywallAnchorCount();
+    int getScrewCount();
+    int getTBoltCount();
 };
