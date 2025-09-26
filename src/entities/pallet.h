@@ -1,5 +1,6 @@
 #pragma once
 #include "box.h"
+#include <vector>
 
 // For standard shipments
 const Dimensions STANDARD_PALLET_DIMENSIONS = {48, 40, 0};
@@ -21,9 +22,11 @@ const int TEMP_OVERSIZED_BOX_CAPACITY = 3;
 class Pallet {
     private:
         Dimensions dimensions_;
-        float weight_; // in lbs
         int standardBoxCapacity_;
         int oversizedBoxCapacity_; // TODO
+        int totalWeight_;
+        std::vector<Box> contents_;
+
 
     public:
         Pallet(Dimensions dimensions, float weight, int standardBoxCapacity, int oversizedBoxCapacity);

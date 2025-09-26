@@ -60,10 +60,10 @@ public:
     int getQuantity();
     std::string getTagNumber();
     MaterialType getMaterial();
-    float getDensity();
     float getOuterWidth();
     float getOuterHeight();
     GlazingType getGlazeType();
     std::string getFrame1Moulding();
     std::string getHardware();
+    int getWeight();
 };

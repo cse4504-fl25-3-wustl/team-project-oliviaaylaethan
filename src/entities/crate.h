@@ -1,7 +1,7 @@
 #pragma once
 
 #include "box.h"
-
+#include <vector>
 
 const Dimensions STANDARD_CRATE_DIMENSIONS = {50, 38, 0};
 const float STANDARD_CRATE_TARE_WEIGHT = 125;
@@ -14,7 +14,8 @@ inline float calculateCrateHeight(float largestDimension) {
 class Crate {
     private:
         Dimensions dimensions_;
-        float tareWeight_; // in lbs
+        int totalWeight_;
+        std::vector<Box> contents_;
     
     public:
         Crate(Dimensions dimensions, float tareWeight);
