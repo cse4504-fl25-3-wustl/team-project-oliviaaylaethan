@@ -26,6 +26,7 @@ void PackingCalculator::addItem(Item item) {
     }
 
     itemCount_++;
+    // TODO: Have this use weight calculator
     artworkWeight_ += item.getDensity() * item.getOuterWidth() * item.getOuterHeight();
 }
 
@@ -82,12 +83,32 @@ int PackingCalculator::getTotalPalletCount() {
     return getStandardPalletCount() + getOversizedPalletCount();
 }
 
-PalletSpec PackingCalculator::getPalletList() {
-    // Return the largest pallet spec used
-    if (getOversizedPalletCount() > 0) {
-        return OVERSIZE_PALLET;
+std::vector<PalletSpec> PackingCalculator::getPalletList() {
+    std::vector<PalletSpec> pallets;
+
+    // Calculate standard pallets
+    int standardBoxCount = getStandardBoxCount();
+    int standardPalletCount = getStandardPalletCount();
+    for (int i = 0; i < standardPalletCount; ++i) {
+        PalletSpec pallet = STANDARD_PALLET;
+        int boxesOnPallet = std::min(standardBoxCount, STANDARD_PALLET.boxCapacity);
+        pallet.dimensions.h = boxesOnPallet * STANDARD_BOX.dimensions.h;
+        pallets.push_back(pallet);
+        standardBoxCount -= boxesOnPallet;
     }
-    return STANDARD_PALLET;
+
+    // Calculate oversized pallets
+    int oversizedBoxCount = getLargeBoxCount();
+    int oversizedPalletCount = getOversizedPalletCount();
+    for (int i = 0; i < oversizedPalletCount; ++i) {
+        PalletSpec pallet = OVERSIZE_PALLET;
+        int boxesOnPallet = std::min(oversizedBoxCount, OVERSIZE_PALLET.boxCapacity);
+        pallet.dimensions.h = boxesOnPallet * LARGE_BOX.dimensions.h;
+        pallets.push_back(pallet);
+        oversizedBoxCount -= boxesOnPallet;
+    }
+
+    return pallets;
 }
 
 std::string PackingCalculator::getLineItemHWSummary() {

@@ -37,7 +37,7 @@ public:
     int getTotalPalletCount();
 
     // under final dimensions portion
-    PalletSpec getPalletList();
+    std::vector<PalletSpec> getPalletList();
 
     // --- HARDWARE CALCULATION ---
     std::string getLineItemHWSummary();

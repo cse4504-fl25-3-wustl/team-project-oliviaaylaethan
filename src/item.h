@@ -1,6 +1,6 @@
 #pragma once
 
-#include "references/materialsInfo.h";
+#include "references/materialsInfo.h"
 #include <string>
 
 class Item {
