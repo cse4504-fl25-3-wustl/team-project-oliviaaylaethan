@@ -48,6 +48,6 @@ For CMake on Windows, download from [cmake.org](https://cmake.org/).
 
 
 # Feature 1 Work Assignment
-Olivia - Response
-Ayla - Request
-Ethan - Interactor
+* **Olivia** - Response
+* **Ayla** - Request
+* **Ethan** - Interactor
