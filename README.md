@@ -46,6 +46,17 @@ For CMake on Windows, download from [cmake.org](https://cmake.org/).
    main.exe
    ```
 
+### Backup Manual Compiler Commands
+On Windows:
+```bash
+g++ -Wall -std=c++17 -I./src src/main.cpp src/interactors/packingInteractor.cpp src/requests/request.cpp src/parser/csvParser.cpp -o main.exe -Wl,-subsystem,console
+```
+
+On Mac:
+```bash
+g++ -Wall -std=c++17 -I./src src/main.cpp src/interactors/packingInteractor.cpp src/requests/request.cpp src/parser/csvParser.cpp -o main
+```
+
 
 # Feature 1 Work Assignment
 * **Olivia** - Response
