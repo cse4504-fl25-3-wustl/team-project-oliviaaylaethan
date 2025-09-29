@@ -20,17 +20,18 @@ const int OVERSIZE_PALLET_STANDARD_BOX_CAPACITY = 5;
 const int TEMP_OVERSIZED_BOX_CAPACITY = 3;
 
 class Pallet {
-    private:
-        Dimensions dimensions_;
-        int standardBoxCapacity_;
-        int oversizedBoxCapacity_; // TODO
-        int totalWeight_;
-        std::vector<Box> contents_;
+private:
+    Dimensions dimensions_;
+    int standardBoxCapacity_;
+    int oversizedBoxCapacity_; // TODO
+    int totalWeight_;
+    std::vector<Box> contents_;
 
 
-    public:
-        Pallet(Dimensions dimensions, float weight, int standardBoxCapacity, int oversizedBoxCapacity);
-        Pallet makeStandardPallet();
-        Pallet makeGlassSmallPallet(); // TODO: What is glass small pallet?
-        Pallet makeOversizePallet();
+public:
+    Pallet();
+    Pallet(Dimensions dimensions, float weight, int standardBoxCapacity, int oversizedBoxCapacity);
+    Pallet makeStandardPallet();
+    Pallet makeGlassSmallPallet(); // TODO: What is glass small pallet?
+    Pallet makeOversizePallet();
 };

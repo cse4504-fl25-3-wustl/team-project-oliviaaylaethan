@@ -1,7 +1,7 @@
 #pragma once
-#include "box.h"
-#include "pallet.h"
-#include "crate.h"
+#include "../entities/box.h"
+#include "../entities/pallet.h"
+#include "../entities/crate.h"
 #include "../requests/request.h"
 #include "../responses/response.h"
 #include <vector>
@@ -13,8 +13,8 @@ class PackingInteractor {
         std::vector<Pallet> pallets_;
         std::vector<Crate> crates_;
 
-        bool addBox(Box);
-        bool packInBox(Art art);
+        //bool addBox(Box);
+        //bool packInBox(Art art);
 
     public:
         PackingInteractor();

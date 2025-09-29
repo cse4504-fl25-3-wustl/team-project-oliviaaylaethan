@@ -1,5 +1,10 @@
 #include "art.h"
 
+// Default constructor
+Art::Art() : lineNumber_(0), quantity_(0), tagNumber_(""), material_(MaterialType::CANVAS_FRAMED),
+             materialDensity_(0.0f), outerWidth_(0.0f), outerHeight_(0.0f), glazeType_(GlazingType::GLAZING_NONE),
+             frame1Moulding_(""), hardware_("") {}
+
 // Constructor to initialize the Art object
 Art::Art(int lineNo, int quantity, std::string tagNo, 
            MaterialType material, float outerWidth, float outerHeight, 
@@ -62,10 +67,6 @@ std::string Art::getTagNumber() {
 
 MaterialType Art::getMaterial() {
     return material_;
-}
-
-float Art::getDensity() {
-    return materialDensity_;
 }
 
 float Art::getOuterWidth() {

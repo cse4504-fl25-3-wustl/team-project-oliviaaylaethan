@@ -1,4 +1,5 @@
-#include "box.h"
+#pragma once
+#include "../entities/box.h"
 #include <iostream>
 
 class BoxInfo {
@@ -42,6 +43,7 @@ class HardwareInfo {
 
 class Response {
     public:
+        Response() {};
         void printWeightSummary() {
             std::cout << "Work Order Summary:" << std::endl;
             std::cout << "- Total Pieces: 55" << std::endl;

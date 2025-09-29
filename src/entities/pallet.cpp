@@ -1,8 +1,12 @@
 #include "pallet.h"
 
+Pallet::Pallet() : dimensions_{0, 0, 0}, standardBoxCapacity_(0), oversizedBoxCapacity_(0), totalWeight_(0) {
+    contents_ = std::vector<Box>();
+}
+
 Pallet::Pallet(Dimensions dimensions, float weight, int standardBoxCapacity, int oversizedBoxCapacity) {
     dimensions_ = dimensions;
-    weight_ = weight;
+    //weight_ = weight;
     standardBoxCapacity_ = standardBoxCapacity;
     oversizedBoxCapacity_ = oversizedBoxCapacity;
 }

@@ -12,13 +12,14 @@ inline float calculateCrateHeight(float largestDimension) {
 }
 
 class Crate {
-    private:
-        Dimensions dimensions_;
-        int totalWeight_;
-        std::vector<Box> contents_;
-    
-    public:
-        Crate(Dimensions dimensions, float tareWeight);
-        Crate makeStandardCrate();
-        float calculateCrateHeight(float largestDimension);
+private:
+    Dimensions dimensions_;
+    int totalWeight_;
+    std::vector<Box> contents_;
+
+public:
+    Crate();
+    Crate(Dimensions dimensions, float tareWeight);
+    Crate makeStandardCrate();
+    float calculateCrateHeight(float largestDimension);
 };

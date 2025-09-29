@@ -50,6 +50,8 @@ private:
     std::string hardware_;       // TODO if this impacts calculations, change from string
 
 public:
+    Art(); // default constructor
+
     // constructor ("density" isn't in here because you'll set that value based on "material")
     Art(int lineNo, int quantity, std::string tagNo, 
         MaterialType material, float outerWidth, float outerHeight, 

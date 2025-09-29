@@ -1,8 +1,12 @@
 #include "crate.h"
 
+Crate::Crate() : dimensions_{0, 0, 0}, totalWeight_(0) {
+    contents_ = std::vector<Box>();
+}
+
 Crate::Crate(Dimensions dimensions, float tareWeight) {
     dimensions_ = dimensions;
-    tareWeight_ = tareWeight;
+    //tareWeight_ = tareWeight;
 }
 
 Crate Crate::makeStandardCrate() {
