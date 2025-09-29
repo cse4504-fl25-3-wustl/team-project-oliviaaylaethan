@@ -7,6 +7,8 @@ class BoxInfo {
         int getStandardBoxCount();
         int getLargeBoxCount();
         int getTotalBoxCount();
+        std::vector<std::string> getAllPackedArtSummary();
+        int getTotalWeight();
 };
 
 class ArtInfo {
@@ -14,7 +16,8 @@ class ArtInfo {
         int getTotalCount();
         int getStandardCount();
         int getOversizedCount();
-        std::string getOversizedSummary();
+        std::vector<std::string> getOversizedSummary();
+        std::vector<int> getAllItemWeights();
         int getTotalWeight();
 };
 
@@ -22,6 +25,7 @@ class CrateInfo {
     public:
         int getTotalCrateCount();
         int getTotalWeight();
+        std::vector<std::string> getAllPackedBoxesSummary();
 };
 
 class PalletInfo {
@@ -30,11 +34,12 @@ class PalletInfo {
         int getOversizedPalletCount();
         int getTotalPalletCount();
         int getTotalWeight();
+        std::vector<std::string> getAllPackedBoxesSummary();
 };
 
 class HardwareInfo {
     public:
-        std::string getLineItemHWSummary();
+        std::vector<std::string> getLineItemHWSummary();
         int getWallHardwareCount();
         int getDrywallAnchorCount();
         int getScrewCount();
@@ -42,8 +47,20 @@ class HardwareInfo {
 };
 
 class Response {
+    private:
+        std::vector<std::string> weightSummary_;
+        std::vector<std::string> packingSummary_;
+        std::vector<std::string> businessIntelSummary_;
+        std::vector<std::string> emailFormatSummary;
+
     public:
         Response() {};
+
+        std::vector<std::string> getWeightSummary();
+        std::vector<std::string> getPackingSummary();
+        std::vector<std::string> getBusinessIntelSummary();
+        std::vector<std::string> getEmailFormatSummary();
+
         void printWeightSummary() {
             std::cout << "Work Order Summary:" << std::endl;
             std::cout << "- Total Pieces: 55" << std::endl;
