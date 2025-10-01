@@ -37,5 +37,6 @@ public:
     Box makeUPSSmallBox();
     Box makeUPSLargeBox();
     int getTotalWeight();
+    std::vector<Art> getContents();
 
 };

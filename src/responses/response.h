@@ -1,9 +1,11 @@
 #pragma once
-#include "../entities/box.h"
 #include <iostream>
 
 class BoxInfo {
+    private:
+        std::vector<Box> boxes_;
     public:
+        BoxInfo(const std::vector<Box>& boxes);
         int getStandardBoxCount();
         int getLargeBoxCount();
         int getTotalBoxCount();
@@ -12,7 +14,10 @@ class BoxInfo {
 };
 
 class ArtInfo {
+    private:
+        std::vector<Art> pieces_;
     public:
+        ArtInfo(const std::vector<Art>& pieces);
         int getTotalCount();
         int getStandardCount();
         int getOversizedCount();
@@ -22,14 +27,20 @@ class ArtInfo {
 };
 
 class CrateInfo {
+    private:
+        std::vector<Crate> crates_;
     public:
+        CrateInfo(const std::vector<Crate>& crates);
         int getTotalCrateCount();
         int getTotalWeight();
         std::vector<std::string> getAllPackedBoxesSummary();
 };
 
 class PalletInfo {
+    private:
+        std::vector<Pallet> pallets_;
     public:
+        PalletInfo(const std::vector<Pallet>& pallets);
         int getStandardPalletCount();
         int getOversizedPalletCount();
         int getTotalPalletCount();
@@ -38,7 +49,10 @@ class PalletInfo {
 };
 
 class HardwareInfo {
+    private:
+        std::vector<Art> pieces_;
     public:
+        HardwareInfo(const std::vector<Art>& pieces);
         std::vector<std::string> getLineItemHWSummary();
         int getWallHardwareCount();
         int getDrywallAnchorCount();
@@ -48,13 +62,16 @@ class HardwareInfo {
 
 class Response {
     private:
-        std::vector<std::string> weightSummary_;
-        std::vector<std::string> packingSummary_;
-        std::vector<std::string> businessIntelSummary_;
-        std::vector<std::string> emailFormatSummary;
+        BoxInfo boxInfo_;
+        ArtInfo artInfo_;
+        CrateInfo crateInfo_;
+        PalletInfo palletInfo_;
+        HardwareInfo hardwareInfo_;
 
     public:
-        Response() {};
+        Response(const std::vector<Box>& boxes,
+                const std::vector<Pallet>& pallets,
+                const std::vector<Crate>& crates);
 
         std::vector<std::string> getWeightSummary();
         std::vector<std::string> getPackingSummary();

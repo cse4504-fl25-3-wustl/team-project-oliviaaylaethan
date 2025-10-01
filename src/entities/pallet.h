@@ -34,4 +34,5 @@ public:
     Pallet makeStandardPallet();
     Pallet makeGlassSmallPallet(); // TODO: What is glass small pallet?
     Pallet makeOversizePallet();
+    std::vector<Box> getContents();
 };
