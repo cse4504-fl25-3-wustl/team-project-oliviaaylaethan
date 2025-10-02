@@ -35,6 +35,11 @@ enum GlazingType {
 	GLAZING_NONE
 };
 
+enum HardwareSpec {
+    PT_SEC_4,
+    PT_SEC_3
+};
+
 class Art {
 // private variables end with _ to differentiate them (you can only directly use them in Art.cpp, otherwise use the public functions like getLineNumber())
 private:
@@ -47,7 +52,7 @@ private:
     float outerHeight_;
     GlazingType glazeType_;
     std::string frame1Moulding_; // TODO if this impacts calculations, change from string
-    std::string hardware_;       // TODO if this impacts calculations, change from string
+    HardwareSpec hardware_;       // TODO if this impacts calculations, change from string
 
 public:
     Art(); // default constructor
@@ -55,7 +60,7 @@ public:
     // constructor ("density" isn't in here because you'll set that value based on "material")
     Art(int lineNo, int quantity, std::string tagNo, 
         MaterialType material, float outerWidth, float outerHeight, 
-        GlazingType glazeType, std::string frame1Moulding, std::string hardware);
+        GlazingType glazeType, std::string frame1Moulding, HardwareSpec hardware);
 
 	// gets values of private instance variables so other files can use them
 	int getLineNumber();
@@ -66,6 +71,6 @@ public:
     float getOuterHeight();
     GlazingType getGlazeType();
     std::string getFrame1Moulding();
-    std::string getHardware();
-    int getWeight();
+    HardwareSpec getHardware();
+    int getWeight() { return 10; }
 };

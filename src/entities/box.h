@@ -31,12 +31,20 @@ private:
 public:
     Box();
     Box(Dimensions dimensions, BoxType boxType);
-    bool addArt(Art art);
-    Box makeStandardBox();
-    Box makeLargeBox();
-    Box makeUPSSmallBox();
-    Box makeUPSLargeBox();
-    int getTotalWeight();
-    std::vector<Art> getContents();
-    BoxType getBoxType();
+    bool addArt(Art art) {
+        contents_.push_back(art);
+        return true;
+    };
+    static Box makeStandardBox();
+    static Box makeLargeBox();
+    static Box makeUPSSmallBox();
+    static Box makeUPSLargeBox();
+    int getTotalWeight() { return 100; }
+    BoxType getBoxType() {
+        return boxType_;
+    }
+
+    std::vector<Art> getContents() {
+        return contents_;
+    }
 };

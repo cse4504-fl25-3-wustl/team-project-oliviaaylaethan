@@ -22,5 +22,5 @@ public:
     Crate(Dimensions dimensions, float tareWeight);
     Crate makeStandardCrate();
     float calculateCrateHeight(float largestDimension);
-    std::vector<Box> getContents();
+    std::vector<Box> getContents() { return contents_; };
 };
