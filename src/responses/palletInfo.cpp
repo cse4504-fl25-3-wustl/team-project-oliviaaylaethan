@@ -27,13 +27,13 @@ int PalletInfo::getTotalPalletCount() {
     return static_cast<int>(pallets_.size());
 }
 
-int PalletInfo::getTotalWeight() {
-    return getStandardPalletCount() * STANDARD_PALLET_WEIGHT
-        + getOversizePalletCount() * OVERSIZE_PALLET_WEIGHT;
+int PalletInfo::getTotalTareWeight() {
+    return getStandardPalletCount() * STANDARD_PALLET_TARE_WEIGHT
+        + getOversizePalletCount() * OVERSIZE_PALLET_TARE_WEIGHT;
 }
 
 std::string PalletInfo::getPalletWeightSummary() {
-    return std::format("- Pallets: {} lbs ({} pallets @ 60-75 lbs each)", getTotalWeight(), getTotalPalletCount());
+    return std::format("- Pallets: {} lbs ({} pallets @ 60-75 lbs each)", getTotalTareWeight(), getTotalPalletCount());
 }
 
 std::vector<std::string> PalletInfo::getPalletRequirementsSummary() {
@@ -62,7 +62,7 @@ std::vector<std::string> PalletInfo::getPalletDimensionsSummary() {
             pallets_[i].getDimensions().l,
             pallets_[i].getDimensions().w,
             pallets_[i].getDimensions().h,
-            getTotalWeight()
+            getTotalTareWeight()
         ));
     }
     return summary;

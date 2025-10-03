@@ -19,6 +19,7 @@ add_executable(main
         src/entities/crate.h
         src/entities/pallet.cpp
         src/entities/pallet.h
+        src/entities/shippingContainer.h
         src/interactors/packingInteractor.cpp
         src/interactors/packingInteractor.h
         src/parser/csvParser.cpp

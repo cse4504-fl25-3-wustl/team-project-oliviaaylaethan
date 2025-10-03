@@ -25,26 +25,35 @@ class Box {
 private:
     Dimensions dimensions_;
     BoxType boxType_;
-    std::vector<Art> contents_;
     int totalWeight_;
+    std::vector<Art> contents_;
 
 public:
     Box();
     Box(Dimensions dimensions, BoxType boxType);
-    bool addArt(Art art) {
-        contents_.push_back(art);
-        return true;
-    };
+
     static Box makeStandardBox();
     static Box makeLargeBox();
     static Box makeUPSSmallBox();
     static Box makeUPSLargeBox();
-    int getTotalWeight() { return 100; }
-    BoxType getBoxType() {
+
+    // TODO move all these definitions to box.cpp
+    bool addArt(Art art) {
+        contents_.push_back(art);
+        return true;
+    };
+
+    Dimensions getDimensions() const {
+        return dimensions_;
+    }
+
+    BoxType getBoxType() const {
         return boxType_;
     }
 
-    std::vector<Art> getContents() {
+    int getTotalWeight() const { return 100; }
+    
+    std::vector<Art> getContents() const {
         return contents_;
     }
 };

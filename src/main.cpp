@@ -4,7 +4,7 @@
 
 int main() {
     CsvParser parser;
-    Request request = parser.parseFile("/Users/ethanmoses/git/team-project-oliviaaylaethan/data_clean.csv");
+    Request request = parser.parseFile("C:/Users/aylab/cse454/team-project-oliviaaylaethan/Input1.csv");
     PackingInteractor packingInteractor;
     Response response = packingInteractor.packAllArt(request);
     response.printWeightSummary();

@@ -1,27 +1,25 @@
 #pragma once
 
-#include "box.h"
+#include "shippingContainer.h"
 #include <vector>
 
 const Dimensions STANDARD_CRATE_DIMENSIONS = {50, 38, 0};
 const float STANDARD_CRATE_TARE_WEIGHT = 125;
 
-// Height calculation for crates
-inline float calculateCrateHeight(float largestDimension) {
-    return largestDimension + 8; // Add 8 inches buffer
-}
 
-class Crate {
-private:
-    Dimensions dimensions_;
-    int totalWeight_;
-    std::vector<Box> contents_;
-
+// also includes protected member variables from ShippingContainer
+class Crate : public ShippingContainer {
 public:
     Crate();
     Crate(Dimensions dimensions, float tareWeight);
-    Crate makeStandardCrate();
-    float calculateCrateHeight(float largestDimension);
-    std::vector<Box> getContents() { return contents_; };
-    bool addBox(Box box);
+
+    static Crate makeStandardCrate();
+
+    float calculateCrateHeight() const;
+    
+    // Overridden methods from ShippingContainer
+    Dimensions getDimensions() const override;
+    float getTareWeight() const override;
+    std::vector<Box> getContents() const override;
+    void addBox(Box box) override;
 };

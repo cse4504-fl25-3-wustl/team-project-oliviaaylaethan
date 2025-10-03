@@ -38,7 +38,7 @@ class CrateInfo {
     public:
         CrateInfo(const std::vector<Crate>& crates);
         int getTotalCrateCount();
-        int getTotalWeight();
+        int getTotalTareWeight();
         std::string getCrateWeightSummary();
         std::string getCrateRequirementsSummary();
         std::vector<std::string> getCrateDimensionsSummary();
@@ -53,7 +53,7 @@ class PalletInfo {
         int getStandardPalletCount();
         int getOversizePalletCount();
         int getTotalPalletCount();
-        int getTotalWeight();
+        int getTotalTareWeight();
         std::string getPalletWeightSummary();
         std::vector<std::string> getPalletRequirementsSummary();
         std::vector<std::string> getPalletDimensionsSummary();

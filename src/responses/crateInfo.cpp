@@ -7,12 +7,12 @@ int CrateInfo::getTotalCrateCount() {
     return static_cast<int>(crates_.size());
 }
 
-int CrateInfo::getTotalWeight() {
+int CrateInfo::getTotalTareWeight() {
     return getTotalCrateCount() * STANDARD_CRATE_TARE_WEIGHT;
 }
 
 std::string CrateInfo::getCrateWeightSummary() {
-    return std::format("- Crates: {} lbs", getTotalWeight());
+    return std::format("- Crates: {} lbs", getTotalTareWeight());
 }
 
 std::string CrateInfo::getCrateRequirementsSummary() {

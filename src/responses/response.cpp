@@ -18,12 +18,12 @@ std::vector<std::string> Response::getWeightSummary() {
         summary.push_back(artInfo_.getTotalWeightSummary()[i]);
     }
     summary.push_back(std::format("\nTotal Packaging Weight: {} lbs",
-        palletInfo_.getTotalWeight() + crateInfo_.getTotalWeight()
+        palletInfo_.getTotalTareWeight() + crateInfo_.getTotalTareWeight()
     ));
     summary.push_back(palletInfo_.getPalletWeightSummary());
     summary.push_back(crateInfo_.getCrateWeightSummary());
     summary.push_back(std::format("\nFinal Shipment Weight: {} lbs",
-        artInfo_.getTotalWeight() + palletInfo_.getTotalWeight() + crateInfo_.getTotalWeight()
+        artInfo_.getTotalWeight() + palletInfo_.getTotalTareWeight() + crateInfo_.getTotalTareWeight()
     ));
     return summary;
 }
@@ -52,7 +52,7 @@ std::vector<std::string> Response::getBusinessIntelSummary() {
 
 std::vector<std::string> Response::getEmailFormatSummary() {
     std::vector<std::string> summary = {"\nShipment Details:"};
-    summary.push_back(std::format("- Total Weight: {} lbs", artInfo_.getTotalWeight() + palletInfo_.getTotalWeight() + crateInfo_.getTotalWeight()));
+    summary.push_back(std::format("- Total Weight: {} lbs", artInfo_.getTotalWeight() + palletInfo_.getTotalTareWeight() + crateInfo_.getTotalTareWeight()));
     std::string pieces = "- Pieces:";
     if (palletInfo_.getTotalPalletCount() > 0) {
         pieces.append(std::format(" {} pallets", palletInfo_.getTotalPalletCount()));
