@@ -46,16 +46,18 @@ int ArtInfo::getTotalWeight() {
 std::vector<std::string> ArtInfo::getOversizedSummary() {
     int totalCount = getTotalCount();
     std::vector<std::string> summary;
-    summary.reserve(totalCount);
     summary.push_back("\nOversized Items Flagged:");
     Art art;
     for (int i = 0; i < totalCount; i++) {
         art = pieces_[i];
-        summary.push_back(std::format("- {}\"x{}\" (Qty: {}) - Requires large box",
-            art.getOuterHeight(),
-            art.getOuterWidth(),
-            art.getQuantity()
-        ));
+        // Check if oversized
+        if (art.getOuterWidth() > 33 and art.getOuterHeight() > 43) {
+            summary.push_back(std::format("- {}\"x{}\" (Qty: {}) - Requires large box",
+                art.getOuterHeight(),
+                art.getOuterWidth(),
+                art.getQuantity()
+            ));
+        }
     }
     return summary;
 }

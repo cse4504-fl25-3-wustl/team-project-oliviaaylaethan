@@ -32,5 +32,4 @@ add_executable(main
         src/responses/crateInfo.cpp
         src/responses/hardwareInfo.cpp
         src/responses/palletInfo.cpp
-        src/responses/testing.cpp
         src/main.cpp)
