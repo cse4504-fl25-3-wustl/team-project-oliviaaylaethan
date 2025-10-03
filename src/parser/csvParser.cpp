@@ -9,36 +9,18 @@
 CsvParser::CsvParser() {}
 
 Request CsvParser::parseFile(std::string filePath) {
-    // Placeholder implementation
     std::cout << "Parsing CSV file: " << filePath << std::endl;
 
 
-std::ifstream file(filePath);
-    if (file.is_open()) {
-        std::cout << "File found and opened successfully: " << filePath << std::endl;
-        // Optionally read a line to confirm
-        std::string line;
-        if (std::getline(file, line)) {
-            std::cout << "First line of the file: " << line << std::endl;
-        }
-        file.close();
-    } else {
+    std::ifstream file(filePath);
+    // error checking for opening file
+    if (!file.is_open()) {
         std::cerr << "Error: Could NOT open file: " << filePath << std::endl;
     }
 
-
-
-
-
-
-
-
-
-
-
-
     std::vector<Art> artworks = parseCSV(filePath);
 
+    // to show parsed data for debugging, won't need in final version
     for (auto& art : artworks) {
         std::cout << "Line #" << art.getLineNumber()
                   << ", Quantity: " << art.getQuantity()
@@ -111,21 +93,18 @@ std::vector<Art> CsvParser::parseCSV(const std::string& filename) {
 
     // Skip header
     std::getline(file, line);
+while (std::getline(file, line)) {
+    std::replace(line.begin(), line.end(), '\t', ',');
+    std::stringstream ss(line);
+    std::vector<std::string> tokens;
+    std::string cell;
 
-    while (std::getline(file, line)) {
-        // Replace all tabs with commas in the line
-        std::replace(line.begin(), line.end(), '\t', ',');
+    while (std::getline(ss, cell, ',')) {
+        tokens.push_back(trim(cell));
+    }
+    while (tokens.size() < 9) tokens.push_back("");
 
-        std::stringstream ss(line);
-        std::vector<std::string> tokens;
-        std::string cell;
-
-        while (std::getline(ss, cell, ',')) {
-            tokens.push_back(trim(cell));
-        }
-
-        if (tokens.size() < 9) continue; // skip malformed lines
-
+    try {
         int lineNo = std::stoi(tokens[0]);
         int qty = std::stoi(tokens[1]);
         std::string tag = tokens[2];
@@ -138,7 +117,12 @@ std::vector<Art> CsvParser::parseCSV(const std::string& filename) {
 
         Art art(lineNo, qty, tag, material, width, height, glaze, frame, hw);
         artList.push_back(art);
+    } catch (const std::exception& e) {
+        std::cerr << "Error parsing line: '" << line << "' -> " << e.what() << std::endl;
+        continue;  // skip malformed line
     }
+}
+    file.close();
 
     return artList;
 }
