@@ -6,3 +6,6 @@ Request::Request(std::vector<Art> artPieces) {
 Request::Request() {
     artPieces_ = std::vector<Art>();
 }
+std::vector<Art> Request::getArtPieces() {
+    return artPieces_;
+}

@@ -20,5 +20,6 @@ private:
 public:
     Request(std::vector<Art> artPieces);
     Request();
+    std::vector<Art> getArtPieces();
 
 };
