@@ -23,4 +23,5 @@ public:
     Crate makeStandardCrate();
     float calculateCrateHeight(float largestDimension);
     std::vector<Box> getContents() { return contents_; };
+    bool addBox(Box box);
 };

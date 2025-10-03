@@ -5,8 +5,15 @@ Crate::Crate() : dimensions_{0, 0, 0}, totalWeight_(0) {
 }
 
 Crate::Crate(Dimensions dimensions, float tareWeight) {
+    contents_ = std::vector<Box>();
     dimensions_ = dimensions;
-    //tareWeight_ = tareWeight;
+    totalWeight_ = tareWeight;
+}
+
+bool Crate::addBox(Box box) {
+    contents_.push_back(box);
+    totalWeight_ += box.getTotalWeight();
+    return true;
 }
 
 Crate Crate::makeStandardCrate() {
