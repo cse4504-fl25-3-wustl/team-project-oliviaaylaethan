@@ -64,7 +64,7 @@ class HardwareInfo {
     private:
         std::vector<Art> pieces_;
     public:
-        HardwareInfo(const std::vector<Art>& pieces) : pieces_(pieces) {};
+        HardwareInfo(const std::vector<Art>& pieces);
         std::vector<std::string> getLineItemHWSummary();
         int getWallHardwareCount();
 

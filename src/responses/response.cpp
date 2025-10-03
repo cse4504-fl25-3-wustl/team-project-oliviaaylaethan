@@ -1,5 +1,6 @@
 #include "response.h"
 #include <iostream>
+#include <format>
 
 Response::Response(const std::vector<Box>& boxes,
                 const std::vector<Pallet>& pallets,

@@ -1,5 +1,6 @@
 #include "response.h"
 #include <format>
+#include <map>
 
 HardwareInfo::HardwareInfo(const std::vector<Art>& pieces) : pieces_(pieces) {}
 

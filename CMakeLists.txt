@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 4.0)
 project(team_project_oliviaaylaethan)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 20)
 
 include_directories(src/entities)
 include_directories(src/interactors)
@@ -25,5 +25,12 @@ add_executable(main
         src/parser/csvParser.h
         src/requests/request.cpp
         src/requests/request.h
+        src/responses/response.cpp
         src/responses/response.h
+        src/responses/artInfo.cpp
+        src/responses/boxInfo.cpp
+        src/responses/crateInfo.cpp
+        src/responses/hardwareInfo.cpp
+        src/responses/palletInfo.cpp
+        src/responses/testing.cpp
         src/main.cpp)
