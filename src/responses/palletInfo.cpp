@@ -1,0 +1,88 @@
+#include "response.h"
+#include <format>
+
+PalletInfo::PalletInfo(const std::vector<Pallet>& pallets) : pallets_(pallets) {}
+
+int PalletInfo::getStandardPalletCount() {
+    int count = 0;
+    for (int i = 0; i < getTotalPalletCount(); i++) {
+        if (pallets_[i].getPalletType() == STANDARD_PALLET) {
+            count++;
+        }
+    }
+    return count;
+}
+
+int PalletInfo::getOversizePalletCount() {
+    int count = 0;
+    for (int i = 0; i < getTotalPalletCount(); i++) {
+        if (pallets_[i].getPalletType() == OVERSIZE_PALLET) {
+            count++;
+        }
+    }
+    return count;
+}
+
+int PalletInfo::getTotalPalletCount() {
+    return static_cast<int>(pallets_.size());
+}
+
+int PalletInfo::getTotalWeight() {
+    return getStandardPalletCount() * STANDARD_PALLET_WEIGHT
+        + getOversizePalletCount() * OVERSIZE_PALLET_WEIGHT;
+}
+
+std::string PalletInfo::getPalletWeightSummary() {
+    return std::format("- Pallets: {} lbs ({} pallets @ 60-75 lbs each)", getTotalWeight(), getTotalPalletCount());
+}
+
+std::vector<std::string> PalletInfo::getPalletRequirementsSummary() {
+    return {
+        std::format("- Standard pallets ({}\"x{}\"): {} pallet",
+            STANDARD_PALLET_DIMENSIONS.l,
+            STANDARD_PALLET_DIMENSIONS.w,
+            getStandardPalletCount()
+        ),
+        std::format("- Oversize pallets ({}\"x{}\"): {} pallet",
+            OVERSIZE_PALLET_DIMENSIONS.l,
+            OVERSIZE_PALLET_DIMENSIONS.w,
+            getOversizePalletCount()
+        )
+    };
+}
+
+std::vector<std::string> PalletInfo::getPalletDimensionsSummary() {
+    int count = getTotalPalletCount();
+    std::vector<std::string> summary;
+    summary.reserve(count);
+    for (int i = 0; i < count; i++) {
+        summary.push_back(std::format(
+            "- Pallet {}: {}\"x{}\"x{}\"H @ {} lbs",
+            i,
+            pallets_[i].getDimensions().l,
+            pallets_[i].getDimensions().w,
+            pallets_[i].getDimensions().h,
+            getTotalWeight()
+        ));
+    }
+    return summary;
+}
+
+std::vector<std::string> PalletInfo::getAllPackedBoxesSummary() {
+    int count = getTotalPalletCount();
+    if (count < 1) return {};
+    std::vector<std::string> summary;
+    summary.push_back("\nBox Packing Summary - Pallet:");
+    Pallet pallet;
+    for (int i = 0; i < count; i++) {
+        pallet = pallets_[i];
+        summary.push_back(std::format("- Pallet {}", i));
+        std::vector<Box> contents = pallet.getContents();
+        for (size_t j = 0; j < contents.size(); j++) {
+            summary.push_back(std::format(
+                "  - {}", to_string(contents[j].getBoxType())
+            ));
+        }
+    }
+    return summary;
+}

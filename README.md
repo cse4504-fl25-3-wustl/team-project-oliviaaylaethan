@@ -62,3 +62,19 @@ g++ -Wall -std=c++17 -I./src src/main.cpp src/interactors/packingInteractor.cpp 
 * **Olivia** - Response
 * **Ayla** - Request
 * **Ethan** - Interactor
+
+# Run response testing on Mac
+```bash
+g++ -Wall -std=c++20 -I./src \
+   src/responses/testing.cpp \
+   src/entities/art.cpp \
+   src/entities/box.cpp \
+   src/entities/pallet.cpp \
+   src/entities/crate.cpp \
+   src/responses/response.cpp \
+   src/responses/boxInfo.cpp \
+   src/responses/artInfo.cpp \
+   src/responses/palletInfo.cpp \
+   src/responses/crateInfo.cpp \
+   -o test
+```
