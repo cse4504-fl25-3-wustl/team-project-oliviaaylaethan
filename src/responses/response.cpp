@@ -4,16 +4,18 @@
 
 Response::Response(const std::vector<Box>& boxes,
                 const std::vector<Pallet>& pallets,
-                const std::vector<Crate>& crates) :
+                const std::vector<Crate>& crates,
+                const Requirements requirements) :
 
     boxInfo_(boxes),
     artInfo_(boxInfo_.getAllArt()),
     crateInfo_(crates),
     palletInfo_(pallets),
-    hardwareInfo_(boxInfo_.getAllArt()) {}    
+    hardwareInfo_(boxInfo_.getAllArt()),
+    requirements_(requirements) {}    
 
 std::vector<std::string> Response::getWeightSummary() {
-    std::vector<std::string> summary;
+    std::vector<std::string> summary = {"\n\n--------- WEIGHT SUMMARY ---------"};
     for (size_t i = 0; i < artInfo_.getTotalWeightSummary().size(); i++) {
         summary.push_back(artInfo_.getTotalWeightSummary()[i]);
     }
@@ -29,37 +31,79 @@ std::vector<std::string> Response::getWeightSummary() {
 }
 
 std::vector<std::vector<std::string>> Response::getPackingSummary() {
-    return {
+    std::vector<std::vector<std::string>> summary = {
+        std::vector<std::string>{"\n\n--------- PACKING SUMMARY ---------"},
         boxInfo_.getBoxRequirementsSummary(),
         std::vector<std::string>{"\nPallet/Crate Requirements:"},
         palletInfo_.getPalletRequirementsSummary(),
         std::vector<std::string>{crateInfo_.getCrateRequirementsSummary()},
-        std::vector<std::string>{"\nFinal Dimensions:"},
-        palletInfo_.getPalletDimensionsSummary(),
-        crateInfo_.getCrateDimensionsSummary(),
-        std::vector<std::string>{"\n-------------------------------"},
-        boxInfo_.getAllPackedArtSummary(),
-        palletInfo_.getAllPackedBoxesSummary(),
-        crateInfo_.getAllPackedBoxesSummary()
+        std::vector<std::string>{"\nFinal Dimensions:"}
     };
+    std::vector<std::string> palletDimens = {};
+    for (size_t i = 0; i < palletInfo_.getTotalPalletCount(); i++) {
+        palletDimens.push_back(std::format("- Pallet {}: {}",
+            i, palletInfo_.getPalletDimensionsSummary()[i]));
+    }
+    summary.push_back(palletDimens);
+    summary.push_back(crateInfo_.getCrateDimensionsSummary());
+    summary.push_back(hardwareInfo_.getLineItemHWSummary());
+    summary.push_back(std::vector<std::string>{"\n-----------------------------------"});
+    summary.push_back(boxInfo_.getAllPackedArtSummary());
+    summary.push_back(palletInfo_.getAllPackedBoxesSummary());
+    summary.push_back(crateInfo_.getAllPackedBoxesSummary());
+    return summary;
 }
 
 std::vector<std::string> Response::getBusinessIntelSummary() {
-    return {
-        artInfo_.getOversizedSummary()
-    };
+    std::vector<std::string> summary = {"\n\n--------- BUSINESS INTEL SUMMARY ---------"};
+    for (size_t i = 0; i < artInfo_.getOversizedSummary().size(); i++) {
+        summary.push_back(artInfo_.getOversizedSummary()[i]);
+    }
+    return summary;
 }
 
 std::vector<std::string> Response::getEmailFormatSummary() {
-    std::vector<std::string> summary = {"\nShipment Details:"};
+    std::vector<std::string> summary = {"\n\n--------- EMAIL FORMAT ---------"};
+    summary.push_back(std::format("Subject: Quote Request - {}", requirements_.getClientName()));
+
+    summary.push_back("\nShipment Details:");
     summary.push_back(std::format("- Total Weight: {} lbs", artInfo_.getTotalWeight() + palletInfo_.getTotalTareWeight() + crateInfo_.getTotalTareWeight()));
+
     std::string pieces = "- Pieces:";
     if (palletInfo_.getTotalPalletCount() > 0) {
         pieces.append(std::format(" {} pallets", palletInfo_.getTotalPalletCount()));
+        if (crateInfo_.getTotalCrateCount() > 0) {
+            pieces.append(",");
+        }
     }
     if (crateInfo_.getTotalCrateCount() > 0) {
         pieces.append(std::format(" {} crates", crateInfo_.getTotalCrateCount()));
     }
+    summary.push_back(pieces);
+    std::string dimensions = "- Dimensions: ";
+    for (size_t i = 0; i < palletInfo_.getTotalPalletCount(); i++) {
+        dimensions.append(palletInfo_.getPalletDimensionsSummary()[i]);
+        if (i+1 < palletInfo_.getTotalPalletCount()) {
+            dimensions.append(", ");
+        }
+    }
+    summary.push_back(dimensions);
+
+    summary.push_back("- Pickup: ARCH Design, St. Louis, MO");
+    summary.push_back(std::format("- Delivery: {}", requirements_.getJobSiteLocation()));
+
+    std::string specialReq = "- Special Requirements: ";
+    if (requirements_.getHasLoadingDock()) {
+        specialReq.append("Has loading dock, ");
+    }
+    if (requirements_.getNeedsLiftgate()) {
+        specialReq.append("Needs liftgate, ");
+    }
+    if (requirements_.getNeedsInsideDelivery()) {
+        specialReq.append("Needs inside delivery");
+    }
+    summary.push_back(specialReq);
+    
     return summary;
 }
 
@@ -91,4 +135,5 @@ void Response::printEmailFormat() {
     for (size_t i = 0; i < summary.size(); i++) {
         std::cout << summary[i] << std::endl;
     }
+    std::cout << "\n" << std::endl;
 }

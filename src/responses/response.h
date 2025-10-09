@@ -4,6 +4,7 @@
 #include "../entities/art.h"
 #include "../entities/crate.h"
 #include "../entities/pallet.h"
+#include "../entities/requirements.h"
 
 class BoxInfo {
     private:
@@ -97,11 +98,13 @@ class Response {
         CrateInfo crateInfo_;
         PalletInfo palletInfo_;
         HardwareInfo hardwareInfo_;
+        Requirements requirements_;
 
     public:
         Response(const std::vector<Box>& boxes,
                 const std::vector<Pallet>& pallets,
-                const std::vector<Crate>& crates);
+                const std::vector<Crate>& crates,
+                const Requirements requirements);
 
         std::vector<std::string> getWeightSummary();
         std::vector<std::vector<std::string>> getPackingSummary();

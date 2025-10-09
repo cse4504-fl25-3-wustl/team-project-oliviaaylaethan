@@ -89,7 +89,7 @@ Response PackingInteractor::packAllArt(Request request) {
         }
     }
 
-    return Response(boxes_, pallets_, crates_);
+    return Response(boxes_, pallets_, crates_, request.getRequirements());
 }
 
 std::vector<Box> PackingInteractor::getBoxes() {
