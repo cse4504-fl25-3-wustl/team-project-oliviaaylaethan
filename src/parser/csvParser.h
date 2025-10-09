@@ -10,8 +10,11 @@ private:
     GlazingType mapToGlazing(const std::string& glaze);
     HardwareSpec mapToHardware(const std::string& hw);
     float getMaterialDensity(MaterialType mat);
-    std::vector<Art> parseCSV(const std::string& filePath);
+    std::vector<Art> parseArtCsv(const std::string& filePath);
+    Requirements parseRequirementsCsv(const std::string& filePath);
+    bool isValidFile(const std::string& filePath);
+    std::vector<std::string> commaSplitter(std::string line);
 public:
     CsvParser();
-    Request parseFile(std::string filePath);
+    Request parseFiles(std::string artFilePath, std::string siteFilePath);
 };

@@ -8,19 +8,31 @@
 
 CsvParser::CsvParser() {}
 
-Request CsvParser::parseFile(std::string filePath) {
-    std::cout << "Parsing CSV file: " << filePath << std::endl;
-
-
+bool CsvParser::isValidFile(const std::string & filePath) {
     std::ifstream file(filePath);
+
     // error checking for opening file
     if (!file.is_open()) {
         std::cerr << "Error: Could NOT open file: " << filePath << std::endl;
+        return false;
     }
+    return true;
+}
 
-    std::vector<Art> artworks = parseCSV(filePath);
+Request CsvParser::parseFiles(std::string artFilePath, std::string siteFilePath) {
+    bool artFileValid = isValidFile(artFilePath);
+    bool siteFileValid = isValidFile(siteFilePath);
+
+    if (!artFileValid) {
+        return Request();
+    }
+    
+    std::vector<Art> artworks = parseArtCsv(artFilePath);
+    Requirements siteRequirements = parseRequirementsCsv(siteFilePath);
 
     // to show parsed data for debugging, won't need in final version
+    std::cout << std::endl;
+
     for (auto& art : artworks) {
         std::cout << "Line #" << art.getLineNumber()
                   << ", Quantity: " << art.getQuantity()
@@ -33,8 +45,21 @@ Request CsvParser::parseFile(std::string filePath) {
 
     std::cout << "Total artworks parsed: " << artworks.size() << std::endl;
 
-    return Request(artworks);
+    std::cout << std::endl;
+
+    std::cout << "Job Site Location: " << siteRequirements.getJobSiteLocation() << std::endl;
+    std::cout << "Client Name: " << siteRequirements.getClientName() << std::endl;
+    std::cout << "Accepts Pallets: " << Requirements::convertOptionalToString(siteRequirements.getAcceptsPallets()) << std::endl;
+    std::cout << "Accepts Crates: " << Requirements::convertOptionalToString(siteRequirements.getAcceptsCrates()) << std::endl;
+    std::cout << "Has Loading Dock: " << Requirements::convertOptionalToString(siteRequirements.getHasLoadingDock()) << std::endl;
+    std::cout << "Needs Liftgate: " << Requirements::convertOptionalToString(siteRequirements.getNeedsLiftgate()) << std::endl;
+    std::cout << "Needs Inside Delivery: " << Requirements::convertOptionalToString(siteRequirements.getNeedsInsideDelivery()) << std::endl;
+    std::cout << "Service Type: " << siteRequirements.getServiceType() << std::endl;
+
+    return Request(artworks, siteRequirements);
 }
+
+
 
 // Trim utility
 std::string CsvParser::trim(const std::string& str) {
@@ -85,16 +110,7 @@ float CsvParser::getMaterialDensity(MaterialType mat) {
     }
 }
 
-// Parse CSV and return vector of Art objects
-std::vector<Art> CsvParser::parseCSV(const std::string& filename) {
-    std::vector<Art> artList;
-    std::ifstream file(filename);
-    std::string line;
-
-    // Skip header
-    std::getline(file, line);
-while (std::getline(file, line)) {
-    std::replace(line.begin(), line.end(), '\t', ',');
+std::vector<std::string> CsvParser::commaSplitter(std::string line) {
     std::stringstream ss(line);
     std::vector<std::string> tokens;
     std::string cell;
@@ -102,27 +118,88 @@ while (std::getline(file, line)) {
     while (std::getline(ss, cell, ',')) {
         tokens.push_back(trim(cell));
     }
-    while (tokens.size() < 9) tokens.push_back("");
 
-    try {
-        int lineNo = std::stoi(tokens[0]);
-        int qty = std::stoi(tokens[1]);
-        std::string tag = tokens[2];
-        MaterialType material = mapToMaterial(tokens[3]);
-        float width = std::stof(tokens[4]);
-        float height = std::stof(tokens[5]);
-        GlazingType glaze = mapToGlazing(tokens[6]);
-        std::string frame = tokens[7];
-        HardwareSpec hw = mapToHardware(tokens[8]);
-
-        Art art(lineNo, qty, tag, material, width, height, glaze, frame, hw);
-        artList.push_back(art);
-    } catch (const std::exception& e) {
-        std::cerr << "Error parsing line: '" << line << "' -> " << e.what() << std::endl;
-        continue;  // skip malformed line
-    }
+    return tokens;
 }
+
+// Parse CSV and return vector of Art objects
+std::vector<Art> CsvParser::parseArtCsv(const std::string& filename) {
+    std::cout << "Parsing Art CSV file: " << filename << std::endl;
+
+    std::vector<Art> artList;
+    std::ifstream file(filename);
+    std::string line;
+
+    // Skip header
+    std::getline(file, line);
+    while (std::getline(file, line)) {
+        std::replace(line.begin(), line.end(), '\t', ',');
+        std::vector<std::string> tokens = commaSplitter(line);
+
+        while (tokens.size() < 9) tokens.push_back("");
+
+        try {
+            int lineNo = std::stoi(tokens[0]);
+            int qty = std::stoi(tokens[1]);
+            std::string tag = tokens[2];
+            MaterialType material = mapToMaterial(tokens[3]);
+            float width = std::stof(tokens[4]);
+            float height = std::stof(tokens[5]);
+            GlazingType glaze = mapToGlazing(tokens[6]);
+            std::string frame = tokens[7];
+            HardwareSpec hw = mapToHardware(tokens[8]);
+
+            Art art(lineNo, qty, tag, material, width, height, glaze, frame, hw);
+            artList.push_back(art);
+        } catch (const std::exception& e) {
+            std::cerr << "Error parsing line: '" << line << "' -> " << e.what() << std::endl;
+            continue;  // skip malformed line
+        }
+    }
     file.close();
 
     return artList;
+}
+
+Requirements CsvParser::parseRequirementsCsv(const std::string& filename) {
+    // to be moved to its own header file
+    enum RequirementIndex {
+        JOB_SITE_LOCATION,
+        CLIENT_NAME,
+        ACCEPTS_PALLETS,
+        ACCEPTS_CRATES,
+        HAS_LOADING_DOCK,
+        NEEDS_LIFTGATE,
+        NEEDS_INSIDE_DELIVERY,
+        SERVICE_TYPE
+    };
+
+    std::cout << "Parsing Requirements CSV file: " << filename << std::endl;
+
+    Requirements siteRequirements = Requirements();
+    std::ifstream file(filename);
+    std::string line;
+
+    // Read and skip header
+    std::getline(file, line);
+
+    // Get line of requirements
+    std::getline(file, line);
+
+    std::replace(line.begin(), line.end(), '\t', ',');
+    std::vector<std::string> requirementList = commaSplitter(line);
+
+    try {
+        siteRequirements.setJobSiteLocation(requirementList[JOB_SITE_LOCATION]);
+        siteRequirements.setClientName(requirementList[CLIENT_NAME]);
+        siteRequirements.setAcceptsPallets(requirementList[ACCEPTS_PALLETS]);
+        siteRequirements.setAcceptsCrates(requirementList[ACCEPTS_CRATES]);
+        siteRequirements.setHasLoadingDock(requirementList[HAS_LOADING_DOCK]);
+        siteRequirements.setNeedsLiftgate(requirementList[NEEDS_LIFTGATE]);
+        siteRequirements.setNeedsInsideDelivery(requirementList[NEEDS_INSIDE_DELIVERY]);
+        siteRequirements.setServiceType(requirementList[SERVICE_TYPE]);
+    } catch (const std::exception& e) {
+        std::cerr << "Error parsing requirements: '" << line << "' -> " << e.what() << std::endl;
+    }
+    return siteRequirements;
 }
