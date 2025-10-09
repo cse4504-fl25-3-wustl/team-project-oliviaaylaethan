@@ -32,6 +32,9 @@ int main() {
             std::cout << std::endl;
 
             CsvParser parser;
+            if (!parser.isValidFile(dataInputFile) || !parser.isValidFile(requirementsInputFile)) {
+                continue;
+            }
             Request request = parser.parseFiles(dataInputFile, requirementsInputFile);
             PackingInteractor packingInteractor;
             Response response = packingInteractor.packAllArt(request);

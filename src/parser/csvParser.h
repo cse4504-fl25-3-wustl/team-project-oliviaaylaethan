@@ -12,9 +12,9 @@ private:
     float getMaterialDensity(MaterialType mat);
     std::vector<Art> parseArtCsv(const std::string& filePath);
     Requirements parseRequirementsCsv(const std::string& filePath);
-    bool isValidFile(const std::string& filePath);
     std::vector<std::string> commaSplitter(std::string line);
 public:
     CsvParser();
+    bool isValidFile(const std::string& filePath);
     Request parseFiles(std::string artFilePath, std::string siteFilePath);
 };
