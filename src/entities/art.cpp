@@ -1,4 +1,5 @@
 #include "art.h"
+#include <cmath>
 
 // Default constructor
 Art::Art() : lineNumber_(0), quantity_(0), tagNumber_(""), material_(MaterialType::CANVAS_FRAMED),
@@ -87,4 +88,8 @@ std::string Art::getFrame1Moulding() {
 
 HardwareSpec Art::getHardware() {
     return hardware_;
+}
+
+int Art::getWeight() {
+    return std::ceil(quantity_ * outerWidth_ * outerHeight_ * materialDensity_);
 }

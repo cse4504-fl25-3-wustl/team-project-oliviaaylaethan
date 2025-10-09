@@ -72,5 +72,5 @@ public:
     GlazingType getGlazeType();
     std::string getFrame1Moulding();
     HardwareSpec getHardware();
-    int getWeight() const { return 10; }
+    int getWeight();
 };
