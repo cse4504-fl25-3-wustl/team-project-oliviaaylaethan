@@ -13,9 +13,6 @@ class PackingInteractor {
         std::vector<Pallet> pallets_;
         std::vector<Crate> crates_;
 
-        //bool addBox(Box);
-        //bool packInBox(Art art);
-
     public:
         PackingInteractor();
 

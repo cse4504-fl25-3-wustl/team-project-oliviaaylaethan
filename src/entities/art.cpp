@@ -93,3 +93,11 @@ HardwareSpec Art::getHardware() {
 int Art::getWeight() {
     return std::ceil(quantity_ * outerWidth_ * outerHeight_ * materialDensity_);
 }
+
+bool Art::needsCustomShipping() {
+    return material_ == MaterialType::MIRROR;
+}
+
+bool Art::needsCanvasPacking() {
+    return material_ == MaterialType::CANVAS_FRAMED || material_ == MaterialType::CANVAS_GALLERY;
+}

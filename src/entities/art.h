@@ -73,4 +73,6 @@ public:
     std::string getFrame1Moulding();
     HardwareSpec getHardware();
     int getWeight();
+    bool needsCustomShipping();
+    bool needsCanvasPacking();
 };

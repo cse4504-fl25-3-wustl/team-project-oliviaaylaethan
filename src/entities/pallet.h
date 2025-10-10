@@ -7,6 +7,8 @@
 const Dimensions STANDARD_PALLET_DIMENSIONS = {48, 40, 0};
 const float STANDARD_PALLET_TARE_WEIGHT = 60;
 const int STANDARD_PALLET_STANDARD_BOX_CAPACITY = 4;
+const int STANDARD_PALLET_CANVAS_BOX_CAPACITY = 12;
+
 
 // For small shipments
 const Dimensions GLASS_SMALL_PALLET_DIMENSIONS = {43, 35, 0};

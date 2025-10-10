@@ -19,6 +19,9 @@ const Dimensions LARGE_BOX_DIMENSIONS = {44, 13, 48};
 const Dimensions UPS_SMALL_BOX_DIMENSIONS = {36, 6, 36};
 const Dimensions UPS_LARGE_BOX_DIMENSIONS = {44, 6, 35};
 
+const int STANDARD_BOX_CAPACITY = 6;
+const int LARGE_BOX_CAPACITY = 4;
+
 //static BoxType boxFit(Art art);
 
 class Box {
@@ -36,6 +39,8 @@ public:
     static Box makeLargeBox();
     static Box makeUPSSmallBox();
     static Box makeUPSLargeBox();
+
+    bool fitsArt(Art artwork);
 
     // TODO move all these definitions to box.cpp
     bool addArt(Art art) {
