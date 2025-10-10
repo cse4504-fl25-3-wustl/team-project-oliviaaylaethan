@@ -53,3 +53,22 @@ For CMake on Windows, download from [cmake.org](https://cmake.org/).
 * **Olivia** - Response
 * **Ayla** - Request
 * **Ethan** - Interactor
+
+# Testing Assignment
+* ***Olivia**
+   * Packing Interactor
+      * packAllArt
+* **Ayla**
+   * Art
+      * getWeight
+      * needsCustomShipping
+   * Box
+      * fitsArt
+      * addArt
+      * getTotalWeight
+* **Ethan**
+   * Shipping Container
+      * calculateContainerHeight
+      * addBox
+   * CSV Parser
+      * parseFiles
