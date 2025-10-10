@@ -42,3 +42,17 @@ add_executable(main
         src/responses/hardwareInfo.cpp
         src/responses/palletInfo.cpp
         src/main.cpp)
+
+enable_testing()
+
+add_executable(
+  hello_test
+  src/entities/artTest.cpp
+)
+target_link_libraries(
+  hello_test
+  GTest::gtest_main
+)
+
+include(GoogleTest)
+gtest_discover_tests(hello_test)
