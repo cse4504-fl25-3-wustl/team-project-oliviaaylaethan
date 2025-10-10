@@ -1,7 +1,7 @@
 #include "response.h"
 #include <format>
 
-CrateInfo::CrateInfo(const std::vector<Crate>& crates) : crates_(crates) {}
+CrateInfo::CrateInfo(const std::vector<ShippingContainer>& crates) : crates_(crates) {}
 
 int CrateInfo::getTotalCrateCount() {
     return static_cast<int>(crates_.size());
@@ -41,7 +41,7 @@ std::vector<std::string> CrateInfo::getAllPackedBoxesSummary() {
     if (count < 1) return {};
     std::vector<std::string> summary;
     summary.push_back("\nBox Packing Summary - Crate:");
-    Crate crate;
+    ShippingContainer crate;
     for (int i = 0; i < count; i++) {
         crate = crates_[i];
         summary.push_back(std::format("- Crate {}", i));

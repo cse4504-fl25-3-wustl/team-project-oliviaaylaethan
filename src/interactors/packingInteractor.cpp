@@ -5,8 +5,8 @@ using namespace std;
 
 PackingInteractor::PackingInteractor() {
     boxes_ = std::vector<Box>();
-    pallets_ = std::vector<Pallet>();
-    crates_ = std::vector<Crate>();
+    pallets_ = std::vector<ShippingContainer>();
+    crates_ = std::vector<ShippingContainer>();
 }
 
 Response PackingInteractor::packAllArt(Request request) {
@@ -60,7 +60,7 @@ Response PackingInteractor::packAllArt(Request request) {
     // Pack custom crates and pallets based on material rules
     for (Art piece : needsCustomPallet) {
         if (piece.needsCustomShipping()) {
-            Crate crate = Crate(STANDARD_CRATE_DIMENSIONS, STANDARD_CRATE_TARE_WEIGHT);
+            ShippingContainer crate = ShippingContainer::makeStandardCrate();
             Box mirrorBox = Box::makeLargeBox();
             mirrorBox.addArt(piece);
             crate.addBox(mirrorBox); // Use addBox instead of directly modifying contents_
@@ -70,7 +70,7 @@ Response PackingInteractor::packAllArt(Request request) {
             customBox.addArt(piece);
             boxes_.push_back(customBox);
 
-            Pallet pallet = Pallet::makeOversizePallet();
+            ShippingContainer pallet = ShippingContainer::makeOversizePallet();
             pallet.addBox(customBox);
             pallets_.push_back(pallet);
         }
@@ -80,7 +80,7 @@ Response PackingInteractor::packAllArt(Request request) {
     // 🚨 FLAG: Canvas packing rule discrepancy. Using Excel logic (12 per pallet) for now.
     for (size_t i = 0; i < needsStandardBox.size(); ++i) {
         if (needsStandardBox[i].needsCanvasPacking()) {
-            Pallet pallet = Pallet::makeStandardPallet();
+            ShippingContainer pallet = ShippingContainer::makeStandardPallet();
             for (size_t j = i; j < i + STANDARD_PALLET_CANVAS_BOX_CAPACITY && j < needsStandardBox.size(); ++j) {
                 if (needsStandardBox[j].needsCanvasPacking()) {
                     pallet.addBox(boxes_[j]);
@@ -97,10 +97,10 @@ std::vector<Box> PackingInteractor::getBoxes() {
     return boxes_;
 }
 
-std::vector<Pallet> PackingInteractor::getPallets() {
+std::vector<ShippingContainer> PackingInteractor::getPallets() {
     return pallets_;
 }
 
-std::vector<Crate> PackingInteractor::getCrates() {
+std::vector<ShippingContainer> PackingInteractor::getCrates() {
     return crates_;
 }

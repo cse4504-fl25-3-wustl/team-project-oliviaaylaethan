@@ -2,16 +2,15 @@
 #include <cmath>
 
 // Default constructor
-Art::Art() : lineNumber_(0), quantity_(0), tagNumber_(""), material_(MaterialType::CANVAS_FRAMED),
+Art::Art() : lineNumber_(0), tagNumber_(""), material_(MaterialType::CANVAS_FRAMED),
              materialDensity_(0.0f), outerWidth_(0.0f), outerHeight_(0.0f), glazeType_(GlazingType::GLAZING_NONE),
-             frame1Moulding_(""), hardware_(PT_SEC_4) {}
+             frame1Moulding_(""), hardware_(HardwareSpec::NONE) {}
 
 // Constructor to initialize the Art object
-Art::Art(int lineNo, int quantity, std::string tagNo, 
+Art::Art(int lineNo, std::string tagNo, 
            MaterialType material, float outerWidth, float outerHeight, 
            GlazingType glazeType, std::string frame1Moulding, HardwareSpec hardware)
     : lineNumber_(lineNo), 
-      quantity_(quantity), 
       tagNumber_(tagNo), 
       material_(material), 
       outerWidth_(outerWidth), 
@@ -58,10 +57,6 @@ int Art::getLineNumber() {
     return lineNumber_;
 }
 
-int Art::getQuantity() {
-    return quantity_;
-}
-
 std::string Art::getTagNumber() {
     return tagNumber_;
 }
@@ -91,7 +86,14 @@ HardwareSpec Art::getHardware() {
 }
 
 int Art::getWeight() {
-    return std::ceil(quantity_ * outerWidth_ * outerHeight_ * materialDensity_);
+    // If art is glazed with glass or acrylic, use those to calculate weight instead of material
+    if (glazeType_ == GlazingType::GLAZING_GLASS) {
+        return std::ceil(outerWidth_ * outerHeight_ * MaterialType::GLASS);
+    }
+    if (glazeType_ == GlazingType::GLAZING_ACRYLIC) {
+        return std::ceil(outerWidth_ * outerHeight_ * MaterialType::ACRYLIC);
+    }
+    return std::ceil(outerWidth_ * outerHeight_ * materialDensity_);
 }
 
 bool Art::needsCustomShipping() {

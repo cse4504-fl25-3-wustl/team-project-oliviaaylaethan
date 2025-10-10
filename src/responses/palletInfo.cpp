@@ -1,12 +1,12 @@
 #include "response.h"
 #include <format>
 
-PalletInfo::PalletInfo(const std::vector<Pallet>& pallets) : pallets_(pallets) {}
+PalletInfo::PalletInfo(const std::vector<ShippingContainer>& pallets) : pallets_(pallets) {}
 
 int PalletInfo::getStandardPalletCount() {
     int count = 0;
     for (int i = 0; i < getTotalPalletCount(); i++) {
-        if (pallets_[i].getPalletType() == STANDARD_PALLET) {
+        if (pallets_[i].getShippingContainerType() == STANDARD_PALLET) {
             count++;
         }
     }
@@ -16,7 +16,7 @@ int PalletInfo::getStandardPalletCount() {
 int PalletInfo::getOversizePalletCount() {
     int count = 0;
     for (int i = 0; i < getTotalPalletCount(); i++) {
-        if (pallets_[i].getPalletType() == OVERSIZE_PALLET) {
+        if (pallets_[i].getShippingContainerType() == OVERSIZE_PALLET) {
             count++;
         }
     }
@@ -72,7 +72,7 @@ std::vector<std::string> PalletInfo::getAllPackedBoxesSummary() {
     if (count < 1) return {};
     std::vector<std::string> summary;
     summary.push_back("\nBox Packing Summary - Pallet:");
-    Pallet pallet;
+    ShippingContainer pallet = ShippingContainer::makeStandardPallet();
     for (int i = 0; i < count; i++) {
         pallet = pallets_[i];
         summary.push_back(std::format("- Pallet {}", i));

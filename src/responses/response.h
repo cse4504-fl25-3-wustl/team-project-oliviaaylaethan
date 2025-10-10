@@ -1,9 +1,9 @@
 #pragma once
 #include <iostream>
+#include <map>
 #include "../entities/box.h"
 #include "../entities/art.h"
-#include "../entities/crate.h"
-#include "../entities/pallet.h"
+#include "../entities/shippingContainer.h"
 #include "../entities/requirements.h"
 
 class BoxInfo {
@@ -22,12 +22,21 @@ class BoxInfo {
 
 class ArtInfo {
     private:
+        // List of all art pieces in order
         std::vector<Art> pieces_;
+
+        // Map of quantity of each line number
+        std::map<int, int> quantities_;
+
+        // Map of Art pieces that represent each line number
+        std::map<int, Art> artTypes_;
     public:
         ArtInfo(const std::vector<Art>& pieces);
         int getTotalCount();
         int getStandardCount();
         int getOversizedCount();
+        int getQuantity(int lineNo);
+        Art getArtType(int lineNo);
         std::vector<std::string> getOversizedSummary();
         std::vector<std::string> getTotalWeightSummary();
         int getTotalWeight();
@@ -35,9 +44,9 @@ class ArtInfo {
 
 class CrateInfo {
     private:
-        std::vector<Crate> crates_;
+        std::vector<ShippingContainer> crates_;
     public:
-        CrateInfo(const std::vector<Crate>& crates);
+        CrateInfo(const std::vector<ShippingContainer>& crates);
         int getTotalCrateCount();
         int getTotalTareWeight();
         std::string getCrateWeightSummary();
@@ -48,9 +57,9 @@ class CrateInfo {
 
 class PalletInfo {
     private:
-        std::vector<Pallet> pallets_;
+        std::vector<ShippingContainer> pallets_;
     public:
-        PalletInfo(const std::vector<Pallet>& pallets);
+        PalletInfo(const std::vector<ShippingContainer>& pallets);
         int getStandardPalletCount();
         int getOversizePalletCount();
         int getTotalPalletCount();
@@ -102,8 +111,8 @@ class Response {
 
     public:
         Response(const std::vector<Box>& boxes,
-                const std::vector<Pallet>& pallets,
-                const std::vector<Crate>& crates,
+                const std::vector<ShippingContainer>& pallets,
+                const std::vector<ShippingContainer>& crates,
                 const Requirements requirements);
 
         std::vector<std::string> getWeightSummary();

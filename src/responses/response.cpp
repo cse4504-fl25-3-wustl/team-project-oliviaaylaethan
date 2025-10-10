@@ -3,8 +3,8 @@
 #include <format>
 
 Response::Response(const std::vector<Box>& boxes,
-                const std::vector<Pallet>& pallets,
-                const std::vector<Crate>& crates,
+                const std::vector<ShippingContainer>& pallets,
+                const std::vector<ShippingContainer>& crates,
                 const Requirements requirements) :
 
     boxInfo_(boxes),

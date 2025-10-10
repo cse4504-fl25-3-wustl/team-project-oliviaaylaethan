@@ -7,7 +7,7 @@ HardwareInfo::HardwareInfo(const std::vector<Art>& pieces) : pieces_(pieces) {}
 int HardwareInfo::getWallHardwareCount() {
     int count = 0;
     for (size_t i = 0; i < pieces_.size(); i++) {
-        count += pieces_[i].getQuantity();
+        count += 1;
     }
     return count;
 }
@@ -21,7 +21,7 @@ std::vector<std::string> HardwareInfo::getLineItemHWSummary() {
     Art art;
     for (size_t i = 0; i < pieces_.size(); i++) {
         art = pieces_[i];
-        hardwareByType[art.getHardware()] += art.getQuantity();
+        hardwareByType[art.getHardware()] += 1;
     }
 
     for (const auto& [spec, qty] : hardwareByType) {
