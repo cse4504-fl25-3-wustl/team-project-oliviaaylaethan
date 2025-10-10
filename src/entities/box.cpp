@@ -34,3 +34,25 @@ bool Box::fitsArt(Art artwork) {
         return false;
     }
 }
+
+bool Box::addArt(Art art) {
+    contents_.push_back(art);
+    totalWeight_ += art.getWeight();
+    return true;
+};
+
+Dimensions Box::getDimensions() const {
+    return dimensions_;
+}
+
+BoxType Box::getBoxType() const {
+    return boxType_;
+}
+
+int Box::getTotalWeight() const { 
+    return totalWeight_; 
+}
+
+std::vector<Art> Box::getContents() const {
+    return contents_;
+}

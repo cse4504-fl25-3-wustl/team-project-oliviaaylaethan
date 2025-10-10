@@ -22,8 +22,6 @@ const Dimensions UPS_LARGE_BOX_DIMENSIONS = {44, 6, 35};
 const int STANDARD_BOX_CAPACITY = 6;
 const int LARGE_BOX_CAPACITY = 4;
 
-//static BoxType boxFit(Art art);
-
 class Box {
 private:
     Dimensions dimensions_;
@@ -40,25 +38,11 @@ public:
     static Box makeUPSSmallBox();
     static Box makeUPSLargeBox();
 
+    Dimensions getDimensions() const;
+    BoxType getBoxType() const;
+    int getTotalWeight() const;
+    std::vector<Art> getContents() const;
+
     bool fitsArt(Art artwork);
-
-    // TODO move all these definitions to box.cpp
-    bool addArt(Art art) {
-        contents_.push_back(art);
-        return true;
-    };
-
-    Dimensions getDimensions() const {
-        return dimensions_;
-    }
-
-    BoxType getBoxType() const {
-        return boxType_;
-    }
-
-    int getTotalWeight() const { return 100; }
-    
-    std::vector<Art> getContents() const {
-        return contents_;
-    }
+    bool addArt(Art artwork);
 };
