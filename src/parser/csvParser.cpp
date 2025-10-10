@@ -35,7 +35,6 @@ Request CsvParser::parseFiles(std::string artFilePath, std::string siteFilePath)
 
     for (auto& art : artworks) {
         std::cout << "Line #" << art.getLineNumber()
-                  << ", Quantity: " << art.getQuantity()
                   << ", Material: " << art.getMaterial()
                   << ", Glaze: " << art.getGlazeType()
                   << ", Size: " << art.getOuterWidth() << "x" << art.getOuterHeight()
@@ -149,8 +148,10 @@ std::vector<Art> CsvParser::parseArtCsv(const std::string& filename) {
             std::string frame = tokens[7];
             HardwareSpec hw = mapToHardware(tokens[8]);
 
-            Art art(lineNo, qty, tag, material, width, height, glaze, frame, hw);
-            artList.push_back(art);
+            for (int i = 0; i < qty; i++) {
+                Art art(lineNo, tag, material, width, height, glaze, frame, hw);
+                artList.push_back(art);
+            }
         } catch (const std::exception& e) {
             std::cerr << "Error parsing line: '" << line << "' -> " << e.what() << std::endl;
             continue;  // skip malformed line

@@ -2,7 +2,13 @@
 #include <format>
 #include <map>
 
-ArtInfo::ArtInfo(const std::vector<Art>& pieces) : pieces_(pieces) {}
+ArtInfo::ArtInfo(const std::vector<Art>& pieces) : pieces_(pieces) {
+    for (auto& art : pieces_) {
+        int lineNo = art.getLineNumber();
+        quantities_[lineNo]++;
+        artTypes_[lineNo] = art;
+    }
+}
 
 int ArtInfo::getTotalCount() {
     return static_cast<int>(pieces_.size());
@@ -34,6 +40,14 @@ int ArtInfo::getOversizedCount() {
     return count;
 }
 
+int ArtInfo::getQuantity(int lineNo) {
+    return quantities_[lineNo];
+}
+
+Art ArtInfo::getArtType(int lineNo) {
+    return artTypes_[lineNo];
+}
+
 int ArtInfo::getTotalWeight() {
     int totalCount = getTotalCount();
     int weight = 0;
@@ -44,18 +58,15 @@ int ArtInfo::getTotalWeight() {
 }
 
 std::vector<std::string> ArtInfo::getOversizedSummary() {
-    int totalCount = getTotalCount();
     std::vector<std::string> summary;
     summary.push_back("\nOversized Items Flagged:");
-    Art art;
-    for (int i = 0; i < totalCount; i++) {
-        art = pieces_[i];
+    for (auto& [lineNo, art] : artTypes_) {
         // Check if oversized
         if (art.getOuterWidth() > 33 and art.getOuterHeight() > 43) {
             summary.push_back(std::format("- {}\"x{}\" (Qty: {}) - Requires large box",
                 art.getOuterHeight(),
                 art.getOuterWidth(),
-                art.getQuantity()
+                getQuantity(lineNo)
             ));
         }
     }
