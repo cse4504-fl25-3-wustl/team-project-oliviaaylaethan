@@ -5,8 +5,8 @@ using namespace std;
 
 PackingInteractor::PackingInteractor() {
     boxes_ = std::vector<Box>();
-    pallets_ = std::vector<Pallet>();
-    crates_ = std::vector<Crate>();
+    pallets_ = std::vector<ShippingContainer>();
+    crates_ = std::vector<ShippingContainer>();
 }
 
 Response PackingInteractor::packAllArt(Request request) {
@@ -47,7 +47,7 @@ Response PackingInteractor::packAllArt(Request request) {
 
     // Place all boxes on pallets
     for (size_t i = 0; i < boxes_.size(); i += 4) { // 4 boxes per pallet
-        Pallet pallet = Pallet::makeStandardPallet();
+        ShippingContainer pallet = ShippingContainer::makeStandardPallet();
         for (size_t j = i; j < i + 4 && j < boxes_.size(); ++j) {
             pallet.addBox(boxes_[j]);
         }
@@ -57,7 +57,7 @@ Response PackingInteractor::packAllArt(Request request) {
     // Pack custom crates and pallets based on material rules
     for (Art piece : needsCustomPallet) {
         if (piece.getMaterial() == MaterialType::MIRROR) {
-            Crate crate = Crate(STANDARD_CRATE_DIMENSIONS, STANDARD_CRATE_TARE_WEIGHT);
+            ShippingContainer crate = ShippingContainer::makeStandardCrate();
             Box mirrorBox = Box::makeLargeBox();
             mirrorBox.addArt(piece);
             crate.addBox(mirrorBox); // Use addBox instead of directly modifying contents_
@@ -67,7 +67,7 @@ Response PackingInteractor::packAllArt(Request request) {
             customBox.addArt(piece);
             boxes_.push_back(customBox);
 
-            Pallet pallet = Pallet::makeOversizePallet();
+            ShippingContainer pallet = ShippingContainer::makeOversizePallet();
             pallet.addBox(customBox);
             pallets_.push_back(pallet);
         }
@@ -78,7 +78,7 @@ Response PackingInteractor::packAllArt(Request request) {
     for (size_t i = 0; i < needsStandardBox.size(); ++i) {
         if (needsStandardBox[i].getMaterial() == MaterialType::CANVAS_FRAMED ||
             needsStandardBox[i].getMaterial() == MaterialType::CANVAS_GALLERY) {
-            Pallet pallet = Pallet::makeStandardPallet();
+            ShippingContainer pallet = ShippingContainer::makeStandardPallet();
             for (size_t j = i; j < i + 12 && j < needsStandardBox.size(); ++j) {
                 if (needsStandardBox[j].getMaterial() == MaterialType::CANVAS_FRAMED ||
                     needsStandardBox[j].getMaterial() == MaterialType::CANVAS_GALLERY) {
@@ -96,10 +96,10 @@ std::vector<Box> PackingInteractor::getBoxes() {
     return boxes_;
 }
 
-std::vector<Pallet> PackingInteractor::getPallets() {
+std::vector<ShippingContainer> PackingInteractor::getPallets() {
     return pallets_;
 }
 
-std::vector<Crate> PackingInteractor::getCrates() {
+std::vector<ShippingContainer> PackingInteractor::getCrates() {
     return crates_;
 }

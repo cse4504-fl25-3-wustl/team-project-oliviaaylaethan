@@ -15,12 +15,9 @@ add_executable(main
         src/entities/art.h
         src/entities/box.cpp
         src/entities/box.h
-        src/entities/crate.cpp
-        src/entities/crate.h
-        src/entities/pallet.cpp
-        src/entities/pallet.h
         src/entities/requirements.cpp
         src/entities/requirements.h
+        src/entities/shippingContainer.cpp
         src/entities/shippingContainer.h
         src/interactors/packingInteractor.cpp
         src/interactors/packingInteractor.h
