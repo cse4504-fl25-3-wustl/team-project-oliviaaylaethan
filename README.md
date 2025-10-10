@@ -48,6 +48,13 @@ For CMake on Windows, download from [cmake.org](https://cmake.org/).
 
    Note: The program takes input files as absolute paths.
 
+5. **Test the Program**
+
+   Run all tests with this command in the `build` directory:
+   ```bash
+   ctest
+   ```
+
 
 # Feature 1 Work Assignment
 * **Olivia** - Response
