@@ -25,3 +25,12 @@ Box Box::makeUPSLargeBox() {
     return Box(UPS_LARGE_BOX_DIMENSIONS, UPS_LARGE_BOX);
 }
 
+bool Box::fitsArt(Art artwork) {
+    if (artwork.getOuterHeight() < dimensions_.l && artwork.getOuterWidth() < dimensions_.h) {
+        return true;
+    } else if (artwork.getOuterWidth() < dimensions_.l && artwork.getOuterHeight() < dimensions_.h) {
+        return true;
+    } else {
+        return false;
+    }
+}

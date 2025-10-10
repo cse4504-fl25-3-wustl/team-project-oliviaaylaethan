@@ -7,7 +7,7 @@ const Dimensions STANDARD_CRATE_DIMENSIONS = {50, 38, 0};
 const float STANDARD_CRATE_TARE_WEIGHT = 125;
 const int TEMP_CRATE_OVERSIZED_BOX_CAPACITY = 3; // TODO determine real values later
 const int TEMP_CRATE_STANDARD_BOX_CAPACITY = 4; // TODO determine real values later
-
+const int STANDARD_PALLET_CANVAS_BOX_CAPACITY = 12;
 
 // Pallet info
 // For standard shipments
