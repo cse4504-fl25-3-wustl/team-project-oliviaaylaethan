@@ -50,7 +50,7 @@ Response PackingInteractor::packAllArt(Request request) {
 
     // Place all boxes on pallets
     for (size_t i = 0; i < boxes_.size(); i += STANDARD_PALLET_STANDARD_BOX_CAPACITY) {
-        Pallet pallet = Pallet::makeStandardPallet();
+        ShippingContainer pallet = ShippingContainer::makeStandardPallet();
         for (size_t j = i; j < i + STANDARD_PALLET_STANDARD_BOX_CAPACITY && j < boxes_.size(); ++j) {
             pallet.addBox(boxes_[j]);
         }
