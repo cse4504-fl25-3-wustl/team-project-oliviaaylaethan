@@ -2,8 +2,7 @@
 #include <iostream>
 #include "../entities/box.h"
 #include "../entities/art.h"
-#include "../entities/crate.h"
-#include "../entities/pallet.h"
+#include "../entities/shippingContainer.h"
 #include "../entities/requirements.h"
 
 class BoxInfo {
@@ -35,9 +34,9 @@ class ArtInfo {
 
 class CrateInfo {
     private:
-        std::vector<Crate> crates_;
+        std::vector<ShippingContainer> crates_;
     public:
-        CrateInfo(const std::vector<Crate>& crates);
+        CrateInfo(const std::vector<ShippingContainer>& crates);
         int getTotalCrateCount();
         int getTotalTareWeight();
         std::string getCrateWeightSummary();
@@ -48,9 +47,9 @@ class CrateInfo {
 
 class PalletInfo {
     private:
-        std::vector<Pallet> pallets_;
+        std::vector<ShippingContainer> pallets_;
     public:
-        PalletInfo(const std::vector<Pallet>& pallets);
+        PalletInfo(const std::vector<ShippingContainer>& pallets);
         int getStandardPalletCount();
         int getOversizePalletCount();
         int getTotalPalletCount();
@@ -102,8 +101,8 @@ class Response {
 
     public:
         Response(const std::vector<Box>& boxes,
-                const std::vector<Pallet>& pallets,
-                const std::vector<Crate>& crates,
+                const std::vector<ShippingContainer>& pallets,
+                const std::vector<ShippingContainer>& crates,
                 const Requirements requirements);
 
         std::vector<std::string> getWeightSummary();
