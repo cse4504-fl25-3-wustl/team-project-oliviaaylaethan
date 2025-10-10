@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <map>
 #include "../entities/box.h"
 #include "../entities/art.h"
 #include "../entities/crate.h"
@@ -22,12 +23,21 @@ class BoxInfo {
 
 class ArtInfo {
     private:
+        // List of all art pieces in order
         std::vector<Art> pieces_;
+
+        // Map of quantity of each line number
+        std::map<int, int> quantities_;
+
+        // Map of Art pieces that represent each line number
+        std::map<int, Art> artTypes_;
     public:
         ArtInfo(const std::vector<Art>& pieces);
         int getTotalCount();
         int getStandardCount();
         int getOversizedCount();
+        int getQuantity(int lineNo);
+        Art getArtType(int lineNo);
         std::vector<std::string> getOversizedSummary();
         std::vector<std::string> getTotalWeightSummary();
         int getTotalWeight();
