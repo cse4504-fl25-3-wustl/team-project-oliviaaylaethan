@@ -43,7 +43,7 @@ For CMake on Windows, download from [cmake.org](https://cmake.org/).
    ```
    or this command on Windows:
    ```bash
-   main.exe
+   Debug/main.exe
    ```
 
    Note: The program takes input files as absolute paths.
