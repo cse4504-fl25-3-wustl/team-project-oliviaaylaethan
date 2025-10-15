@@ -49,12 +49,49 @@ target_link_libraries(
 
 enable_testing()
 
+# Art Tests
 add_executable(
-  hello_test
-  testing/artTest.cpp
+  art_test
+  testing/entities/artTest.cpp
+  src/entities/art.cpp
+  src/entities/art.h
 )
 target_link_libraries(
-  hello_test
+  art_test
+  GTest::gtest_main
+)
+
+# Shipping Container Tests
+add_executable(
+  shipping_container_test
+  testing/entities/shippingContainerTest.cpp
+  src/entities/shippingContainer.cpp
+  src/entities/shippingContainer.h
+  src/entities/box.cpp
+  src/entities/box.h
+  src/entities/art.cpp
+  src/entities/art.h
+)
+target_link_libraries(
+  shipping_container_test
+  GTest::gtest_main
+)
+
+# CSV Parser Tests
+add_executable(
+  csv_parser_test
+  testing/parser/csvParserTest.cpp
+  src/parser/csvParser.cpp
+  src/parser/csvParser.h
+  src/entities/art.cpp
+  src/entities/art.h
+  src/entities/requirements.cpp
+  src/entities/requirements.h
+  src/requests/request.cpp
+  src/requests/request.h
+)
+target_link_libraries(
+  csv_parser_test
   GTest::gtest_main
 )
 
@@ -69,5 +106,6 @@ target_link_libraries(
 )
 
 include(GoogleTest)
-gtest_discover_tests(hello_test)
-gtest_discover_tests(packing_interactor_test)
+gtest_discover_tests(art_test)
+gtest_discover_tests(shipping_container_test)
+gtest_discover_tests(csv_parser_test)
