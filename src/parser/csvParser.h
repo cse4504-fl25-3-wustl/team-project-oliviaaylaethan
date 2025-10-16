@@ -9,7 +9,6 @@ private:
     MaterialType mapToMaterial(const std::string& medium);
     GlazingType mapToGlazing(const std::string& glaze);
     HardwareSpec mapToHardware(const std::string& hw);
-    float getMaterialDensity(MaterialType mat);
     std::vector<Art> parseArtCsv(const std::string& filePath);
     Requirements parseRequirementsCsv(const std::string& filePath);
     std::vector<std::string> commaSplitter(std::string line);

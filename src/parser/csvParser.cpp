@@ -72,13 +72,12 @@ std::string CsvParser::trim(const std::string& str) {
 }
 
 // Map Final Medium to MaterialType
-MaterialType CsvParser::mapToMaterial(const std::string& medium) {
+MaterialType CsvParser::mapToMaterial(const std::string& medium) { // FIXME these mappings might be wrong
     std::string m = trim(medium);
     if (m == "Paper Print - Framed") return CANVAS_FRAMED;
     if (m == "Canvas - Float Frame") return CANVAS_GALLERY;
     if (m == "Print - Framed with Title Plate") return CANVAS_FRAMED;
     if (m == "Wall Décor") return ACOUSTIC_PANEL;
-    if (m == "Metal Print") return ACRYLIC;
     if (m == "Mirror") return MIRROR;
     return ACOUSTIC_PANEL; // default/fallback
 }
@@ -96,21 +95,6 @@ HardwareSpec CsvParser::mapToHardware(const std::string& hw) {
     std::string h = trim(hw);
     if (h.find("4 pt") != std::string::npos) return PT_SEC_4;
     return PT_SEC_3;
-}
-
-// Get density based on material
-float CsvParser::getMaterialDensity(MaterialType mat) {
-    switch (mat) {
-        case ACOUSTIC_PANEL: return ACOUSTIC_PANEL_DENSITY;
-        case ACOUSTIC_PANEL_FRAMED: return ACOUSTIC_PANEL_FRAMED_DENSITY;
-        case ACRYLIC: return ACRYLIC_DENSITY;
-        case CANVAS_FRAMED: return CANVAS_FRAMED_DENSITY;
-        case CANVAS_GALLERY: return CANVAS_GALLERY_DENSITY;
-        case GLASS: return GLASS_DENSITY;
-        case MIRROR: return MIRROR_DENSITY;
-        case PATIENT_BOARD: return PATIENT_BOARD_DENSITY;
-        default: return 0.0f;
-    }
 }
 
 std::vector<std::string> CsvParser::commaSplitter(std::string line) {
