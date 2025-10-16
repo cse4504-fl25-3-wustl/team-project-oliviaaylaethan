@@ -102,21 +102,13 @@ std::vector<std::string> ArtInfo::getTotalWeightSummary() {
         summary.push_back(std::format(
             "- Acoustic framed panels: {} lbs", weightByType[ACOUSTIC_PANEL_FRAMED]));
     }
-    if (weightByType[ACRYLIC] > 0) {
-        summary.push_back(std::format(
-            "- Acrylic framed prints: {} lbs", weightByType[ACRYLIC]));
-    }
     if (weightByType[CANVAS_FRAMED] > 0) {
         summary.push_back(std::format(
-            "- Canvas framed prints: {} lbs", weightByType[CANVAS_FRAMED]));
+            "- Canvas framed prints (acrylic glazing, glass glazing, and no glazing): {} lbs", weightByType[CANVAS_FRAMED])); // TODO split this up by glazing type?
     }
     if (weightByType[CANVAS_GALLERY] > 0) {
         summary.push_back(std::format(
             "- Canvas gallery prints: {} lbs", weightByType[CANVAS_GALLERY]));
-    }
-    if (weightByType[GLASS] > 0) {
-        summary.push_back(std::format(
-            "- Glass framed prints: {} lbs", weightByType[GLASS]));
     }
     if (weightByType[MIRROR] > 0) {
         summary.push_back(std::format(

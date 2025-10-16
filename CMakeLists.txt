@@ -48,6 +48,7 @@ enable_testing()
 add_executable(
   hello_test
   testing/artTest.cpp
+  src/entities/art.cpp
 )
 target_link_libraries(
   hello_test
