@@ -58,5 +58,15 @@ target_link_libraries(
   GTest::gtest_main
 )
 
+add_executable(
+    packing_interactor_test
+    testing/packingInteractorTest.cpp
+)
+target_link_libraries(
+    packing_interactor_test
+    GTest::gtest_main
+    core_lib
+)
+
 include(GoogleTest)
 gtest_discover_tests(hello_test)

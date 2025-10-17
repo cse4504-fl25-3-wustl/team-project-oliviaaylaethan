@@ -7,6 +7,7 @@ Box::Box() : dimensions_{0, 0, 0}, boxType_(STANDARD_BOX), totalWeight_(0) {
 Box::Box(Dimensions dimensions, BoxType boxType) {
     dimensions_ = dimensions;
     boxType_ = boxType;
+    totalWeight_ = 0;
 }
 
 Box Box::makeStandardBox() {
@@ -26,9 +27,9 @@ Box Box::makeUPSLargeBox() {
 }
 
 bool Box::fitsArt(Art artwork) {
-    if (artwork.getOuterHeight() < dimensions_.l && artwork.getOuterWidth() < dimensions_.h) {
+    if (artwork.getOuterHeight() < dimensions_.l || artwork.getOuterWidth() < dimensions_.h) {
         return true;
-    } else if (artwork.getOuterWidth() < dimensions_.l && artwork.getOuterHeight() < dimensions_.h) {
+    } else if (artwork.getOuterWidth() < dimensions_.l || artwork.getOuterHeight() < dimensions_.h) {
         return true;
     } else {
         return false;
