@@ -55,6 +55,11 @@ For CMake on Windows, download from [cmake.org](https://cmake.org/).
    ctest
    ```
 
+   Run packing interactor tests with this command in the `build` directory:
+   ```bash
+   ./packing_interactor_test
+   ```
+
 
 # Feature 1 Work Assignment
 * **Olivia** - Response
