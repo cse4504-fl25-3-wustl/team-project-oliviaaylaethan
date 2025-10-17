@@ -91,8 +91,12 @@ int Art::getWeight() {
     return std::ceil(outerWidth_ * outerHeight_ * materialDensity_);
 }
 
-bool Art::needsCustomShipping() {
-    return material_ == MaterialType::MIRROR;
+bool Art::needsCustomPackaging() {
+    // Anything that exceeds 43.5" in BOTH directions would require custom packaging.
+    if (outerWidth_ > CUSTOM_PACKING_NEEDED_THRESHOLD && outerHeight_ > CUSTOM_PACKING_NEEDED_THRESHOLD) {
+        return true;
+    }
+    return false;
 }
 
 bool Art::needsCanvasPacking() {

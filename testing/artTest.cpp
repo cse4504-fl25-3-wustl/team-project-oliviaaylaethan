@@ -1,35 +1,10 @@
 #include <gtest/gtest.h>
 #include "..\src\entities\art.h"
 
-// // Demonstrate some basic assertions.
-// TEST(HelloTest, BasicAssertions) {
-//   // Expect two strings not to be equal.
-//   EXPECT_STRNE("hello", "world");
-//   // Expect equality.
-//   EXPECT_EQ(7 * 6, 42);
-// }
-
-
-
 // * Art
 //       * getWeight
 //       * needsCustomShipping
 
-
-// TODO delete this one
-TEST(ArtTest, ReturnsCorrectLineNumber) {
-    // Arrange
-    int expectedLineNumber = 42;
-    Art art(expectedLineNumber, "0", 
-        ACOUSTIC_PANEL, 0, 0, 
-        GLAZING_NONE, "", NONE);
-
-    // Act
-    int actualLineNumber = art.getLineNumber();
-
-    // Assert
-    EXPECT_EQ(actualLineNumber, expectedLineNumber);
-}
 
 TEST(ArtTest, getWeight) {
     // Arrange
@@ -61,4 +36,22 @@ TEST(ArtTest, getWeight) {
     EXPECT_EQ(weight6, 6);
     EXPECT_EQ(weight7, 17);
     EXPECT_EQ(weight8, 30);
+}
+
+TEST(ArtTest, needsCustomPackaging) {        // Anything that exceeds 43.5" in BOTH directions would require custom packaging.
+    // Arrange
+    Art art1(1, "0", ACOUSTIC_PANEL, 33, 36, GLAZING_NONE, "", NONE); // false
+    Art art2(2, "0", CANVAS_FRAMED, 43.5, 43.5, GLAZING_NONE, "", NONE); // false
+    Art art3(3, "0", CANVAS_GALLERY, 44, 36, GLAZING_NONE, "", NONE); // false
+    Art art4(4, "0", MIRROR, 24, 45, GLAZING_NONE, "", NONE); // false
+    Art art5(5, "0", PATIENT_BOARD, 43.5, 36, GLAZING_NONE, "", NONE); // false
+    Art art6(5, "0", PATIENT_BOARD, 44, 45, GLAZING_NONE, "", NONE); // true
+
+    // Act & Assert
+    EXPECT_FALSE(art1.needsCustomPackaging());
+    EXPECT_FALSE(art2.needsCustomPackaging());
+    EXPECT_FALSE(art3.needsCustomPackaging());
+    EXPECT_FALSE(art4.needsCustomPackaging());
+    EXPECT_FALSE(art5.needsCustomPackaging());
+    EXPECT_TRUE(art6.needsCustomPackaging());
 }
