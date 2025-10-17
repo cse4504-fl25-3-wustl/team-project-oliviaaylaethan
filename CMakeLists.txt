@@ -56,6 +56,7 @@ add_executable(
   testing/entities/boxTest.cpp
   testing/entities/shippingContainerTest.cpp
   testing/interactors/packingInteractorTest.cpp
+  testing/responses/responseTest.cpp
 )
 target_link_libraries(
   all_tests

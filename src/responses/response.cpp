@@ -137,3 +137,27 @@ void Response::printEmailFormat() {
     }
     std::cout << "\n" << std::endl;
 }
+
+BoxInfo Response::getBoxInfo() {
+    return boxInfo_;
+}
+
+ArtInfo Response::getArtInfo() {
+    return artInfo_;
+}
+
+CrateInfo Response::getCrateInfo() {
+    return crateInfo_;
+}
+
+PalletInfo Response::getPalletInfo() {
+    return palletInfo_;
+}
+
+HardwareInfo Response::getHardwareInfo() {
+    return hardwareInfo_;
+}
+
+Requirements Response::getRequirements() {
+    return requirements_;
+}
