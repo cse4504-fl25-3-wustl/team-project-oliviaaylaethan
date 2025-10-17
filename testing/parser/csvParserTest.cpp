@@ -1,4 +1,11 @@
 #include <gtest/gtest.h>
+
+#include <string>
+
+#ifndef TEST_DATA_PATH
+#error "TEST_DATA_PATH not defined"
+#endif
+
 #include <fstream>
 #include "../../src/parser/csvParser.h"
 
@@ -10,7 +17,8 @@ protected:
     
     void SetUp() override {
         // Path to test data directory
-        testDataPath = "../testing/testdata/";
+        testDataPath = std::string(TEST_DATA_PATH) + "/";
+;
     }
 };
 
@@ -23,6 +31,9 @@ TEST_F(CsvParserTest, ParseFiles_ValidFiles) {
     
     // Act
     Request request = parser.parseFiles(artFile, reqFile);
+    
+    EXPECT_TRUE(parser.isValidFile(artFile));
+    EXPECT_TRUE(parser.isValidFile(reqFile));
     
     // Assert - Check that artworks were parsed
     std::vector<Art> artPieces = request.getArtPieces();

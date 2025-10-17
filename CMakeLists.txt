@@ -49,6 +49,12 @@ target_link_libraries(
 
 enable_testing()
 
+# Define the path to your test data directory so that test csv files are accessible across Windows vs Mac
+set(TEST_DATA_PATH "${CMAKE_SOURCE_DIR}/testing/testdata")
+
+# Pass it to your test executable as a preprocessor macro
+add_compile_definitions(TEST_DATA_PATH="${TEST_DATA_PATH}")
+
 add_executable(
   all_tests
   testing/parser/csvParserTest.cpp
