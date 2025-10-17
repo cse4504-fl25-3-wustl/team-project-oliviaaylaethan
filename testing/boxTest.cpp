@@ -35,14 +35,28 @@ TEST (BoxTest, fitsArt) {
 TEST (BoxTest, addArt) {
     // Arrange
     Box box = Box::makeStandardBox();
+    Box largeBox = Box::makeLargeBox();
 
     Art art1(1, "0", ACOUSTIC_PANEL, 24, 36, GLAZING_NONE, "", NONE); // fits in standard box
-    Art art2(2, "0", ACOUSTIC_PANEL_FRAMED, 34, 36, GLAZING_NONE, "", NONE); // fits in oversized box
+    Art art2(2, "0", ACOUSTIC_PANEL_FRAMED, 34, 36, GLAZING_NONE, "", NONE); // also fits in standard box
+    Art art3(3, "0", CANVAS_FRAMED, 40, 37, GLAZING_NONE, "", NONE); // does NOT fit in standard box
 
     // Act & Assert
     EXPECT_TRUE(box.addArt(art1)); // should succeed
-    EXPECT_FALSE(box.addArt(art2)); // should fail (too big)
-    EXPECT_EQ(box.getContents().size(), 1); // only one art piece should be in the box
+    EXPECT_TRUE(box.addArt(art2)); // should succeed
+    EXPECT_FALSE(box.addArt(art3)); // should fail
+    EXPECT_EQ(box.getContents().size(), 2); // two art pieces should be in the box
+
+    for (int i = 0; i < 4; i++) { // fill the box to capacity
+        EXPECT_TRUE(box.addArt(art1));
+    }
+    EXPECT_FALSE(box.addArt(art1)); // should fail, box is at capacity
+    EXPECT_EQ(box.getContents().size(), 6); // box should be at capacity
+
+    EXPECT_TRUE(largeBox.addArt(art1)); // should succeed in large box
+    EXPECT_TRUE(largeBox.addArt(art2)); // should succeed in large box  
+    EXPECT_TRUE(largeBox.addArt(art3)); // should succeed in large box
+    EXPECT_EQ(largeBox.getContents().size(), 3); // three art pieces should be in the large box
 }   
 
 TEST (BoxTest, getTotalWeight) {
