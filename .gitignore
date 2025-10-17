@@ -1,7 +1,6 @@
-/.github/
+/.github/copilot-instructions.md
 /.idea/
 /.vscode/
 /build/
 .DS_Store
-*.csv
 /cmake-build-debug/
