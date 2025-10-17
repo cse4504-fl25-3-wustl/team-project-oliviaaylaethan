@@ -51,10 +51,11 @@ enable_testing()
 
 add_executable(
   all_tests
+  testing/parser/csvParserTest.cpp
   testing/entities/artTest.cpp
   testing/entities/boxTest.cpp
   testing/entities/shippingContainerTest.cpp
-  testing/parser/csvParserTest.cpp
+  testing/interactors/packingInteractorTest.cpp
 )
 target_link_libraries(
   all_tests
