@@ -56,6 +56,16 @@ For CMake on Windows, download from [cmake.org](https://cmake.org/).
    ```
 
 
+   NOTE: for the tests that require csv inputs, the csv file paths are specified by TEST_DATA_PATH, which is defined in CMakeLists.txt.
+
+   If vscode says TEST_DATA_PATH doesn't exist, add this to your .vscode/c_cpp_properties.json file:
+   ```
+   "defines": [
+       // ... other definitions
+       "TEST_DATA_PATH=\"${CMAKE_SOURCE_DIR}/testing/testdata\""
+   ],
+   ```
+
 # Feature 1 Work Assignment
 * **Olivia** - Response
 * **Ayla** - Request

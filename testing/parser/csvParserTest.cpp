@@ -17,8 +17,7 @@ protected:
     
     void SetUp() override {
         // Path to test data directory
-        testDataPath = std::string(TEST_DATA_PATH) + "/";
-;
+        testDataPath = std::string(TEST_DATA_PATH) + "/"; 
     }
 };
 

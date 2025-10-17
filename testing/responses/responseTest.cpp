@@ -14,13 +14,18 @@ protected:
     
     void SetUp() override {
         // Create a standard pallet for testing
-        testDataPath = "../testing/testdata/";
+        testDataPath = std::string(TEST_DATA_PATH) + "/"; // Path to test data directory
         requirementsFilePath = testDataPath + "Site_requirements.csv";
         inputPrefix = "Input";
     }
 
     Response generateResponse(std::string dataInput, std::string requirements) {
         Request request = parser.parseFiles(dataInput, requirements);
+
+        // check that the file paths are correct (all the other tests will fail if they aren't)
+        EXPECT_TRUE(parser.isValidFile(dataInput));
+        EXPECT_TRUE(parser.isValidFile(requirements));
+    
         PackingInteractor packingInteractor;
         return packingInteractor.packAllArt(request);
     }
@@ -28,6 +33,7 @@ protected:
 
 TEST_F(ResponseTest, Input1_EndToEnd) {
     std::string dataInputFilePath = testDataPath + inputPrefix + "1.csv";
+    EXPECT_TRUE(parser.isValidFile(dataInputFilePath));
     Response response = generateResponse(dataInputFilePath, requirementsFilePath);
 
     EXPECT_EQ(55, response.getArtInfo().getTotalCount());
@@ -53,6 +59,7 @@ TEST_F(ResponseTest, Input1_EndToEnd) {
 
 TEST_F(ResponseTest, Input2_EndToEnd) {
     std::string dataInputFilePath = testDataPath + inputPrefix + "2.csv";
+    EXPECT_TRUE(parser.isValidFile(dataInputFilePath));
     Response response = generateResponse(dataInputFilePath, requirementsFilePath);
 
     EXPECT_EQ(70, response.getArtInfo().getTotalCount());
@@ -71,6 +78,7 @@ TEST_F(ResponseTest, Input2_EndToEnd) {
 
 TEST_F(ResponseTest, Input3_EndToEnd) {
     std::string dataInputFilePath = testDataPath + inputPrefix + "3.csv";
+    EXPECT_TRUE(parser.isValidFile(dataInputFilePath));
     Response response = generateResponse(dataInputFilePath, requirementsFilePath);
 
     EXPECT_EQ(13, response.getArtInfo().getTotalCount());
@@ -93,6 +101,7 @@ TEST_F(ResponseTest, Input3_EndToEnd) {
 
 TEST_F(ResponseTest, Input4_EndToEnd) {
     std::string dataInputFilePath = testDataPath + inputPrefix + "3.csv";
+    EXPECT_TRUE(parser.isValidFile(dataInputFilePath));
     Response response = generateResponse(dataInputFilePath, requirementsFilePath);
 
     EXPECT_EQ(18, response.getArtInfo().getTotalCount());
