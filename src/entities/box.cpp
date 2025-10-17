@@ -46,6 +46,9 @@ bool Box::fitsArt(Art artwork) {
 }
 
 bool Box::addArt(Art art) {
+    if(!fitsArt(art) || (boxType_ == STANDARD_BOX && contents_.size() >= STANDARD_BOX_CAPACITY) || (boxType_ == LARGE_BOX && contents_.size() >= LARGE_BOX_CAPACITY)) {
+        return false;
+    }
     contents_.push_back(art);
     totalWeight_ += art.getWeight();
     return true;
