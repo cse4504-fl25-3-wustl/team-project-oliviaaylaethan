@@ -12,36 +12,40 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-include_directories(src/entities)
-include_directories(src/interactors)
-include_directories(src/parser)
-include_directories(src/requests)
-include_directories(src/responses)
+# Create static library for source files
+add_library(core_lib
+    src/entities/art.cpp
+    src/entities/box.cpp
+    src/entities/requirements.cpp
+    src/entities/shippingContainer.cpp
+    src/interactors/packingInteractor.cpp
+    src/parser/csvParser.cpp
+    src/requests/request.cpp
+    src/responses/response.cpp
+    src/responses/artInfo.cpp
+    src/responses/boxInfo.cpp
+    src/responses/crateInfo.cpp
+    src/responses/hardwareInfo.cpp
+    src/responses/palletInfo.cpp
+)
+
+target_include_directories(core_lib PUBLIC
+    src/entities
+    src/interactors
+    src/parser
+    src/requests
+    src/responses
+)
 
 # Set the executable name to 'main'
-add_executable(main
-        src/entities/art.cpp
-        src/entities/art.h
-        src/entities/box.cpp
-        src/entities/box.h
-        src/entities/requirements.cpp
-        src/entities/requirements.h
-        src/entities/shippingContainer.cpp
-        src/entities/shippingContainer.h
-        src/interactors/packingInteractor.cpp
-        src/interactors/packingInteractor.h
-        src/parser/csvParser.cpp
-        src/parser/csvParser.h
-        src/requests/request.cpp
-        src/requests/request.h
-        src/responses/response.cpp
-        src/responses/response.h
-        src/responses/artInfo.cpp
-        src/responses/boxInfo.cpp
-        src/responses/crateInfo.cpp
-        src/responses/hardwareInfo.cpp
-        src/responses/palletInfo.cpp
-        src/main.cpp)
+add_executable(
+    main
+    src/main.cpp
+)
+target_link_libraries(
+    main
+    core_lib
+)
 
 enable_testing()
 
