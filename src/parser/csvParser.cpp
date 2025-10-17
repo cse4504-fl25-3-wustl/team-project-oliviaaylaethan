@@ -28,7 +28,11 @@ Request CsvParser::parseFiles(std::string artFilePath, std::string siteFilePath)
     }
     
     std::vector<Art> artworks = parseArtCsv(artFilePath);
-    Requirements siteRequirements = parseRequirementsCsv(siteFilePath);
+
+    Requirements siteRequirements = Requirements();
+    if (siteFileValid) {
+        siteRequirements = parseRequirementsCsv(siteFilePath);
+    }
 
     // to show parsed data for debugging, won't need in final version
     std::cout << std::endl;
