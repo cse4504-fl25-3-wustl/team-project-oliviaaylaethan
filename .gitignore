@@ -3,5 +3,4 @@
 /.vscode/
 /build/
 .DS_Store
-*.csv
 /cmake-build-debug/
