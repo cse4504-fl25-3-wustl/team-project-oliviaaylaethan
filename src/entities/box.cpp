@@ -4,10 +4,8 @@ Box::Box() : dimensions_{0, 0, 0}, boxType_(STANDARD_BOX), totalWeight_(0) {
     contents_ = std::vector<Art>();
 }
 
-Box::Box(Dimensions dimensions, BoxType boxType) {
-    dimensions_ = dimensions;
-    boxType_ = boxType;
-    totalWeight_ = 0;
+Box::Box(Dimensions dimensions, BoxType boxType) : dimensions_(dimensions), boxType_(boxType), totalWeight_(0) {
+    contents_ = std::vector<Art>();
 }
 
 Box Box::makeStandardBox() {
