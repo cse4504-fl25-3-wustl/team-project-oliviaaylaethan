@@ -1,0 +1,62 @@
+name: ctest
+
+on:
+  # 1. Manual trigger
+  workflow_dispatch:
+  
+  # 2. When a pull request is approved for merging to main
+  pull_request_review:
+    types: [submitted]
+    branches:
+      - main
+  
+  # 3. When anything is pushed to main
+  push:
+    branches:
+      - main
+jobs:
+  build-and-test:
+    runs-on: windows-latest
+    if: |
+      github.event_name == 'workflow_dispatch' || 
+      github.event_name == 'push' || 
+      (github.event_name == 'pull_request_review' && github.event.review.state == 'approved')
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install latest CMake
+      uses: jwlawson/actions-setup-cmake@v2
+      with:
+        cmake-version: 'latest'
+    
+    - name: Setup MSVC
+      uses: microsoft/setup-msbuild@v2
+    
+    - name: Create build directory
+      run: mkdir -Force build
+    
+    - name: Configure CMake
+      working-directory: build
+      run: cmake ..
+    
+    - name: Build
+      working-directory: build
+      run: cmake --build . --config Release
+    
+    - name: Run tests
+      working-directory: build
+      run: ctest -C Release --output-on-failure --output-junit test-results.xml
+    
+    - name: Generate HTML test report
+      if: always()
+      run: |
+        pip install junit2html
+        junit2html build/test-results.xml build/test-report.html
+    
+    - name: Upload test report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-report
+        path: build/test-report.html

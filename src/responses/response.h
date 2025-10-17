@@ -124,4 +124,11 @@ class Response {
         void printPackingSummary();
         void printBusinessIntelSummary();
         void printEmailFormat();
+
+        BoxInfo getBoxInfo();
+        ArtInfo getArtInfo();
+        CrateInfo getCrateInfo();
+        PalletInfo getPalletInfo();
+        HardwareInfo getHardwareInfo();
+        Requirements getRequirements();
 };
