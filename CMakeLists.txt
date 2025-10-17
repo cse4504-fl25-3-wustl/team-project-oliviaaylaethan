@@ -89,9 +89,14 @@ add_executable(
   src/entities/requirements.h
   src/requests/request.cpp
   src/requests/request.h
+  all_tests
+  testing/artTest.cpp
+  testing/boxTest.cpp
 )
 target_link_libraries(
-  csv_parser_test
+  all_tests
+  core_lib
+  GTest::gtest
   GTest::gtest_main
 )
 
@@ -106,6 +111,4 @@ target_link_libraries(
 )
 
 include(GoogleTest)
-gtest_discover_tests(art_test)
-gtest_discover_tests(shipping_container_test)
-gtest_discover_tests(csv_parser_test)
+gtest_discover_tests(all_tests)

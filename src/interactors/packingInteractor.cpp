@@ -12,6 +12,7 @@ PackingInteractor::PackingInteractor() {
 Response PackingInteractor::packAllArt(Request request) {
     vector<Art> needsStandardBox = vector<Art>();
     vector<Art> needsLargeBox = vector<Art>();
+    vector<Art> needsMirrorPacking = vector<Art>();
     vector<Art> needsCustomPallet = vector<Art>();
 
     Box standardBox = Box::makeStandardBox();
@@ -19,8 +20,8 @@ Response PackingInteractor::packAllArt(Request request) {
 
     // segment art pieces by size and material
     for (Art piece : request.getArtPieces()) {
-        if (piece.needsCustomShipping()) {
-            needsCustomPallet.push_back(piece); // Mirrors always use crates
+        if (piece.getMaterial() == MIRROR) {
+            needsMirrorPacking.push_back(piece); // Mirrors always use crates
         } else if (standardBox.fitsArt(piece)) {
             needsStandardBox.push_back(piece);
         } else if (largeBox.fitsArt(piece)) {
@@ -59,7 +60,7 @@ Response PackingInteractor::packAllArt(Request request) {
 
     // Pack custom crates and pallets based on material rules
     for (Art piece : needsCustomPallet) {
-        if (piece.needsCustomShipping()) {
+        if (piece.getMaterial() == MIRROR) {
             ShippingContainer crate = ShippingContainer::makeStandardCrate();
             Box mirrorBox = Box::makeLargeBox();
             mirrorBox.addArt(piece);
