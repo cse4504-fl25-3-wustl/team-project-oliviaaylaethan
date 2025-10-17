@@ -27,11 +27,20 @@ Box Box::makeUPSLargeBox() {
 }
 
 bool Box::fitsArt(Art artwork) {
-    if (artwork.getOuterHeight() < dimensions_.l || artwork.getOuterWidth() < dimensions_.h) {
-        return true;
-    } else if (artwork.getOuterWidth() < dimensions_.l || artwork.getOuterHeight() < dimensions_.h) {
-        return true;
-    } else {
+    // Rule: As long as at least ONE dimension of an art piece is 36" or less, it will fit in a standard size box. Boxes can be telescoped to a max height of 84"
+    if (boxType_ == STANDARD_BOX) {
+        if (artwork.getOuterHeight() <= STANDARD_BOX_MAX_ART_DIMENSION || artwork.getOuterWidth() <= STANDARD_BOX_MAX_ART_DIMENSION) {
+            return true;
+        }
+        return false;
+    }
+    else { // TODO check real rules for other box types
+        if (artwork.getOuterHeight() < dimensions_.l && artwork.getOuterWidth() < dimensions_.h) {
+            return true;
+        } 
+        if (artwork.getOuterWidth() < dimensions_.l && artwork.getOuterHeight() < dimensions_.h) {
+            return true;
+        }
         return false;
     }
 }
