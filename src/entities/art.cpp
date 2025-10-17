@@ -27,17 +27,19 @@ Art::Art(int lineNo, std::string tagNo,
         case MaterialType::ACOUSTIC_PANEL_FRAMED:
             materialDensity_ = ACOUSTIC_PANEL_FRAMED_DENSITY;
             break;
-        case MaterialType::ACRYLIC:
-            materialDensity_ = ACRYLIC_DENSITY;
-            break;
         case MaterialType::CANVAS_FRAMED:
-            materialDensity_ = CANVAS_FRAMED_DENSITY;
+            if(glazeType_ == GlazingType::GLAZING_ACRYLIC) {
+                materialDensity_ = CANVAS_FRAMED_GLAZING_ACRYLIC_DENSITY;
+            }
+            else if(glazeType_ == GlazingType::GLAZING_GLASS) {
+                materialDensity_ = CANVAS_FRAMED_GLAZING_GLASS_DENSITY;
+            }
+            else { // GLAZING_NONE
+                materialDensity_ = CANVAS_FRAMED_GLAZING_NONE_DENSITY;
+            }
             break;
         case MaterialType::CANVAS_GALLERY:
             materialDensity_ = CANVAS_GALLERY_DENSITY;
-            break;
-        case MaterialType::GLASS:
-            materialDensity_ = GLASS_DENSITY;
             break;
         case MaterialType::MIRROR:
             materialDensity_ = MIRROR_DENSITY;
@@ -86,18 +88,15 @@ HardwareSpec Art::getHardware() {
 }
 
 int Art::getWeight() {
-    // If art is glazed with glass or acrylic, use those to calculate weight instead of material
-    if (glazeType_ == GlazingType::GLAZING_GLASS) {
-        return std::ceil(outerWidth_ * outerHeight_ * MaterialType::GLASS);
-    }
-    if (glazeType_ == GlazingType::GLAZING_ACRYLIC) {
-        return std::ceil(outerWidth_ * outerHeight_ * MaterialType::ACRYLIC);
-    }
     return std::ceil(outerWidth_ * outerHeight_ * materialDensity_);
 }
 
-bool Art::needsCustomShipping() {
-    return material_ == MaterialType::MIRROR;
+bool Art::needsCustomPackaging() {
+    // Anything that exceeds 43.5" in BOTH directions would require custom packaging.
+    if (outerWidth_ > CUSTOM_PACKING_NEEDED_THRESHOLD && outerHeight_ > CUSTOM_PACKING_NEEDED_THRESHOLD) {
+        return true;
+    }
+    return false;
 }
 
 bool Art::needsCanvasPacking() {

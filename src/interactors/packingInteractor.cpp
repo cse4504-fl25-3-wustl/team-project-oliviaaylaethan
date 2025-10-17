@@ -12,6 +12,7 @@ PackingInteractor::PackingInteractor() {
 Response PackingInteractor::packAllArt(Request request) {
     vector<Art> needsStandardBox = vector<Art>();
     vector<Art> needsLargeBox = vector<Art>();
+    vector<Art> needsMirrorPacking = vector<Art>();
     vector<Art> needsCustomPallet = vector<Art>();
 
     Box standardBox = Box::makeStandardBox();
@@ -19,8 +20,8 @@ Response PackingInteractor::packAllArt(Request request) {
 
     // segment art pieces by size and material
     for (Art piece : request.getArtPieces()) {
-        if (piece.needsCustomShipping()) {
-            needsCustomPallet.push_back(piece); // Mirrors always use crates
+        if (piece.getMaterial() == MIRROR) {
+            needsMirrorPacking.push_back(piece); // Mirrors always use crates
         } else if (standardBox.fitsArt(piece)) {
             needsStandardBox.push_back(piece);
         } else if (largeBox.fitsArt(piece)) {
@@ -59,7 +60,7 @@ Response PackingInteractor::packAllArt(Request request) {
 
     // Pack custom crates and pallets based on material rules
     for (Art piece : needsCustomPallet) {
-        if (piece.needsCustomShipping()) {
+        if (piece.getMaterial() == MIRROR) {
             ShippingContainer crate = ShippingContainer::makeStandardCrate();
             Box mirrorBox = Box::makeLargeBox();
             mirrorBox.addArt(piece);
@@ -78,17 +79,17 @@ Response PackingInteractor::packAllArt(Request request) {
 
     // Handle Canvas Rule Discrepancy
     // 🚨 FLAG: Canvas packing rule discrepancy. Using Excel logic (12 per pallet) for now.
-    for (size_t i = 0; i < needsStandardBox.size(); ++i) {
-        if (needsStandardBox[i].needsCanvasPacking()) {
-            ShippingContainer pallet = ShippingContainer::makeStandardPallet();
-            for (size_t j = i; j < i + STANDARD_PALLET_CANVAS_BOX_CAPACITY && j < needsStandardBox.size(); ++j) {
-                if (needsStandardBox[j].needsCanvasPacking()) {
-                    pallet.addBox(boxes_[j]);
-                }
-            }
-            pallets_.push_back(pallet);
-        }
-    }
+    // for (size_t i = 0; i < needsStandardBox.size(); ++i) {
+    //     if (needsStandardBox[i].needsCanvasPacking()) {
+    //         ShippingContainer pallet = ShippingContainer::makeStandardPallet();
+    //         for (size_t j = i; j < i + STANDARD_PALLET_CANVAS_BOX_CAPACITY && j < needsStandardBox.size(); ++j) {
+    //             if (needsStandardBox[j].needsCanvasPacking()) {
+    //                 //pallet.addBox(boxes_[j]); // FIXME crashing program bc going out of bounds (at least for input1)
+    //             }
+    //         }
+    //         pallets_.push_back(pallet);
+    //     }
+    // }
 
     return Response(boxes_, pallets_, crates_, request.getRequirements());
 }

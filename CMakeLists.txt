@@ -50,13 +50,16 @@ target_link_libraries(
 enable_testing()
 
 add_executable(
-  hello_test
+  all_tests
   testing/artTest.cpp
+  testing/boxTest.cpp
 )
 target_link_libraries(
-  hello_test
+  all_tests
+  core_lib
+  GTest::gtest
   GTest::gtest_main
 )
 
 include(GoogleTest)
-gtest_discover_tests(hello_test)
+gtest_discover_tests(all_tests)
