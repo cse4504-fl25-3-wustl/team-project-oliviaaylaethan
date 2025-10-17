@@ -90,8 +90,10 @@ add_executable(
   src/requests/request.cpp
   src/requests/request.h
   all_tests
-  testing/artTest.cpp
-  testing/boxTest.cpp
+  testing/entities/artTest.cpp
+  testing/entities/boxTest.cpp
+  testing/entities/shippingContainerTest.cpp
+  testing/parser/csvParserTest.cpp
 )
 target_link_libraries(
   all_tests
@@ -112,3 +114,4 @@ target_link_libraries(
 
 include(GoogleTest)
 gtest_discover_tests(all_tests)
+
