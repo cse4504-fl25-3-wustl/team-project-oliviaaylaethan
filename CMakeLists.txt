@@ -49,67 +49,19 @@ target_link_libraries(
 
 enable_testing()
 
-# Art Tests
 add_executable(
-  art_test
-  testing/entities/artTest.cpp
-  src/entities/art.cpp
-  src/entities/art.h
-)
-target_link_libraries(
-  art_test
-  GTest::gtest_main
-)
-
-# Shipping Container Tests
-add_executable(
-  shipping_container_test
-  testing/entities/shippingContainerTest.cpp
-  src/entities/shippingContainer.cpp
-  src/entities/shippingContainer.h
-  src/entities/box.cpp
-  src/entities/box.h
-  src/entities/art.cpp
-  src/entities/art.h
-)
-target_link_libraries(
-  shipping_container_test
-  GTest::gtest_main
-)
-
-# CSV Parser Tests
-add_executable(
-  csv_parser_test
-  testing/parser/csvParserTest.cpp
-  src/parser/csvParser.cpp
-  src/parser/csvParser.h
-  src/entities/art.cpp
-  src/entities/art.h
-  src/entities/requirements.cpp
-  src/entities/requirements.h
-  src/requests/request.cpp
-  src/requests/request.h
   all_tests
+  testing/parser/csvParserTest.cpp
   testing/entities/artTest.cpp
   testing/entities/boxTest.cpp
   testing/entities/shippingContainerTest.cpp
-  testing/parser/csvParserTest.cpp
+  testing/interactors/packingInteractorTest.cpp
 )
 target_link_libraries(
   all_tests
   core_lib
   GTest::gtest
   GTest::gtest_main
-)
-
-add_executable(
-    packing_interactor_test
-    testing/packingInteractorTest.cpp
-)
-target_link_libraries(
-    packing_interactor_test
-    GTest::gtest_main
-    core_lib
 )
 
 include(GoogleTest)

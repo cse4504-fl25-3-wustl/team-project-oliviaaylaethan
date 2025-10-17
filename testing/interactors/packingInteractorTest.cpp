@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "../src/interactors/packingInteractor.h"
+#include "../../src/interactors/packingInteractor.h"
 
 class PackingInteractorTest : public testing::Test {
     protected:
@@ -16,13 +16,13 @@ class PackingInteractorTest : public testing::Test {
             // Input 1
             std::vector<Art> artPieces1;
             for (int i = 0; i < 49; i++) {
-                artPieces1.push_back(Art(1,"1",GLASS,33,43,GLAZING_GLASS,"",NONE));
+                artPieces1.push_back(Art(1,"1",PAPER_PRINT_FRAMED,33,43,GLAZING_GLASS,"",NONE));
             }
-            artPieces1.push_back(Art(2,"2",GLASS,34,46,GLAZING_GLASS,"",NONE));
-            artPieces1.push_back(Art(2,"2",GLASS,34,46,GLAZING_GLASS,"",NONE));
-            artPieces1.push_back(Art(3,"3",GLASS,32,56,GLAZING_GLASS,"",NONE));
+            artPieces1.push_back(Art(2,"2",PAPER_PRINT_FRAMED,34,46,GLAZING_GLASS,"",NONE));
+            artPieces1.push_back(Art(2,"2",PAPER_PRINT_FRAMED,34,46,GLAZING_GLASS,"",NONE));
+            artPieces1.push_back(Art(3,"3",PAPER_PRINT_FRAMED,32,56,GLAZING_GLASS,"",NONE));
             for (int i = 0; i < 3; i++) {
-                artPieces1.push_back(Art(4,"4",GLASS,32,48,GLAZING_GLASS,"",NONE));
+                artPieces1.push_back(Art(4,"4",PAPER_PRINT_FRAMED,32,48,GLAZING_GLASS,"",NONE));
             }
 
             request1_ = Request(artPieces1, requirements);
@@ -34,7 +34,7 @@ class PackingInteractorTest : public testing::Test {
             // Input 2
             std::vector<Art> artPieces2;
             for (int i = 0; i < 70; i++) {
-                artPieces2.push_back(Art(1,"1",GLASS,36,44,GLAZING_GLASS,"",NONE));
+                artPieces2.push_back(Art(1,"1",PAPER_PRINT_FRAMED,36,44,GLAZING_GLASS,"",NONE));
             }
             request2_ = Request(artPieces2, requirements);
             interactor2_ = PackingInteractor();
@@ -45,10 +45,10 @@ class PackingInteractorTest : public testing::Test {
             // Input 3
             std::vector<Art> artPieces3;
             for (int i = 0; i < 11; i++) {
-                artPieces3.push_back(Art(1,"1",GLASS,33,43,GLAZING_GLASS,"",NONE));
+                artPieces3.push_back(Art(1,"1",PAPER_PRINT_FRAMED,33,43,GLAZING_GLASS,"",NONE));
             }
-            artPieces3.push_back(Art(2,"2",GLASS,34,46,GLAZING_GLASS,"",NONE));
-            artPieces3.push_back(Art(3,"3",GLASS,34,46,GLAZING_GLASS,"",NONE));
+            artPieces3.push_back(Art(2,"2",PAPER_PRINT_FRAMED,34,46,GLAZING_GLASS,"",NONE));
+            artPieces3.push_back(Art(3,"3",PAPER_PRINT_FRAMED,34,46,GLAZING_GLASS,"",NONE));
 
             request3_ = Request(artPieces3, requirements);
             interactor3_ = PackingInteractor();
