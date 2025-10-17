@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "../src/entities/box.h"
+#include "../../src/entities/box.h"
 
 //    * Box
 //       * fitsArt
