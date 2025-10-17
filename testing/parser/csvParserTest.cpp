@@ -26,7 +26,7 @@ TEST_F(CsvParserTest, ParseFiles_ValidFiles) {
     
     // Assert - Check that artworks were parsed
     std::vector<Art> artPieces = request.getArtPieces();
-    EXPECT_EQ(artPieces.size(), 3); // 3 artworks in test file
+    EXPECT_EQ(artPieces.size(), 4); // 4 artworks in test file
     
     // Verify first artwork
     EXPECT_EQ(artPieces[0].getLineNumber(), 1);
@@ -62,7 +62,7 @@ TEST_F(CsvParserTest, ParseFiles_InvalidRequirementsFile) {
     
     // Assert - Should still parse art file
     std::vector<Art> artPieces = request.getArtPieces();
-    EXPECT_EQ(artPieces.size(), 3);
+    EXPECT_EQ(artPieces.size(), 4);
 }
 
 TEST_F(CsvParserTest, ParseFiles_EmptyArtFile) {
@@ -104,8 +104,8 @@ TEST_F(CsvParserTest, ParseFiles_VerifyArtworkDetails) {
     Request request = parser.parseFiles(artFile, reqFile);
     std::vector<Art> artPieces = request.getArtPieces();
     
-    // Assert - Verify all three artworks in detail
-    ASSERT_EQ(artPieces.size(), 3);
+    // Assert
+    ASSERT_EQ(artPieces.size(), 4);
     
     // First artwork - Paper Print Framed
     EXPECT_EQ(artPieces[0].getLineNumber(), 1);
@@ -119,13 +119,19 @@ TEST_F(CsvParserTest, ParseFiles_VerifyArtworkDetails) {
     EXPECT_FLOAT_EQ(artPieces[1].getOuterWidth(), 36.0f);
     EXPECT_FLOAT_EQ(artPieces[1].getOuterHeight(), 48.0f);
     EXPECT_EQ(artPieces[1].getMaterial(), CANVAS_GALLERY); // Canvas Float Frame maps to CANVAS_GALLERY
+
+    // Second artwork - Canvas Float Frame
+    EXPECT_EQ(artPieces[2].getLineNumber(), 2);
+    EXPECT_FLOAT_EQ(artPieces[2].getOuterWidth(), 36.0f);
+    EXPECT_FLOAT_EQ(artPieces[2].getOuterHeight(), 48.0f);
+    EXPECT_EQ(artPieces[2].getMaterial(), CANVAS_GALLERY); // Canvas Float Frame maps to CANVAS_GALLERY
     
     // Third artwork - Metal Print
-    EXPECT_EQ(artPieces[2].getLineNumber(), 3);
-    EXPECT_FLOAT_EQ(artPieces[2].getOuterWidth(), 20.0f);
-    EXPECT_FLOAT_EQ(artPieces[2].getOuterHeight(), 20.0f);
-    EXPECT_EQ(artPieces[2].getMaterial(), ACRYLIC); // Metal Print maps to ACRYLIC
-    EXPECT_EQ(artPieces[2].getGlazeType(), GLAZING_ACRYLIC);
+    EXPECT_EQ(artPieces[3].getLineNumber(), 3);
+    EXPECT_FLOAT_EQ(artPieces[3].getOuterWidth(), 20.0f);
+    EXPECT_FLOAT_EQ(artPieces[3].getOuterHeight(), 20.0f);
+    EXPECT_EQ(artPieces[3].getMaterial(), ACRYLIC); // Metal Print maps to ACRYLIC
+    EXPECT_EQ(artPieces[3].getGlazeType(), GLAZING_ACRYLIC);
 }
 
 TEST_F(CsvParserTest, ParseFiles_VerifyRequirementsDetails) {
