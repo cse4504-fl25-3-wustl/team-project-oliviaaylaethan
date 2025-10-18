@@ -10,8 +10,8 @@ TEST(ArtTest, getWeight) {
     // Arrange
     Art art1(1, "0", ACOUSTIC_PANEL, 24, 36, GLAZING_NONE, "", NONE); // 3.28
     Art art2(2, "0", ACOUSTIC_PANEL_FRAMED, 24, 36, GLAZING_NONE, "", NONE); // 3.20
-    Art art3(3, "0", CANVAS_FRAMED, 24, 36, GLAZING_ACRYLIC, "", NONE); // 8.12
-    Art art4(4, "0", CANVAS_FRAMED, 24, 36, GLAZING_GLASS, "", NONE); // 8.47
+    Art art3(3, "0", PAPER_PRINT_FRAMED, 24, 36, GLAZING_ACRYLIC, "", NONE); // 8.12
+    Art art4(4, "0", PAPER_PRINT_FRAMED, 24, 36, GLAZING_GLASS, "", NONE); // 8.47
     Art art5(5, "0", CANVAS_FRAMED, 24, 36, GLAZING_NONE, "", NONE); // 7.34
     Art art6(6, "0", CANVAS_GALLERY, 24, 36, GLAZING_NONE, "", NONE); // 5.27
     Art art7(7, "0", MIRROR, 24, 36, GLAZING_NONE, "", NONE); // 16.50

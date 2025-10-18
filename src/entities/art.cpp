@@ -28,21 +28,24 @@ Art::Art(int lineNo, std::string tagNo,
             materialDensity_ = ACOUSTIC_PANEL_FRAMED_DENSITY;
             break;
         case MaterialType::CANVAS_FRAMED:
-            if(glazeType_ == GlazingType::GLAZING_ACRYLIC) {
-                materialDensity_ = CANVAS_FRAMED_GLAZING_ACRYLIC_DENSITY;
-            }
-            else if(glazeType_ == GlazingType::GLAZING_GLASS) {
-                materialDensity_ = CANVAS_FRAMED_GLAZING_GLASS_DENSITY;
-            }
-            else { // GLAZING_NONE
-                materialDensity_ = CANVAS_FRAMED_GLAZING_NONE_DENSITY;
-            }
+            materialDensity_ = CANVAS_FRAMED_DENSITY;
             break;
         case MaterialType::CANVAS_GALLERY:
             materialDensity_ = CANVAS_GALLERY_DENSITY;
             break;
         case MaterialType::MIRROR:
             materialDensity_ = MIRROR_DENSITY;
+            break;
+        case MaterialType::PAPER_PRINT_FRAMED:
+            if(glazeType_ == GlazingType::GLAZING_ACRYLIC) {
+                materialDensity_ = PAPER_PRINT_GLAZING_ACRYLIC_DENSITY;
+            }
+            else if(glazeType_ == GlazingType::GLAZING_GLASS) {
+                materialDensity_ = PAPER_PRINT_GLAZING_GLASS_DENSITY;
+            }
+            else {
+                materialDensity_ = 0.0f;  // Default to 0 since we weren't given a density for glazeless paper prints
+            }
             break;
         case MaterialType::PATIENT_BOARD:
             materialDensity_ = PATIENT_BOARD_DENSITY;

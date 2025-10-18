@@ -65,7 +65,7 @@ TEST (BoxTest, getTotalWeight) {
 
     Art art1(1, "0", ACOUSTIC_PANEL, 24, 36, GLAZING_NONE, "", NONE); // 4 lbs
     Art art2(2, "0", ACOUSTIC_PANEL_FRAMED, 24, 36, GLAZING_NONE, "", NONE); // 4 lbs
-    Art art3(3, "0", CANVAS_FRAMED, 24, 36, GLAZING_ACRYLIC, "", NONE); // 9 lbs
+    Art art3(3, "0", PAPER_PRINT_FRAMED, 24, 36, GLAZING_ACRYLIC, "", NONE); // 9 lbs
 
     // Act
     box.addArt(art1);
