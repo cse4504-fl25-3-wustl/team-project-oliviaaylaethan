@@ -100,7 +100,7 @@ TEST_F(ResponseTest, Input3_EndToEnd) {
 }
 
 TEST_F(ResponseTest, Input4_EndToEnd) {
-    std::string dataInputFilePath = testDataPath + inputPrefix + "3.csv";
+    std::string dataInputFilePath = testDataPath + inputPrefix + "4.csv";
     EXPECT_TRUE(parser.isValidFile(dataInputFilePath));
     Response response = generateResponse(dataInputFilePath, requirementsFilePath);
 
