@@ -121,7 +121,7 @@ TEST_F(CsvParserTest, ParseFiles_VerifyArtworkDetails) {
     EXPECT_EQ(artPieces[0].getLineNumber(), 1);
     EXPECT_FLOAT_EQ(artPieces[0].getOuterWidth(), 24.0f);
     EXPECT_FLOAT_EQ(artPieces[0].getOuterHeight(), 30.0f);
-    EXPECT_EQ(artPieces[0].getMaterial(), CANVAS_FRAMED); // Paper Print maps to CANVAS_FRAMED
+    EXPECT_EQ(artPieces[0].getMaterial(), PAPER_PRINT_FRAMED); // Paper Print maps to PAPER_PRINT_FRAMED
     EXPECT_EQ(artPieces[0].getGlazeType(), GLAZING_GLASS);
     
     // Second artwork - Canvas Float Frame

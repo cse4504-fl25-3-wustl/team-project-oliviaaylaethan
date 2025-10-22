@@ -95,7 +95,7 @@ TEST_F(ResponseTest, Input3_EndToEnd) {
     EXPECT_FLOAT_EQ(60, response.getPalletInfo().getTotalTareWeight() + response.getCrateInfo().getTotalTareWeight()) 
         << "Expected total packaging weight of 60 lbs";
     
-    EXPECT_FLOAT_EQ(1300, response.getArtInfo().getTotalWeight() + response.getPalletInfo().getTotalTareWeight() + response.getCrateInfo().getTotalTareWeight()) 
+    EXPECT_FLOAT_EQ(247, response.getArtInfo().getTotalWeight() + response.getPalletInfo().getTotalTareWeight() + response.getCrateInfo().getTotalTareWeight()) 
         << "Expected total shipment weight of 247 lbs (187 + 60)";
 }
 

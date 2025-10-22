@@ -33,7 +33,7 @@ int ArtInfo::getOversizedCount() {
     Art art;
     for (int i = 0; i < totalCount; i++) {
         art = pieces_[i];
-        if (art.getOuterWidth() > 33 and art.getOuterHeight() > 43) {
+        if (art.getOuterWidth() > 33 || art.getOuterHeight() > 43) {
             count++;
         }
     }
