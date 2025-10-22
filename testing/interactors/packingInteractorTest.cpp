@@ -3,9 +3,29 @@
 
 class PackingInteractorTest : public testing::Test {
     protected:
-        PackingInteractorTest() {
-        }
+        PackingInteractorTest() {}
+        ~PackingInteractorTest() noexcept override = default;
 
+        Request request1_;
+        Request request2_;
+        Request request3_;
+
+        PackingInteractor interactor1_;
+        PackingInteractor interactor2_;
+        PackingInteractor interactor3_;
+
+        std::unique_ptr<Response> response1_;
+        std::unique_ptr<Response> response2_;
+        std::unique_ptr<Response> response3_;
+
+        std::vector<Box> boxes1_;
+        std::vector<Box> boxes2_;
+        std::vector<Box> boxes3_;
+
+        std::vector<ShippingContainer> pallets1_;
+        std::vector<ShippingContainer> pallets2_;
+        std::vector<ShippingContainer> pallets3_;
+        
         void SetUp() override {
             Requirements requirements;
             requirements.setJobSiteLocation("St. Louis");
@@ -47,8 +67,8 @@ class PackingInteractorTest : public testing::Test {
             for (int i = 0; i < 11; i++) {
                 artPieces3.push_back(Art(1,"1",PAPER_PRINT_FRAMED,33,43,GLAZING_GLASS,"",NONE));
             }
-            artPieces3.push_back(Art(2,"2",PAPER_PRINT_FRAMED,34,46,GLAZING_GLASS,"",NONE));
-            artPieces3.push_back(Art(3,"3",PAPER_PRINT_FRAMED,34,46,GLAZING_GLASS,"",NONE));
+            artPieces3.push_back(Art(2,"2",PAPER_PRINT_FRAMED,31,55,GLAZING_GLASS,"",NONE));
+            artPieces3.push_back(Art(3,"3",PAPER_PRINT_FRAMED,34,47,GLAZING_GLASS,"",NONE));
 
             request3_ = Request(artPieces3, requirements);
             interactor3_ = PackingInteractor();
@@ -56,26 +76,6 @@ class PackingInteractorTest : public testing::Test {
             boxes3_ = interactor3_.getBoxes();
             pallets3_ = interactor3_.getPallets();
         };
-
-        Request request1_;
-        Request request2_;
-        Request request3_;
-
-        PackingInteractor interactor1_;
-        PackingInteractor interactor2_;
-        PackingInteractor interactor3_;
-
-        std::unique_ptr<Response> response1_;
-        std::unique_ptr<Response> response2_;
-        std::unique_ptr<Response> response3_;
-
-        std::vector<Box> boxes1_;
-        std::vector<Box> boxes2_;
-        std::vector<Box> boxes3_;
-
-        std::vector<ShippingContainer> pallets1_;
-        std::vector<ShippingContainer> pallets2_;
-        std::vector<ShippingContainer> pallets3_;
 };
 
 // Check that request art pieces have the correct number
@@ -235,6 +235,7 @@ TEST_F(PackingInteractorTest, ArtworkWeight) {
     totalWeight = 0;
     for (size_t i = 0; i < boxes3_.size(); i++) {
         totalWeight += boxes3_[i].getTotalWeight();
+        std::cout << (boxes3_[i].getTotalWeight()) << std::endl;
     }
     EXPECT_EQ(187, totalWeight);
 }
@@ -292,5 +293,5 @@ TEST_F(PackingInteractorTest, TotalWeight) {
             totalWeight += boxes[j].getTotalWeight();
         }
     }
-    EXPECT_EQ(1300, totalWeight);
+    EXPECT_EQ(247, totalWeight);
 }

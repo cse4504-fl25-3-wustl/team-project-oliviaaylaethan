@@ -12,6 +12,8 @@ class PackingInteractor {
         std::vector<ShippingContainer> pallets_;
         std::vector<ShippingContainer> crates_;
 
+        float computeMinTareWeight(int numBoxes);
+
     public:
         PackingInteractor();
 

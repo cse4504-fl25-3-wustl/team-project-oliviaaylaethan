@@ -9,6 +9,25 @@ PackingInteractor::PackingInteractor() {
     crates_ = std::vector<ShippingContainer>();
 }
 
+float PackingInteractor::computeMinTareWeight(int numBoxes) {
+    // dp[i] = minimum tare weight to hold i boxes
+    std::vector<float> dp(numBoxes + 1, std::numeric_limits<float>::infinity());
+    dp[0] = 0.0f;
+
+    for (int i = 1; i <= numBoxes; ++i) {
+        if (i >= STANDARD_PALLET_STANDARD_BOX_CAPACITY)
+            dp[i] = std::min(dp[i], dp[i - STANDARD_PALLET_STANDARD_BOX_CAPACITY] + STANDARD_PALLET_TARE_WEIGHT);
+        if (i >= OVERSIZE_PALLET_STANDARD_BOX_CAPACITY)
+            dp[i] = std::min(dp[i], dp[i - OVERSIZE_PALLET_STANDARD_BOX_CAPACITY] + OVERSIZE_PALLET_TARE_WEIGHT);
+
+        // if less than 4 boxes left, we still need one pallet
+        if (i < STANDARD_PALLET_STANDARD_BOX_CAPACITY)
+            dp[i] = std::min(dp[i], STANDARD_PALLET_TARE_WEIGHT);
+    }
+
+    return dp[numBoxes];
+}
+
 Response PackingInteractor::packAllArt(Request request) {
     vector<Art> needsStandardBox = vector<Art>();
     vector<Art> needsLargeBox = vector<Art>();
@@ -50,13 +69,38 @@ Response PackingInteractor::packAllArt(Request request) {
     }
 
     // Place all boxes on pallets
-    for (size_t i = 0; i < boxes_.size(); i += STANDARD_PALLET_STANDARD_BOX_CAPACITY) {
-        ShippingContainer pallet = ShippingContainer::makeStandardPallet();
-        for (size_t j = i; j < i + STANDARD_PALLET_STANDARD_BOX_CAPACITY && j < boxes_.size(); ++j) {
-            pallet.addBox(boxes_[j]);
+    vector<Box> tempBoxes = boxes_;
+    int remaining = tempBoxes.size();
+    while (remaining > 0) {
+        // Check which choice yields lower total tare weight
+        float useStandard = (remaining >= STANDARD_PALLET_STANDARD_BOX_CAPACITY)
+            ? computeMinTareWeight(remaining - STANDARD_PALLET_STANDARD_BOX_CAPACITY) + STANDARD_PALLET_TARE_WEIGHT
+            : std::numeric_limits<float>::infinity();
+
+        float useOversized = (remaining >= OVERSIZE_PALLET_STANDARD_BOX_CAPACITY)
+            ? computeMinTareWeight(remaining - OVERSIZE_PALLET_STANDARD_BOX_CAPACITY) + OVERSIZE_PALLET_TARE_WEIGHT
+            : std::numeric_limits<float>::infinity();
+
+        ShippingContainer pallet;
+        int capacity = 0;
+
+        if (useStandard <= useOversized || remaining < OVERSIZE_PALLET_STANDARD_BOX_CAPACITY) {
+            pallet = ShippingContainer::makeStandardPallet();
+            capacity = STANDARD_PALLET_STANDARD_BOX_CAPACITY;
+        } else {
+            pallet = ShippingContainer::makeOversizePallet();
+            capacity = OVERSIZE_PALLET_STANDARD_BOX_CAPACITY;
         }
-        pallets_.push_back(pallet);
-    }
+
+        for (int j = 0; j < capacity && !tempBoxes.empty(); ++j) {
+            pallet.addBox(tempBoxes.back());
+            tempBoxes.pop_back();
+        }
+
+        pallets_.push_back(std::move(pallet));
+        remaining = tempBoxes.size();
+    }   
+
 
     // Pack custom crates and pallets based on material rules
     for (Art piece : needsCustomPallet) {
