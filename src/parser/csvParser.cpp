@@ -86,6 +86,7 @@ MaterialType CsvParser::mapToMaterial(const std::string& medium) { // FIXME thes
 GlazingType CsvParser::mapToGlazing(const std::string& glaze) {
     std::string g = trim(glaze);
     if (g == "Regular Glass") return GLAZING_GLASS;
+    if (g == "Regular glass") return GLAZING_GLASS;
     if (g == "Acrylic") return GLAZING_ACRYLIC;
     return GLAZING_NONE;
 }
