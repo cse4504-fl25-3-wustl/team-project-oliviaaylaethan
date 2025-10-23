@@ -105,3 +105,10 @@ bool Art::needsCustomPackaging() {
 bool Art::needsCanvasPacking() {
     return material_ == MaterialType::CANVAS_FRAMED || material_ == MaterialType::CANVAS_GALLERY;
 }
+
+bool Art::isOversized() {
+    if (outerWidth_ >= OVERSIZED_THRESHOLD || outerHeight_ >= OVERSIZED_THRESHOLD) {
+        return true;
+    }
+    return false;
+}
