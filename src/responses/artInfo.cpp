@@ -62,7 +62,7 @@ std::vector<std::string> ArtInfo::getOversizedSummary() {
     summary.push_back("\nOversized Items Flagged:");
     for (auto& [lineNo, art] : artTypes_) {
         // Check if oversized
-        if (art.getOuterWidth() > 33 and art.getOuterHeight() > 43) {
+        if (art.isOversized()) {
             summary.push_back(std::format("- {}\"x{}\" (Qty: {}) - Requires large box",
                 art.getOuterHeight(),
                 art.getOuterWidth(),
