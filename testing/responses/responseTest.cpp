@@ -60,15 +60,15 @@ TEST_F(ResponseTest, Input1_EndToEnd) {
     std::multiset<std::tuple<float, float>> dimensionSet;
     // repeat twice
     for (int i = 0; i < 2; i++) {
-        dimensionSet.insert(std::make_tuple(34, 46));
+        dimensionSet.insert(std::make_tuple(34.0f, 46.0f));
     }
 
     // only one
-    dimensionSet.insert(std::make_tuple(32, 56));
+    dimensionSet.insert(std::make_tuple(32.0f, 56.0f));
 
     // repeat thrice
     for (int i = 0; i < 3; i++) {
-        dimensionSet.insert(std::make_tuple(32, 48));
+        dimensionSet.insert(std::make_tuple(32.0f, 48.0f));
     }
 
     checkOversizedMatch(oversized, dimensionSet);
@@ -117,8 +117,8 @@ TEST_F(ResponseTest, Input3_EndToEnd) {
     std::vector<Art> oversized = response.getArtInfo().getOversizedItems();
 
     std::multiset<std::tuple<float, float>> dimensionSet;
-    dimensionSet.insert(std::make_tuple(31, 55));
-    dimensionSet.insert(std::make_tuple(34, 47));
+    dimensionSet.insert(std::make_tuple(31.0f, 55.0f));
+    dimensionSet.insert(std::make_tuple(34.0f, 47.0f));
 
     checkOversizedMatch(oversized, dimensionSet);
 
