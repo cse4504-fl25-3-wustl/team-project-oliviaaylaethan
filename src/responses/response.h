@@ -35,6 +35,7 @@ class ArtInfo {
         int getTotalCount();
         int getStandardCount();
         int getOversizedCount();
+        int getCustomCount();
         int getQuantity(int lineNo);
         Art getArtType(int lineNo);
         std::vector<std::string> getOversizedSummary();

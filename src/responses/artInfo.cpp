@@ -40,6 +40,19 @@ int ArtInfo::getOversizedCount() {
     return count;
 }
 
+int ArtInfo::getCustomCount() {
+    int totalCount = getTotalCount();
+    int count = 0;
+    Art art;
+    for (int i = 0; i < totalCount; i++) {
+        art = pieces_[i];
+        if (art.needsCustomPackaging()) {
+            count++;
+        }
+    }
+    return count;
+}
+
 int ArtInfo::getQuantity(int lineNo) {
     return quantities_[lineNo];
 }
