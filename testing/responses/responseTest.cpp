@@ -92,8 +92,18 @@ TEST_F(ResponseTest, Input2_EndToEnd) {
     Response response = generateResponse(dataInputFilePath, requirementsFilePath);
 
     EXPECT_EQ(70, response.getArtInfo().getTotalCount());
-    EXPECT_EQ(70, response.getArtInfo().getStandardCount());
-    EXPECT_EQ(0, response.getArtInfo().getOversizedCount());
+    EXPECT_EQ(0, response.getArtInfo().getStandardCount());
+    EXPECT_EQ(70, response.getArtInfo().getOversizedCount());
+
+    std::vector<Art> oversized = response.getArtInfo().getOversizedItems();
+
+    std::multiset<std::tuple<float, float>> dimensionSet;
+    // repeat twice
+    for (int i = 0; i < 70; i++) {
+        dimensionSet.insert(std::make_tuple(36.0f, 44.0f));
+    }
+
+    checkOversizedMatch(oversized, dimensionSet);
 
     EXPECT_FLOAT_EQ(1120, response.getArtInfo().getTotalWeight()) 
         << "Expected total artwork weight of 1120 lbs";
