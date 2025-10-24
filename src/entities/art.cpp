@@ -95,8 +95,12 @@ int Art::getWeight() {
 }
 
 bool Art::needsCustomPackaging() {
-    // Anything that exceeds 43.5" in BOTH directions would require custom packaging.
-    if (outerWidth_ > CUSTOM_PACKING_NEEDED_THRESHOLD && outerHeight_ > CUSTOM_PACKING_NEEDED_THRESHOLD) {
+    // art needs custom packing if dimensions exceed 43.5 x 88 (43.5 x 88 STILL FITS and does NOT need custom packing)
+    // --> if any dimension exceeds 88, needs custom
+    // --> if both dimensions exceed 43.5, needs custom
+    // --> if only ONE dimension exceeds 43.5, do NOT need custom
+    if ((outerWidth_ > CUSTOM_PACKING_NEEDED_THRESHOLD_LARGER_DIM || outerHeight_ > CUSTOM_PACKING_NEEDED_THRESHOLD_LARGER_DIM)
+        || (outerWidth_ > CUSTOM_PACKING_NEEDED_THRESHOLD_SMALLER_DIM && outerHeight_ > CUSTOM_PACKING_NEEDED_THRESHOLD_SMALLER_DIM)) {
         return true;
     }
     return false;

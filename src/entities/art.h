@@ -2,11 +2,13 @@
 
 #include <string>
 
+// art needs custom packing if dimensions exceed 43.5 x 88 (43.5 x 88 STILL FITS and does NOT need custom packing)
+const float CUSTOM_PACKING_NEEDED_THRESHOLD_SMALLER_DIM = 43.5f;
+const float CUSTOM_PACKING_NEEDED_THRESHOLD_LARGER_DIM = 88.0f; // this is the tallest art can be to still be packable on a pallet
 
-const float CUSTOM_PACKING_NEEDED_THRESHOLD = 43.5f; // Anything that exceeds 43.5" in BOTH directions would require custom packaging.
 const float OVERSIZED_INSTALLATION_THRESHOLD = 44.0f; // Anything that exceeds (inclusive) 44" in EITHER direction is considered oversized.
 const float TELESCOPED_THRESHOLD = 36.0f; // Anything that exceeds 36" in ONLY one direction can be telescoped.
-// TODO confirm if this is the correct threshold for oversized items.
+
 
 // MATERIAL DENSITY REFERENCE TABLE
 // Critical Data - Use these precise densities for ALL calculations
@@ -29,11 +31,11 @@ enum MaterialType {
 	CANVAS_FRAMED,
 	CANVAS_GALLERY,
     MIRROR,
-    PAPER_PRINT_FRAMED, // TODO use this instead of CANVAS_FRAMED for framed prints (with glazing)
+    PAPER_PRINT_FRAMED,
     PATIENT_BOARD
 };
 
-// Glazing types ONLY apply to framed canvases
+// Glazing types ONLY apply to framed paper prints
 enum GlazingType {
 	GLAZING_ACRYLIC,
 	GLAZING_GLASS,
@@ -41,7 +43,7 @@ enum GlazingType {
 };
 
 enum HardwareSpec {
-    PT_SEC_4,
+    PT_SEC_4, // TODO this should apply to art that exceeds OVERSIZED_INSTALLATION_THRESHOLD?
     PT_SEC_3,
     NONE
 };

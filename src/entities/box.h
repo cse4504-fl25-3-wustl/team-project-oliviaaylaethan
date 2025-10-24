@@ -11,6 +11,7 @@ enum BoxType {
     LARGE_BOX,
     UPS_SMALL_BOX,
     UPS_LARGE_BOX,
+    CRATE_BOX, // can fit art 36 x 46, 1 single box goes in crate, only use if client accepts crate
     CUSTOM
 };
 

@@ -38,14 +38,19 @@ TEST(ArtTest, getWeight) {
     EXPECT_EQ(weight8, 30);
 }
 
-TEST(ArtTest, needsCustomPackaging) {        // Anything that exceeds 43.5" in BOTH directions would require custom packaging.
+TEST(ArtTest, needsCustomPackaging) {        
+    // art needs custom packing if dimensions exceed 43.5 x 88 (43.5 x 88 STILL FITS and does NOT need custom packing)
+
     // Arrange
     Art art1(1, "0", ACOUSTIC_PANEL, 33, 36, GLAZING_NONE, "", NONE); // false
     Art art2(2, "0", CANVAS_FRAMED, 43.5, 43.5, GLAZING_NONE, "", NONE); // false
     Art art3(3, "0", CANVAS_GALLERY, 44, 36, GLAZING_NONE, "", NONE); // false
     Art art4(4, "0", MIRROR, 24, 45, GLAZING_NONE, "", NONE); // false
     Art art5(5, "0", PATIENT_BOARD, 43.5, 36, GLAZING_NONE, "", NONE); // false
-    Art art6(5, "0", PATIENT_BOARD, 44, 45, GLAZING_NONE, "", NONE); // true
+    Art art6(6, "0", PAPER_PRINT_FRAMED, 88, 43.5, GLAZING_GLASS, "", NONE); // false
+    Art art7(7, "0", PAPER_PRINT_FRAMED, 43.5, 88, GLAZING_GLASS, "", NONE); // false
+    Art art8(8, "0", PAPER_PRINT_FRAMED, 43.6, 88, GLAZING_GLASS, "", NONE); // true
+    Art art9(9, "0", PAPER_PRINT_FRAMED, 43.5, 88.1, GLAZING_GLASS, "", NONE); // true
 
     // Act & Assert
     EXPECT_FALSE(art1.needsCustomPackaging());
@@ -53,5 +58,8 @@ TEST(ArtTest, needsCustomPackaging) {        // Anything that exceeds 43.5" in B
     EXPECT_FALSE(art3.needsCustomPackaging());
     EXPECT_FALSE(art4.needsCustomPackaging());
     EXPECT_FALSE(art5.needsCustomPackaging());
-    EXPECT_TRUE(art6.needsCustomPackaging());
+    EXPECT_FALSE(art6.needsCustomPackaging());
+    EXPECT_FALSE(art7.needsCustomPackaging());
+    EXPECT_TRUE(art8.needsCustomPackaging());
+    EXPECT_TRUE(art9.needsCustomPackaging());
 }
