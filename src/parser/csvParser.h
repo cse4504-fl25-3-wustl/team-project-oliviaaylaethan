@@ -2,6 +2,7 @@
 #include <string>
 #include "../requests/request.h"
 #include "../entities/art.h"
+#include "../entities/requirements.h"
 
 class CsvParser{
 private:

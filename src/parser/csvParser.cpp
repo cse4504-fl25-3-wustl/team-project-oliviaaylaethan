@@ -86,8 +86,7 @@ MaterialType CsvParser::mapToMaterial(const std::string& medium) { // FIXME thes
 // Map Glazing string to GlazingType
 GlazingType CsvParser::mapToGlazing(const std::string& glaze) {
     std::string g = trim(glaze);
-    if (g == "Regular Glass") return GLAZING_GLASS;
-    if (g == "Regular glass") return GLAZING_GLASS;
+    if (g == "Regular Glass" || g == "Regular glass") return GLAZING_GLASS;
     if (g == "Acrylic") return GLAZING_ACRYLIC;
     return GLAZING_NONE;
 }
@@ -153,18 +152,6 @@ std::vector<Art> CsvParser::parseArtCsv(const std::string& filename) {
 }
 
 Requirements CsvParser::parseRequirementsCsv(const std::string& filename) {
-    // to be moved to its own header file
-    enum RequirementIndex {
-        JOB_SITE_LOCATION,
-        CLIENT_NAME,
-        ACCEPTS_PALLETS,
-        ACCEPTS_CRATES,
-        HAS_LOADING_DOCK,
-        NEEDS_LIFTGATE,
-        NEEDS_INSIDE_DELIVERY,
-        SERVICE_TYPE
-    };
-
     std::cout << "Parsing Requirements CSV file: " << filename << std::endl;
 
     Requirements siteRequirements = Requirements();
@@ -181,14 +168,14 @@ Requirements CsvParser::parseRequirementsCsv(const std::string& filename) {
     std::vector<std::string> requirementList = commaSplitter(line);
 
     try {
-        siteRequirements.setJobSiteLocation(requirementList[JOB_SITE_LOCATION]);
-        siteRequirements.setClientName(requirementList[CLIENT_NAME]);
-        siteRequirements.setAcceptsPallets(requirementList[ACCEPTS_PALLETS]);
-        siteRequirements.setAcceptsCrates(requirementList[ACCEPTS_CRATES]);
-        siteRequirements.setHasLoadingDock(requirementList[HAS_LOADING_DOCK]);
-        siteRequirements.setNeedsLiftgate(requirementList[NEEDS_LIFTGATE]);
-        siteRequirements.setNeedsInsideDelivery(requirementList[NEEDS_INSIDE_DELIVERY]);
-        siteRequirements.setServiceType(requirementList[SERVICE_TYPE]);
+        siteRequirements.setJobSiteLocation(requirementList[Requirements::JOB_SITE_LOCATION]);
+        siteRequirements.setClientName(requirementList[Requirements::CLIENT_NAME]);
+        siteRequirements.setAcceptsPallets(requirementList[Requirements::ACCEPTS_PALLETS]);
+        siteRequirements.setAcceptsCrates(requirementList[Requirements::ACCEPTS_CRATES]);
+        siteRequirements.setHasLoadingDock(requirementList[Requirements::HAS_LOADING_DOCK]);
+        siteRequirements.setNeedsLiftgate(requirementList[Requirements::NEEDS_LIFTGATE]);
+        siteRequirements.setNeedsInsideDelivery(requirementList[Requirements::NEEDS_INSIDE_DELIVERY]);
+        siteRequirements.setServiceType(requirementList[Requirements::SERVICE_TYPE]);
     } catch (const std::exception& e) {
         std::cerr << "Error parsing requirements: '" << line << "' -> " << e.what() << std::endl;
     }

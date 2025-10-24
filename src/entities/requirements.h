@@ -17,6 +17,19 @@ private:
 
 public:
     Requirements();
+
+    // CSV order/index to Field
+    enum RequirementIndex {
+        JOB_SITE_LOCATION,
+        CLIENT_NAME,
+        ACCEPTS_PALLETS,
+        ACCEPTS_CRATES,
+        HAS_LOADING_DOCK,
+        NEEDS_LIFTGATE,
+        NEEDS_INSIDE_DELIVERY,
+        SERVICE_TYPE
+    };
+
     // Utilities
     static std::string convertOptionalToString(std::optional<bool> answer);
 
