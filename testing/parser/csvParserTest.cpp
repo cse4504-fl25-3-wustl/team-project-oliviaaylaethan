@@ -140,9 +140,9 @@ TEST_F(CsvParserTest, ParseFiles_VerifyArtworkDetails) {
     EXPECT_EQ(artPieces[3].getLineNumber(), 3);
     EXPECT_FLOAT_EQ(artPieces[3].getOuterWidth(), 20.0f);
     EXPECT_FLOAT_EQ(artPieces[3].getOuterHeight(), 20.0f);
-    // TODO: Change this to whatever metal print is supposed to be eventually, could be PATIENT_BOARD?
-    // EXPECT_EQ(artPieces[3].getMaterial(), ACRYLIC);
-    // EXPECT_EQ(artPieces[3].getGlazeType(), GLAZING_ACRYLIC);
+
+    EXPECT_EQ(artPieces[3].getMaterial(), PATIENT_BOARD);
+    EXPECT_EQ(artPieces[3].getGlazeType(), GLAZING_GLASS);
 }
 
 TEST_F(CsvParserTest, ParseFiles_VerifyRequirementsDetails) {
