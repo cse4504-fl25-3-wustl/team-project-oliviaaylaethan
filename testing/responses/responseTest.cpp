@@ -98,7 +98,8 @@ TEST_F(ResponseTest, Input2_EndToEnd) {
     std::vector<Art> oversized = response.getArtInfo().getOversizedItems();
 
     std::multiset<std::tuple<float, float>> dimensionSet;
-    // repeat twice
+    
+    // repeat 70 times
     for (int i = 0; i < 70; i++) {
         dimensionSet.insert(std::make_tuple(36.0f, 44.0f));
     }
