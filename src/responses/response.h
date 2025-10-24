@@ -38,6 +38,7 @@ class ArtInfo {
         int getQuantity(int lineNo);
         Art getArtType(int lineNo);
         std::vector<std::string> getOversizedSummary();
+        std::vector<Art> getOversizedItems();
         std::vector<std::string> getTotalWeightSummary();
         int getTotalWeight();
 };

@@ -73,6 +73,17 @@ std::vector<std::string> ArtInfo::getOversizedSummary() {
     return summary;
 }
 
+std::vector<Art> ArtInfo::getOversizedItems() {
+    std::vector<Art> oversized;
+    for (auto& art: pieces_) {
+        if (art.isOversized()) {
+            oversized.push_back(art);
+        }
+    }
+
+    return oversized;
+}
+
 std::vector<std::string> ArtInfo::getTotalWeightSummary() {
     int totalCount = getTotalCount();
     std::map<MaterialType, int> weightByType;

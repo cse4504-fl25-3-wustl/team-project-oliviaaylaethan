@@ -5,6 +5,7 @@
 
 const float CUSTOM_PACKING_NEEDED_THRESHOLD = 43.5f; // Anything that exceeds 43.5" in BOTH directions would require custom packaging.
 const float OVERSIZED_THRESHOLD = 46.0f; // Anything that exceeds 46" in EITHER direction is considered oversized.
+const float TELESCOPED_THRESHOLD = 36.0f; // Anything that exceeds 36" in ONLY one direction can be telescoped.
 // TODO confirm if this is the correct threshold for oversized items.
 
 // MATERIAL DENSITY REFERENCE TABLE
@@ -78,4 +79,5 @@ public:
     bool needsCustomPackaging();
     bool needsCanvasPacking();
     bool isOversized();
+    bool needsTelescopedBox();
 };

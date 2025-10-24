@@ -121,20 +121,6 @@ Response PackingInteractor::packAllArt(Request request) {
         }
     }
 
-    // Handle Canvas Rule Discrepancy
-    // 🚨 FLAG: Canvas packing rule discrepancy. Using Excel logic (12 per pallet) for now.
-    // for (size_t i = 0; i < needsStandardBox.size(); ++i) {
-    //     if (needsStandardBox[i].needsCanvasPacking()) {
-    //         ShippingContainer pallet = ShippingContainer::makeStandardPallet();
-    //         for (size_t j = i; j < i + STANDARD_PALLET_CANVAS_BOX_CAPACITY && j < needsStandardBox.size(); ++j) {
-    //             if (needsStandardBox[j].needsCanvasPacking()) {
-    //                 //pallet.addBox(boxes_[j]); // FIXME crashing program bc going out of bounds (at least for input1)
-    //             }
-    //         }
-    //         pallets_.push_back(pallet);
-    //     }
-    // }
-
     return Response(boxes_, pallets_, crates_, request.getRequirements());
 }
 

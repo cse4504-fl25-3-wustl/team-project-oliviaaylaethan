@@ -29,6 +29,21 @@ protected:
         PackingInteractor packingInteractor;
         return packingInteractor.packAllArt(request);
     }
+
+    void checkOversizedMatch(std::vector<Art> oversized, std::multiset<std::tuple<float, float>> dimensionSet) {
+        for (Art art: oversized) {
+            if (art.needsTelescopedBox()) {
+                std::tuple<float, float> dimensions = std::make_tuple(art.getOuterWidth(), art.getOuterHeight());
+                
+                auto extracted = dimensionSet.extract(dimensions);
+                EXPECT_FALSE(extracted.empty()) 
+                    << "Oversized art with dimensions " << art.getOuterWidth() << " x " 
+                    << art.getOuterHeight() << " was not expected.";
+                }
+        }
+
+        dimensionSet.clear();
+    }
 };
 
 TEST_F(ResponseTest, Input1_EndToEnd) {
@@ -40,9 +55,23 @@ TEST_F(ResponseTest, Input1_EndToEnd) {
     EXPECT_EQ(49, response.getArtInfo().getStandardCount());
     EXPECT_EQ(6, response.getArtInfo().getOversizedCount());
 
-    // TODO: test oversized pieces summary!
-    // this might need to get a list of what's oversized instead
-    // response.getArtInfo().getOversizedSummary();
+    std::vector<Art> oversized = response.getArtInfo().getOversizedItems();
+
+    std::multiset<std::tuple<float, float>> dimensionSet;
+    // repeat twice
+    for (int i = 0; i < 2; i++) {
+        dimensionSet.insert(std::make_tuple(34, 46));
+    }
+
+    // only one
+    dimensionSet.insert(std::make_tuple(32, 56));
+
+    // repeat thrice
+    for (int i = 0; i < 3; i++) {
+        dimensionSet.insert(std::make_tuple(32, 48));
+    }
+
+    checkOversizedMatch(oversized, dimensionSet);
 
     // Total Artwork Weight: 784 lbs
     EXPECT_FLOAT_EQ(784, response.getArtInfo().getTotalWeight()) 
@@ -85,9 +114,13 @@ TEST_F(ResponseTest, Input3_EndToEnd) {
     EXPECT_EQ(11, response.getArtInfo().getStandardCount());
     EXPECT_EQ(2, response.getArtInfo().getOversizedCount());
 
-    // TODO: test oversized pieces summary!
-    // this might need to get a list of what's oversized instead
-    // response.getArtInfo().getOversizedSummary();
+    std::vector<Art> oversized = response.getArtInfo().getOversizedItems();
+
+    std::multiset<std::tuple<float, float>> dimensionSet;
+    dimensionSet.insert(std::make_tuple(31, 55));
+    dimensionSet.insert(std::make_tuple(34, 47));
+
+    checkOversizedMatch(oversized, dimensionSet);
 
     EXPECT_FLOAT_EQ(187, response.getArtInfo().getTotalWeight()) 
         << "Expected total artwork weight of 187 lbs";

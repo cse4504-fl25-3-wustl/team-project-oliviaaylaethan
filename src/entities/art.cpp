@@ -112,3 +112,10 @@ bool Art::isOversized() {
     }
     return false;
 }
+
+bool Art::needsTelescopedBox() {
+    if ((outerWidth_ < TELESCOPED_THRESHOLD && outerHeight_ >= TELESCOPED_THRESHOLD) || (outerHeight_ < TELESCOPED_THRESHOLD && outerWidth_ >= TELESCOPED_THRESHOLD)) {
+        return true;
+    }
+    return false;
+}
