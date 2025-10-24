@@ -63,10 +63,11 @@ std::vector<std::string> ArtInfo::getOversizedSummary() {
     for (auto& [lineNo, art] : artTypes_) {
         // Check if oversized
         if (art.isOversized()) {
-            summary.push_back(std::format("- {}\"x{}\" (Qty: {}) - Requires large box",
+            summary.push_back(std::format("- {}\"x{}\" (Qty: {}) - {} lbs each",
                 art.getOuterHeight(),
                 art.getOuterWidth(),
-                getQuantity(lineNo)
+                getQuantity(lineNo),
+                art.getWeight()
             ));
         }
     }

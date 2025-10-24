@@ -38,10 +38,9 @@ int main() {
             Request request = parser.parseFiles(dataInputFile, requirementsInputFile);
             PackingInteractor packingInteractor;
             Response response = packingInteractor.packAllArt(request);
-            response.printWeightSummary();
             response.printPackingSummary();
+            response.printWeightSummary();
             response.printBusinessIntelSummary();
-            response.printEmailFormat();
             
             continue;
         }
