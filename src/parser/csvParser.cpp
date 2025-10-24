@@ -36,28 +36,8 @@ Request CsvParser::parseFiles(std::string artFilePath, std::string siteFilePath)
 
     // to show parsed data for debugging, won't need in final version
     std::cout << std::endl;
-
-    for (auto& art : artworks) {
-        std::cout << "Line #" << art.getLineNumber()
-                  << ", Material: " << art.getMaterial()
-                  << ", Glaze: " << art.getGlazeType()
-                  << ", Size: " << art.getOuterWidth() << "x" << art.getOuterHeight()
-                  << ", Hardware: " << art.getHardware()
-                  << std::endl;
-    }
-
     std::cout << "Total artworks parsed: " << artworks.size() << std::endl;
-
     std::cout << std::endl;
-
-    std::cout << "Job Site Location: " << siteRequirements.getJobSiteLocation() << std::endl;
-    std::cout << "Client Name: " << siteRequirements.getClientName() << std::endl;
-    std::cout << "Accepts Pallets: " << Requirements::convertOptionalToString(siteRequirements.getAcceptsPallets()) << std::endl;
-    std::cout << "Accepts Crates: " << Requirements::convertOptionalToString(siteRequirements.getAcceptsCrates()) << std::endl;
-    std::cout << "Has Loading Dock: " << Requirements::convertOptionalToString(siteRequirements.getHasLoadingDock()) << std::endl;
-    std::cout << "Needs Liftgate: " << Requirements::convertOptionalToString(siteRequirements.getNeedsLiftgate()) << std::endl;
-    std::cout << "Needs Inside Delivery: " << Requirements::convertOptionalToString(siteRequirements.getNeedsInsideDelivery()) << std::endl;
-    std::cout << "Service Type: " << siteRequirements.getServiceType() << std::endl;
 
     return Request(artworks, siteRequirements);
 }

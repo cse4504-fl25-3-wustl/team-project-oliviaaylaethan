@@ -75,7 +75,8 @@ std::vector<std::string> PalletInfo::getAllPackedBoxesSummary() {
     ShippingContainer pallet = ShippingContainer::makeStandardPallet();
     for (int i = 0; i < count; i++) {
         pallet = pallets_[i];
-        summary.push_back(std::format("- Pallet {}", i));
+        summary.push_back(std::format(
+            "- Pallet {} - {}", i, to_string(pallet.getShippingContainerType())));
         std::vector<Box> contents = pallet.getContents();
         for (size_t j = 0; j < contents.size(); j++) {
             summary.push_back(std::format(

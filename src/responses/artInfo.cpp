@@ -88,13 +88,15 @@ std::vector<std::string> ArtInfo::getTotalWeightSummary() {
     int totalCount = getTotalCount();
     std::map<MaterialType, int> weightByType;
     int oversizedWeight = 0;
+    int oversizedCount = 0;
     Art art;
     for (int i = 0; i < totalCount; i++) {
         art = pieces_[i];
 
         // Check if oversized
-        if (art.getOuterWidth() > 33 and art.getOuterHeight() > 43) {
+        if (art.isOversized()) {
             oversizedWeight += art.getWeight();
+            oversizedCount++;
         }
         else {
             weightByType[art.getMaterial()] += art.getWeight();
@@ -103,6 +105,12 @@ std::vector<std::string> ArtInfo::getTotalWeightSummary() {
 
     // Now we convert to a string vector
     std::vector<std::string> summary;
+    summary.push_back(std::format(
+        "\nTotal Artwork Pieces: {}", totalCount));
+    summary.push_back(std::format(
+        "- Standard Size Pieces: {}", totalCount - oversizedCount));
+    summary.push_back(std::format(
+        "- Oversized Pieces: {}", oversizedCount));
     summary.push_back(std::format(
         "\nTotal Artwork Weight: {} lbs", getTotalWeight()));
     if (weightByType[ACOUSTIC_PANEL] > 0) {

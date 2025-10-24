@@ -87,8 +87,19 @@ class HardwareInfo {
 
 inline std::string to_string(BoxType type) {
     switch (type) {
-        case STANDARD_BOX: return "Standard";
-        case LARGE_BOX: return "Large";
+        case STANDARD_BOX: return "Standard Box";
+        case LARGE_BOX: return "Large Box";
+        default: return "Unknown Box";
+    }
+}
+
+inline std::string to_string(ShippingContainerType type) {
+    switch (type) {
+        case STANDARD_PALLET: return "Standard Pallet";
+        case GLASS_SMALL_PALLET: return "Glass Small Pallet";
+        case OVERSIZE_PALLET: return "Oversize Pallet";
+        case STANDARD_CRATE: return "Standard Crate";
+        case OTHER: return "Other Shipping Container";
         default: return "Unknown";
     }
 }
