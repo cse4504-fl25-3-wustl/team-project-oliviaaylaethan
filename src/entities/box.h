@@ -1,0 +1,52 @@
+#pragma once
+#include "art.h"
+#include <vector>
+
+struct Dimensions {
+    float l, w, h; // Length, Width, Height in inches
+};
+
+enum BoxType {
+    STANDARD_BOX,
+    LARGE_BOX,
+    UPS_SMALL_BOX,
+    UPS_LARGE_BOX,
+    CUSTOM
+};
+
+const Dimensions STANDARD_BOX_DIMENSIONS = {37, 11, 31};
+const Dimensions LARGE_BOX_DIMENSIONS = {44, 13, 48};
+const Dimensions UPS_SMALL_BOX_DIMENSIONS = {36, 6, 36};
+const Dimensions UPS_LARGE_BOX_DIMENSIONS = {44, 6, 35};
+
+const int STANDARD_BOX_CAPACITY = 6; // TODO rename this STANDARD_BOX_ART_CAPACITY so it doesn't get mixed up w # of standard boxes that can go on pallet
+const int LARGE_BOX_CAPACITY = 4;
+
+// Rule: As long as at least ONE dimension of an art piece is 36" or less, it will fit in a standard size box. Boxes can be telescoped to a max height of 84"
+const int STANDARD_BOX_MAX_ART_DIMENSION = 36;
+const int MAX_BOX_HEIGHT = 84;
+
+class Box {
+private:
+    Dimensions dimensions_;
+    BoxType boxType_;
+    int totalWeight_;
+    std::vector<Art> contents_;
+
+public:
+    Box();
+    Box(Dimensions dimensions, BoxType boxType);
+
+    static Box makeStandardBox();
+    static Box makeLargeBox();
+    static Box makeUPSSmallBox();
+    static Box makeUPSLargeBox();
+
+    Dimensions getDimensions() const;
+    BoxType getBoxType() const;
+    int getTotalWeight() const;
+    std::vector<Art> getContents() const;
+
+    bool fitsArt(Art artwork);
+    bool addArt(Art artwork);
+};

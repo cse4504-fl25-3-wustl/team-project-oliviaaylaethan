@@ -1,0 +1,6 @@
+/.github/copilot-instructions.md
+/.idea/
+/.vscode/
+/build/
+.DS_Store
+/cmake-build-debug/
