@@ -89,3 +89,17 @@ For CMake on Windows, download from [cmake.org](https://cmake.org/).
       * addBox
    * CSV Parser
       * parseFiles
+    
+# Feature 2 Work Plan
+
+Workflow: all of us will commit directly to the feature2 branch
+
+Responsibilities:
+ 
+* ***Olivia**
+   * change input to accept command line args
+   * change output to json
+* **Ethan**
+   * add test cases from our class github repo
+* **Ayla**
+   * update code to pass new test cases
