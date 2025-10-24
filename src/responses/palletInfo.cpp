@@ -57,11 +57,10 @@ std::vector<std::string> PalletInfo::getPalletDimensionsSummary() {
     summary.reserve(count);
     for (int i = 0; i < count; i++) {
         summary.push_back(std::format(
-            "{}\"x{}\"x{}\"H @ {} lbs",
+            "{}\"x{}\"x{}\"H",
             pallets_[i].getDimensions().l,
             pallets_[i].getDimensions().w,
-            pallets_[i].getDimensions().h,
-            getTotalTareWeight()
+            pallets_[i].getDimensions().h
         ));
     }
     return summary;

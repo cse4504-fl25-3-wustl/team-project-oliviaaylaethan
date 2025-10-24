@@ -56,20 +56,6 @@ ShippingContainer ShippingContainer::makeStandardCrate() {
     );
 }
 
-// Calculate total container height based on tallest box inside
-float ShippingContainer::calculateContainerHeight() {
-    float maxBoxHeight = 0.0f;
-
-    for (const Box& box : contents_) {
-        float boxHeight = box.getDimensions().h; // FIXME do we know that the h dimension will always be "height" or could a box be turned on its side?
-        if (boxHeight > maxBoxHeight) {
-            maxBoxHeight = boxHeight;
-        }
-    }
-
-    return maxBoxHeight + 8.0f; // FIXME is this meant to be 8 inches for CRATES or for PALLETS? Or both?
-}
-
 Dimensions ShippingContainer::getDimensions() const {
     return dimensions_;
 }
@@ -94,6 +80,24 @@ int ShippingContainer::getOversizedBoxCapacity() const {
     return oversizedBoxCapacity_;
 }
 
-void ShippingContainer::addBox(Box box) {
-    contents_.push_back(box);     // TODO this used to update totalWeight_, implement that elsewhere
+bool ShippingContainer::addBox(Box box) {
+    // won't add the box if container is already full
+    // TODO add checks for other types of boxes/pallets once we know what their limits are
+    if (shippingContainerType_ == STANDARD_PALLET && box.getBoxType() == STANDARD_BOX && contents_.size() >= STANDARD_PALLET_STANDARD_BOX_CAPACITY) {
+        return false;
+    }
+
+    contents_.push_back(box);
+
+    // update height of pallet if new box is taller than others
+    float maxBoxHeight = 0.0f;
+    for (const Box& box : contents_) {
+        float boxHeight = box.getDimensions().h; // TODO do we know that the h dimension will always be "height" or could a box be turned on its side?
+        if (boxHeight > maxBoxHeight) {
+            maxBoxHeight = boxHeight;
+        }
+    }
+    dimensions_.h = maxBoxHeight + 8.0f; // FIXME is this meant to be 8 inches for CRATES or for PALLETS? Or both?
+
+    return true;
 }

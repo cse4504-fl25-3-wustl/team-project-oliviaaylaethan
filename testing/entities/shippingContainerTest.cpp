@@ -43,6 +43,33 @@ TEST_F(ShippingContainerTest, AddBox_MultipleBoxes) {
     EXPECT_EQ(container.getContents().size(), 3);
 }
 
+TEST_F(ShippingContainerTest, AddBox_TooManyBoxes) {
+    
+    Box box1 = Box::makeStandardBox();
+    Box box2 = Box::makeStandardBox();
+    Box box3 = Box::makeStandardBox();
+    Box box4 = Box::makeStandardBox();
+    Box box5 = Box::makeStandardBox(); // should fail (over capacity)
+    Box box6 = Box::makeStandardBox(); // should fail
+    
+
+    container.addBox(box1);
+    container.addBox(box2);
+    container.addBox(box3);
+    bool addedBox = container.addBox(box4);
+
+    EXPECT_TRUE(addedBox);
+    EXPECT_EQ(container.getContents().size(), 4);
+    
+    addedBox = container.addBox(box5);
+    EXPECT_FALSE(addedBox);
+    EXPECT_EQ(container.getContents().size(), 4);
+
+    addedBox = container.addBox(box6);
+    EXPECT_FALSE(addedBox);
+    EXPECT_EQ(container.getContents().size(), 4);
+}
+
 TEST_F(ShippingContainerTest, AddBox_PreservesBoxType) {
     // Arrange
     Box standardBox = Box::makeStandardBox();
@@ -102,7 +129,7 @@ TEST_F(ShippingContainerTest, AddBox_ToOversizePallet) {
 
 TEST_F(ShippingContainerTest, CalculateHeight_EmptyContainer) {
     // Act
-    float height = container.calculateContainerHeight();
+    float height = container.getDimensions().h;
     
     // Assert - Empty container should return 8.0 (base height buffer)
     EXPECT_FLOAT_EQ(height, 8.0f);
@@ -114,7 +141,7 @@ TEST_F(ShippingContainerTest, CalculateHeight_SingleStandardBox) {
     container.addBox(box);
     
     // Act
-    float height = container.calculateContainerHeight();
+    float height = container.getDimensions().h;
     
     // Assert - Standard box height (31) + 8 inch buffer
     EXPECT_FLOAT_EQ(height, 31.0f + 8.0f);
@@ -126,7 +153,7 @@ TEST_F(ShippingContainerTest, CalculateHeight_SingleLargeBox) {
     container.addBox(box);
     
     // Act
-    float height = container.calculateContainerHeight();
+    float height = container.getDimensions().h;
     
     // Assert - Large box height (48) + 8 inch buffer
     EXPECT_FLOAT_EQ(height, 48.0f + 8.0f);
@@ -142,7 +169,7 @@ TEST_F(ShippingContainerTest, CalculateHeight_MultipleBoxesSameHeight) {
     container.addBox(box3);
     
     // Act
-    float height = container.calculateContainerHeight();
+    float height = container.getDimensions().h;
     
     // Assert - All boxes are 31 inches tall, so max is 31 + 8
     EXPECT_FLOAT_EQ(height, 31.0f + 8.0f);
@@ -159,7 +186,7 @@ TEST_F(ShippingContainerTest, CalculateHeight_MultipleBoxesDifferentHeights) {
     container.addBox(upsSmallBox);
     
     // Act
-    float height = container.calculateContainerHeight();
+    float height = container.getDimensions().h;
     
     // Assert - Tallest box is 48 inches, so height should be 48 + 8
     EXPECT_FLOAT_EQ(height, 48.0f + 8.0f);
@@ -178,7 +205,7 @@ TEST_F(ShippingContainerTest, CalculateHeight_FindsMaximumHeight) {
     container.addBox(box4);
     
     // Act
-    float height = container.calculateContainerHeight();
+    float height = container.getDimensions().h;
     
     // Assert - Should return the tallest box (48) + 8
     EXPECT_FLOAT_EQ(height, 48.0f + 8.0f);
@@ -191,7 +218,7 @@ TEST_F(ShippingContainerTest, CalculateHeight_InCrate) {
     crate.addBox(box);
     
     // Act
-    float height = crate.calculateContainerHeight();
+    float height = crate.getDimensions().h;
     
     // Assert
     EXPECT_FLOAT_EQ(height, 48.0f + 8.0f);
@@ -206,7 +233,7 @@ TEST_F(ShippingContainerTest, CalculateHeight_InOversizePallet) {
     oversizePallet.addBox(box2);
     
     // Act
-    float height = oversizePallet.calculateContainerHeight();
+    float height = oversizePallet.getDimensions().h;
     
     // Assert - Should use tallest box
     EXPECT_FLOAT_EQ(height, 48.0f + 8.0f);
@@ -217,20 +244,20 @@ TEST_F(ShippingContainerTest, CalculateHeight_InOversizePallet) {
 TEST_F(ShippingContainerTest, AddBoxThenCalculateHeight_Integration) {
     // Arrange - Start with empty container
     EXPECT_EQ(container.getContents().size(), 0);
-    EXPECT_FLOAT_EQ(container.calculateContainerHeight(), 8.0f);
+    EXPECT_FLOAT_EQ(container.getDimensions().h, 8.0f);
     
     // Act & Assert - Add boxes and verify height updates
     Box box1 = Box::makeStandardBox();
     container.addBox(box1);
-    EXPECT_FLOAT_EQ(container.calculateContainerHeight(), 31.0f + 8.0f);
+    EXPECT_FLOAT_EQ(container.getDimensions().h, 31.0f + 8.0f);
     
     Box box2 = Box::makeLargeBox();
     container.addBox(box2);
-    EXPECT_FLOAT_EQ(container.calculateContainerHeight(), 48.0f + 8.0f);
+    EXPECT_FLOAT_EQ(container.getDimensions().h, 48.0f + 8.0f);
     
     Box box3 = Box::makeUPSSmallBox();
     container.addBox(box3);
-    EXPECT_FLOAT_EQ(container.calculateContainerHeight(), 48.0f + 8.0f);
+    EXPECT_FLOAT_EQ(container.getDimensions().h, 48.0f + 8.0f);
     
     // Verify all boxes are present
     EXPECT_EQ(container.getContents().size(), 3);

@@ -11,7 +11,7 @@ const int STANDARD_PALLET_CANVAS_BOX_CAPACITY = 12;
 
 // Pallet info
 // For standard shipments
-const Dimensions STANDARD_PALLET_DIMENSIONS = {48, 40, 0};
+const Dimensions STANDARD_PALLET_DIMENSIONS = {48, 40, 8}; // TODO check if 8 height is for pallet or crate
 const float STANDARD_PALLET_TARE_WEIGHT = 60;
 const int STANDARD_PALLET_STANDARD_BOX_CAPACITY = 4;
 
@@ -57,13 +57,11 @@ public:
     static ShippingContainer makeOversizePallet();
     static ShippingContainer makeStandardCrate();
 
-    float calculateContainerHeight();
-
     Dimensions getDimensions() const;
     float getTareWeight() const;
     std::vector<Box> getContents() const;
     ShippingContainerType getShippingContainerType() const;
     int getStandardBoxCapacity() const;
     int getOversizedBoxCapacity() const;
-    void addBox(Box box);
+    bool addBox(Box box);
 };
