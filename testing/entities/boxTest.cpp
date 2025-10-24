@@ -77,3 +77,28 @@ TEST (BoxTest, getTotalWeight) {
     EXPECT_EQ(totalWeight, 17); // Total weight should be 4 + 4 + 9 = 17 lbs
 }
 
+TEST (BoxTest, getHeight) {
+    Box box = Box::makeStandardBox();
+
+    Art art1(1, "0", ACOUSTIC_PANEL, 24, 36, GLAZING_NONE, "", NONE);
+    Art art2(2, "0", ACOUSTIC_PANEL_FRAMED, 36, 50, GLAZING_NONE, "", NONE);
+    Art art3(3, "0", PAPER_PRINT_FRAMED, 62, 20, GLAZING_ACRYLIC, "", NONE);
+    Art art4(4, "0", PAPER_PRINT_FRAMED, 30, 30, GLAZING_ACRYLIC, "", NONE);
+
+    box.addArt(art1);
+    float boxHeight = box.getDimensions().h;
+    EXPECT_EQ(boxHeight, 31); // should still be default height since this doesn't need telescoping
+
+    box.addArt(art2);
+    boxHeight = box.getDimensions().h;
+    EXPECT_EQ(boxHeight, 50); // should increase box height to the dimension needing telescoping
+
+    box.addArt(art3);
+    boxHeight = box.getDimensions().h;
+    EXPECT_EQ(boxHeight, 62); // should increase box height to the dimension needing telescoping
+
+    box.addArt(art4);
+    boxHeight = box.getDimensions().h;
+    EXPECT_EQ(boxHeight, 62); // should still be what it just was from art3 - this one doesn't increase the height
+
+}

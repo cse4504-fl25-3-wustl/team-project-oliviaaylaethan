@@ -49,6 +49,23 @@ bool Box::addArt(Art art) {
     }
     contents_.push_back(art);
     totalWeight_ += art.getWeight();
+
+    // update height of box to reflect tallest artwork inside of it TODO ask about rules for nonstandard boxes
+    bool needsTelescoping = (art.getOuterHeight() > STANDARD_BOX_MAX_ART_DIMENSION || art.getOuterWidth() > STANDARD_BOX_MAX_ART_DIMENSION);
+    if (needsTelescoping) {
+        float artTelescopedHeight;
+        if ( art.getOuterHeight() > art.getOuterWidth() ) {
+            artTelescopedHeight = art.getOuterHeight();
+        }
+        else {
+            artTelescopedHeight = art.getOuterWidth();
+        }
+
+        if ( artTelescopedHeight > dimensions_.h ) {
+            dimensions_.h = artTelescopedHeight;
+        }
+    }
+    
     return true;
 };
 
