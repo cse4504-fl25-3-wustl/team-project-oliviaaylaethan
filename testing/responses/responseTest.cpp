@@ -14,7 +14,7 @@ protected:
     
     void SetUp() override {
         // Create a standard pallet for testing
-        testDataPath = std::string(TEST_DATA_PATH) + "/"; // Path to test data directory
+        testDataPath = std::string(TEST_DATA_PATH) + "/inputsFeature1/"; // Path to test data directory
         requirementsFilePath = testDataPath + "Site_requirements.csv";
         inputPrefix = "Input";
     }
@@ -98,7 +98,7 @@ TEST_F(ResponseTest, Input2_EndToEnd) {
     std::vector<Art> oversized = response.getArtInfo().getOversizedItems();
 
     std::multiset<std::tuple<float, float>> dimensionSet;
-    
+
     // repeat 70 times
     for (int i = 0; i < 70; i++) {
         dimensionSet.insert(std::make_tuple(36.0f, 44.0f));
