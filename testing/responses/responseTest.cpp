@@ -32,7 +32,7 @@ protected:
 
     void checkOversizedMatch(std::vector<Art> oversized, std::multiset<std::tuple<float, float>> dimensionSet) {
         for (Art art: oversized) {
-            if (art.needsTelescopedBox()) {
+            if (art.isOversizedInstallation()) {
                 std::tuple<float, float> dimensions = std::make_tuple(art.getOuterWidth(), art.getOuterHeight());
                 
                 auto extracted = dimensionSet.extract(dimensions);

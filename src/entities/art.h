@@ -79,5 +79,4 @@ public:
     bool needsCustomPackaging();
     bool needsCanvasPacking();
     bool isOversizedInstallation();
-    bool needsTelescopedBox();
 };
