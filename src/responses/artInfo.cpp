@@ -20,7 +20,7 @@ int ArtInfo::getStandardCount() {
     Art art;
     for (int i = 0; i < totalCount; i++) {
         art = pieces_[i];
-        if (!art.isOversized()) {
+        if (!art.isOversizedInstallation()) {
             count++;
         }
     }
@@ -33,7 +33,7 @@ int ArtInfo::getOversizedCount() {
     Art art;
     for (int i = 0; i < totalCount; i++) {
         art = pieces_[i];
-        if (art.isOversized()) {
+        if (art.isOversizedInstallation()) {
             count++;
         }
     }
@@ -62,7 +62,7 @@ std::vector<std::string> ArtInfo::getOversizedSummary() {
     summary.push_back("\nOversized Items Flagged:");
     for (auto& [lineNo, art] : artTypes_) {
         // Check if oversized
-        if (art.isOversized()) {
+        if (art.isOversizedInstallation()) {
             summary.push_back(std::format("- {}\"x{}\" (Qty: {}) - {} lbs each",
                 art.getOuterHeight(),
                 art.getOuterWidth(),
@@ -77,7 +77,7 @@ std::vector<std::string> ArtInfo::getOversizedSummary() {
 std::vector<Art> ArtInfo::getOversizedItems() {
     std::vector<Art> oversized;
     for (auto& art: pieces_) {
-        if (art.isOversized()) {
+        if (art.isOversizedInstallation()) {
             oversized.push_back(art);
         }
     }
@@ -95,7 +95,7 @@ std::vector<std::string> ArtInfo::getTotalWeightSummary() {
         art = pieces_[i];
 
         // Check if oversized
-        if (art.isOversized()) {
+        if (art.isOversizedInstallation()) {
             oversizedWeight += art.getWeight();
             oversizedCount++;
         }
