@@ -39,11 +39,11 @@ For CMake on Windows, download from [cmake.org](https://cmake.org/).
 
    After building, an executable named `main` on MacOS, or `main.exe` on Windows, will be created in the `build` directory. Run it with this command on Mac:
    ```bash
-   ./main
+   ./main <art_data_file.csv> <requirements_file.csv> optional:<output_file_path>
    ```
    or this command on Windows:
    ```bash
-   Debug/main.exe
+   Debug/main.exe <art_data_file.csv> <requirements_file.csv> optional:<output_file_path>
    ```
 
    Note: The program takes input files as absolute paths.
