@@ -23,9 +23,9 @@ const Dimensions UPS_LARGE_BOX_DIMENSIONS = {44, 6, 35};
 const int STANDARD_BOX_CAPACITY = 6; // TODO rename this STANDARD_BOX_ART_CAPACITY so it doesn't get mixed up w # of standard boxes that can go on pallet
 const int LARGE_BOX_CAPACITY = 4;
 
-// Rule: As long as at least ONE dimension of an art piece is 36" or less, it will fit in a standard size box. Boxes can be telescoped to a max height of 84"
+// Rule: As long as at least ONE dimension of an art piece is 36" or less, it will fit in a standard size box. Boxes can be telescoped to a max height of 88"
 const int STANDARD_BOX_MAX_ART_DIMENSION = 36;
-const int MAX_BOX_HEIGHT = 84;
+const int MAX_BOX_HEIGHT = CUSTOM_PACKING_NEEDED_THRESHOLD_LARGER_DIM;
 
 class Box {
 private:

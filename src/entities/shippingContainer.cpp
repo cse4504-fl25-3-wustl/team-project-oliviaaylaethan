@@ -92,12 +92,12 @@ bool ShippingContainer::addBox(Box box) {
     // update height of pallet if new box is taller than others
     float maxBoxHeight = 0.0f;
     for (const Box& box : contents_) {
-        float boxHeight = box.getDimensions().h; // TODO do we know that the h dimension will always be "height" or could a box be turned on its side?
+        float boxHeight = box.getDimensions().h;
         if (boxHeight > maxBoxHeight) {
             maxBoxHeight = boxHeight;
         }
     }
-    dimensions_.h = maxBoxHeight + 8.0f; // FIXME is this meant to be 8 inches for CRATES or for PALLETS? Or both?
+    dimensions_.h = maxBoxHeight + SHIPPING_CONTAINER_THICKNESS;
 
     return true;
 }
