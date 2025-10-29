@@ -68,7 +68,7 @@ TEST_P(Feature2Test, VerifyEndToEndOutput) {
         << "Mismatch in large box count." << debugOutput;
     EXPECT_EQ(response.getCrateInfo().getTotalCrateCount(), expectedOutput["crate_count"].get<int>())
         << "Mismatch in large box count." << debugOutput;
-    EXPECT_EQ(response.getArtInfo().getOversizedCount(), expectedOutput["custom_piece_count"].get<int>())
+    EXPECT_EQ(response.getArtInfo().getCustomCount(), expectedOutput["custom_piece_count"].get<int>())
         << "Mismatch in custom piece count." << debugOutput;
 }
 
