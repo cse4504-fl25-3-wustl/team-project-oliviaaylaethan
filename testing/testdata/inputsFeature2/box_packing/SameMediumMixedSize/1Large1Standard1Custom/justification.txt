@@ -1,0 +1,3 @@
+Line 1 can fit in a large box since its not above the threshold of 43.5", line 2 can fit in a standard box, and line 3 can fit in a custom box.
+
+We have 1 large, 1 custom, and 1 standard item so we can fit all three in a box since they're all glass type.

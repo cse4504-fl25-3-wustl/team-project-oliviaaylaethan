@@ -1,11 +1,24 @@
 #include "responseTest.h"
 
-class Feature1Test : public ResponseTest {};
+class Feature1Test : public ::testing::Test {
+protected:
+    CsvParser parser;
+    std::string testDataPath;
+    std::string requirementsFilePath;
+    std::string inputPrefix;
 
-TEST_F(ResponseTest, Input1_EndToEnd) {
+    void SetUp() override {
+        // Create a standard pallet for testing
+        testDataPath = std::string(TEST_DATA_PATH) + "/inputsFeature1/"; // Path to test data directory
+        requirementsFilePath = testDataPath + "Site_requirements.csv";
+        inputPrefix = "Input";
+    }
+};
+
+TEST_F(Feature1Test, Input1_EndToEnd) {
     std::string dataInputFilePath = testDataPath + inputPrefix + "1.csv";
     EXPECT_TRUE(parser.isValidFile(dataInputFilePath));
-    Response response = generateResponse(dataInputFilePath, requirementsFilePath);
+    Response response = ResponseTest::generateResponse(dataInputFilePath, requirementsFilePath);
 
     EXPECT_EQ(55, response.getArtInfo().getTotalCount());
     EXPECT_EQ(49, response.getArtInfo().getStandardCount());
@@ -27,7 +40,7 @@ TEST_F(ResponseTest, Input1_EndToEnd) {
         dimensionSet.insert(std::make_tuple(32.0f, 48.0f));
     }
 
-    checkOversizedMatch(oversized, dimensionSet);
+    ResponseTest::checkOversizedMatch(oversized, dimensionSet);
 
     // Total Artwork Weight: 784 lbs
     EXPECT_FLOAT_EQ(784, response.getArtInfo().getTotalWeight()) 
@@ -42,10 +55,10 @@ TEST_F(ResponseTest, Input1_EndToEnd) {
         << "Expected total shipment weight of 934 lbs (784 + 150)";
 }
 
-TEST_F(ResponseTest, Input2_EndToEnd) {
+TEST_F(Feature1Test, Input2_EndToEnd) {
     std::string dataInputFilePath = testDataPath + inputPrefix + "2.csv";
     EXPECT_TRUE(parser.isValidFile(dataInputFilePath));
-    Response response = generateResponse(dataInputFilePath, requirementsFilePath);
+    Response response = ResponseTest::generateResponse(dataInputFilePath, requirementsFilePath);
 
     EXPECT_EQ(70, response.getArtInfo().getTotalCount());
     EXPECT_EQ(0, response.getArtInfo().getStandardCount());
@@ -60,7 +73,7 @@ TEST_F(ResponseTest, Input2_EndToEnd) {
         dimensionSet.insert(std::make_tuple(36.0f, 44.0f));
     }
 
-    checkOversizedMatch(oversized, dimensionSet);
+    ResponseTest::checkOversizedMatch(oversized, dimensionSet);
 
     EXPECT_FLOAT_EQ(1120, response.getArtInfo().getTotalWeight()) 
         << "Expected total artwork weight of 1120 lbs";
@@ -72,10 +85,10 @@ TEST_F(ResponseTest, Input2_EndToEnd) {
         << "Expected total shipment weight of 1300 lbs (1120 + 180)";
 }
 
-TEST_F(ResponseTest, Input3_EndToEnd) {
+TEST_F(Feature1Test, Input3_EndToEnd) {
     std::string dataInputFilePath = testDataPath + inputPrefix + "3.csv";
     EXPECT_TRUE(parser.isValidFile(dataInputFilePath));
-    Response response = generateResponse(dataInputFilePath, requirementsFilePath);
+    Response response = ResponseTest::generateResponse(dataInputFilePath, requirementsFilePath);
 
     EXPECT_EQ(13, response.getArtInfo().getTotalCount());
     EXPECT_EQ(11, response.getArtInfo().getStandardCount());
@@ -87,7 +100,7 @@ TEST_F(ResponseTest, Input3_EndToEnd) {
     dimensionSet.insert(std::make_tuple(31.0f, 55.0f));
     dimensionSet.insert(std::make_tuple(34.0f, 47.0f));
 
-    checkOversizedMatch(oversized, dimensionSet);
+    ResponseTest::checkOversizedMatch(oversized, dimensionSet);
 
     EXPECT_FLOAT_EQ(187, response.getArtInfo().getTotalWeight()) 
         << "Expected total artwork weight of 187 lbs";
@@ -99,10 +112,10 @@ TEST_F(ResponseTest, Input3_EndToEnd) {
         << "Expected total shipment weight of 247 lbs (187 + 60)";
 }
 
-TEST_F(ResponseTest, Input4_EndToEnd) {
+TEST_F(Feature1Test, Input4_EndToEnd) {
     std::string dataInputFilePath = testDataPath + inputPrefix + "4.csv";
     EXPECT_TRUE(parser.isValidFile(dataInputFilePath));
-    Response response = generateResponse(dataInputFilePath, requirementsFilePath);
+    Response response = ResponseTest::generateResponse(dataInputFilePath, requirementsFilePath);
 
     EXPECT_EQ(18, response.getArtInfo().getTotalCount());
     EXPECT_EQ(18, response.getArtInfo().getStandardCount());

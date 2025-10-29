@@ -16,14 +16,8 @@ void ResponseTest::checkOversizedMatch(std::vector<Art> oversized, std::multiset
     dimensionSet.clear();
 }
 
-void ResponseTest::SetUp() {
-    // Create a standard pallet for testing
-    testDataPath = std::string(TEST_DATA_PATH) + "/inputsFeature1/"; // Path to test data directory
-    requirementsFilePath = testDataPath + "Site_requirements.csv";
-    inputPrefix = "Input";
-}
-
 Response ResponseTest::generateResponse(std::string dataInput, std::string requirements) {
+    CsvParser parser = CsvParser();
     Request request = parser.parseFiles(dataInput, requirements);
 
     // check that the file paths are correct (all the other tests will fail if they aren't)

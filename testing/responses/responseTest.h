@@ -6,16 +6,8 @@
 #include "../../src/interactors/packingInteractor.h"
 #include "../../src/responses/response.h"
 
-class ResponseTest : public ::testing::Test {
+class ResponseTest {
 public:
-    void checkOversizedMatch(std::vector<Art> oversized, std::multiset<std::tuple<float, float>> dimensionSet);
-protected:
-    CsvParser parser;
-    std::string testDataPath;
-    std::string requirementsFilePath;
-    std::string inputPrefix;
-    
-    void SetUp() override;
-
-    Response generateResponse(std::string dataInput, std::string requirements);
+    static void checkOversizedMatch(std::vector<Art> oversized, std::multiset<std::tuple<float, float>> dimensionSet);
+    static Response generateResponse(std::string dataInput, std::string requirements);
 };
