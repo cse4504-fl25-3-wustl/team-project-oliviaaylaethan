@@ -6,9 +6,7 @@
 const float CUSTOM_PACKING_NEEDED_THRESHOLD_SMALLER_DIM = 43.5f;
 const float CUSTOM_PACKING_NEEDED_THRESHOLD_LARGER_DIM = 88.0f; // this is the tallest art can be to still be packable on a pallet
 
-const float OVERSIZED_INSTALLATION_THRESHOLD = 44.0f; // Anything that exceeds (inclusive) 44" in EITHER direction is considered oversized.
-const float TELESCOPED_THRESHOLD = 36.0f; // Anything that exceeds 36" in ONLY one direction can be telescoped.
-
+const float OVERSIZED_INSTALLATION_THRESHOLD = 44.0f; // Anything that exceeds (inclusive) 44" in EITHER direction is considered oversized for installation purposes (because needs extra support hardware).
 
 // MATERIAL DENSITY REFERENCE TABLE
 // Critical Data - Use these precise densities for ALL calculations

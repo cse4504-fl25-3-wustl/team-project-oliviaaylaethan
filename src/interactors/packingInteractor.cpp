@@ -49,21 +49,35 @@ Response PackingInteractor::packAllArt(Request request) {
             needsCustomPallet.push_back(piece);
         }
     }
+    
+    // Pack large boxes FIRST
+    for (size_t i = 0; i < needsLargeBox.size(); i += LARGE_BOX_CAPACITY) {
+        Box box = Box::makeLargeBox();
+        for (size_t j = i; j < i + LARGE_BOX_CAPACITY && j < needsLargeBox.size(); ++j) {
+            box.addArt(needsLargeBox[j]);
+        }
+
+        // add some pieces that COULD fit in a standard box to a large box with extra capacity (to save space)
+        bool boxNotFull = (box.getContents().size() < LARGE_BOX_CAPACITY);
+        if(boxNotFull) {
+            int numEmptySpaces = LARGE_BOX_CAPACITY - box.getContents().size();
+            // only add those smaller pieces if they exist
+            while (!needsStandardBox.empty() && numEmptySpaces > 0) {
+                box.addArt(needsStandardBox.back());
+                needsStandardBox.pop_back();
+                numEmptySpaces--;
+            }
+        }
+
+        boxes_.push_back(box);
+    }
+
 
     // Pack standard boxes
     for (size_t i = 0; i < needsStandardBox.size(); i += STANDARD_BOX_CAPACITY) {
         Box box = Box::makeStandardBox();
         for (size_t j = i; j < i + STANDARD_BOX_CAPACITY && j < needsStandardBox.size(); ++j) {
             box.addArt(needsStandardBox[j]);
-        }
-        boxes_.push_back(box);
-    }
-
-    // Pack large boxes
-    for (size_t i = 0; i < needsLargeBox.size(); i += LARGE_BOX_CAPACITY) {
-        Box box = Box::makeLargeBox();
-        for (size_t j = i; j < i + LARGE_BOX_CAPACITY && j < needsLargeBox.size(); ++j) {
-            box.addArt(needsLargeBox[j]);
         }
         boxes_.push_back(box);
     }

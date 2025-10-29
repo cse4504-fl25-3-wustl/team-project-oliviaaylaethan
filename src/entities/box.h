@@ -24,8 +24,10 @@ const int STANDARD_BOX_CAPACITY = 6; // TODO rename this STANDARD_BOX_ART_CAPACI
 const int LARGE_BOX_CAPACITY = 4;
 
 // Rule: As long as at least ONE dimension of an art piece is 36" or less, it will fit in a standard size box. Boxes can be telescoped to a max height of 88"
-const int STANDARD_BOX_MAX_ART_DIMENSION = 36;
 const int MAX_BOX_HEIGHT = CUSTOM_PACKING_NEEDED_THRESHOLD_LARGER_DIM;
+const float STANDARD_BOX_TELESCOPED_THRESHOLD = 36.0f; // Anything that exceeds 36" in ONLY one direction can be telescoped in a standard box.
+
+const bool TODO_PLACEHOLDER_BOOL = false; // for things we don't know the value of yet and need to ask client about for clarification
 
 class Box {
 private:
