@@ -16,7 +16,7 @@ protected:
     void SetUp() override {
         // Set up paths for testing
         testDataPath = std::string(TEST_DATA_PATH) + "/inputsFeature2/"; // Path to test data directory
-        requirementsFilePath = testDataPath + "Site_requirements.csv";
+        requirementsFilePath = std::string(TEST_DATA_PATH) + "/inputsFeature1/Site_requirements.csv";
     }
 
     json loadExpectedOutput(const std::string& csvFilePath) {
@@ -52,17 +52,24 @@ TEST_P(Feature2Test, VerifyEndToEndOutput) {
     // Load expected output from the corresponding .json file
     json expectedOutput = loadExpectedOutput(dataInputFilePath);
 
+    std::string debugOutput = "Actual output: (pieces, standardBox, largeBox, crateCount, customCount): ";
+    debugOutput += "(" + std::to_string(expectedOutput["total_pieces"].get<int>()) + ", ";
+    debugOutput += std::to_string(expectedOutput["standard_box_count"].get<int>()) + ", ";
+    debugOutput += std::to_string(expectedOutput["large_box_count"].get<int>()) + ", ";
+    debugOutput += std::to_string(expectedOutput["crate_count"].get<int>()) + ", ";
+    debugOutput += std::to_string(expectedOutput["custom_piece_count"].get<int>()) + ")";
+
     // Perform assertions based on the expected output
     EXPECT_EQ(response.getArtInfo().getTotalCount(), expectedOutput["total_pieces"].get<int>())
-        << "Mismatch in total pieces.";
+        << "Mismatch in total pieces." << debugOutput;
     EXPECT_EQ(response.getBoxInfo().getStandardBoxCount(), expectedOutput["standard_box_count"].get<int>())
-        << "Mismatch in standard box count.";
+        << "Mismatch in standard box count." << debugOutput;
     EXPECT_EQ(response.getBoxInfo().getLargeBoxCount(), expectedOutput["large_box_count"].get<int>())
-        << "Mismatch in large box count.";
+        << "Mismatch in large box count." << debugOutput;
     EXPECT_EQ(response.getCrateInfo().getTotalCrateCount(), expectedOutput["crate_count"].get<int>())
-        << "Mismatch in large box count.";
+        << "Mismatch in large box count." << debugOutput;
     EXPECT_EQ(response.getArtInfo().getOversizedCount(), expectedOutput["custom_piece_count"].get<int>())
-        << "Mismatch in custom piece count.";
+        << "Mismatch in custom piece count." << debugOutput;
 }
 
 // Helper function to get all test files from the directory
