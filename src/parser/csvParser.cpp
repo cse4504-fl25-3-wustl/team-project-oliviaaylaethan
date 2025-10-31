@@ -54,21 +54,25 @@ std::string CsvParser::trim(const std::string& str) {
 // Map Final Medium to MaterialType
 MaterialType CsvParser::mapToMaterial(const std::string& medium) { // FIXME these mappings might be wrong
     std::string m = trim(medium);
-    if (m == "Paper Print - Framed") return PAPER_PRINT_FRAMED;
-    if (m == "Canvas - Float Frame") return CANVAS_FRAMED;
-    if (m == "Canvas - Gallery") return CANVAS_GALLERY;
-    if (m == "Print - Framed with Title Plate") return CANVAS_FRAMED;
-    if (m == "Wall Décor") return ACOUSTIC_PANEL;
-    if (m == "Mirror") return MIRROR;
-    if (m == "Metal Print") return PATIENT_BOARD;
+    std::transform(m.begin(), m.end(), m.begin(), ::tolower); // Convert to lowercase
+
+    if (m == "paper print - framed") return PAPER_PRINT_FRAMED;
+    if (m == "canvas - float frame") return CANVAS_FRAMED;
+    if (m == "canvas - gallery") return CANVAS_GALLERY;
+    if (m == "print - framed with title plate") return CANVAS_FRAMED;
+    if (m == "wall décor") return ACOUSTIC_PANEL;
+    if (m == "mirror") return MIRROR;
+    if (m == "metal print") return PATIENT_BOARD;
     return ACOUSTIC_PANEL; // default/fallback
 }
 
 // Map Glazing string to GlazingType
 GlazingType CsvParser::mapToGlazing(const std::string& glaze) {
     std::string g = trim(glaze);
-    if (g == "Regular Glass" || g == "Regular glass") return GLAZING_GLASS;
-    if (g == "Acrylic") return GLAZING_ACRYLIC;
+    std::transform(g.begin(), g.end(), g.begin(), ::tolower); // Convert to lowercase
+
+    if (g == "regular glass") return GLAZING_GLASS;
+    if (g == "acrylic") return GLAZING_ACRYLIC;
     return GLAZING_NONE;
 }
 
