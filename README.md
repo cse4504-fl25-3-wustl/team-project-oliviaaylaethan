@@ -55,6 +55,11 @@ For CMake on Windows, download from [cmake.org](https://cmake.org/).
    ctest
    ```
 
+   Run expected outputs vs actual outputs test (Feature 2) for MacOS:
+   ```bash
+    ./feature2_main_tests
+    ```
+    
 
    NOTE: for the tests that require csv inputs, the csv file paths are specified by TEST_DATA_PATH, which is defined in CMakeLists.txt.
 

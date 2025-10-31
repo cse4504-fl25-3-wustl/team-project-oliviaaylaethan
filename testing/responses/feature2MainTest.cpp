@@ -75,24 +75,12 @@ TEST_P(Feature2IntegrationTest, CompareProgramOutputToExpected) {
     nlohmann::json actual = loadJsonFile(generatedOutputPath.string());
 
     compareJsonSelective(actual, expected);
-    // EXPECT_EQ(actual["total_pieces"], expected["total_pieces"]);
-    // EXPECT_EQ(actual["standard_size_pieces"], expected["standard_size_pieces"]);
-    // EXPECT_EQ(actual["oversized_pieces"], expected["oversized_pieces"]);
-    // EXPECT_EQ(actual["standard_box_count"], expected["standard_box_count"]);
-    // EXPECT_EQ(actual["large_box_count"], expected["large_box_count"]);
-    // EXPECT_EQ(actual["custom_piece_count"], expected["custom_piece_count"]);
-    // EXPECT_EQ(actual["standard_pallet_count"], expected["standard_pallet_count"]);
-    // EXPECT_EQ(actual["oversized_pallet_count"], expected["oversized_pallet_count"]);
-    // EXPECT_EQ(actual["crate_count"], expected["crate_count"]);
-    // EXPECT_EQ(actual["total_artwork_weight"], expected["total_artwork_weight"]);
-    // EXPECT_EQ(actual["total_packaging_weight"], expected["total_packaging_weight"]);
-    // EXPECT_EQ(actual["final_shipment_weight"], expected["final_shipment_weight"]);
 }
 
 std::vector<std::filesystem::path> GetAllCsvFiles(const std::string& rootDir) {
     std::vector<std::filesystem::path> files;
     for (const auto& entry : std::filesystem::recursive_directory_iterator(rootDir)) {
-        if (entry.is_regular_file() && entry.path().filename() == "input.csv") {
+        if (entry.is_regular_file() && entry.path().extension() == ".csv") {
             files.push_back(entry.path());
         }
     }
