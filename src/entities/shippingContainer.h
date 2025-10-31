@@ -60,7 +60,6 @@ private:
 
     int standardBoxCapacity_;
     int oversizedBoxCapacity_; 
-    float filledArt_ = 0.0f;
     
 public:
     ShippingContainer();
@@ -80,6 +79,4 @@ public:
     int getOversizedBoxCapacity() const;
     bool addBox(Box box);
     bool addArt(Art art);
-    float getFilledArt();
-    void setFilledArt(float filledArt);
 };

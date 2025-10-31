@@ -108,9 +108,9 @@ Response PackingInteractor::packAllArt(Request request) {
         crates_.push_back(crate);
     }
 
-    for (size_t i = 0; i < needsLargeCrate.size(); i += GLASS_ACRYLIC_LARGE_CRATE_CAPACITY) {
+    for (size_t i = 0; i < needsLargeCrate.size(); i += GLASS_ACRYLIC_SMALL_CRATE_CAPACITY) {
         ShippingContainer crate = ShippingContainer::makeStandardCrate();
-        for (size_t j = i; j < i + GLASS_ACRYLIC_LARGE_CRATE_CAPACITY && j < needsLargeCrate.size(); ++j) {
+        for (size_t j = i; j < i + GLASS_ACRYLIC_SMALL_CRATE_CAPACITY && j < needsLargeCrate.size(); ++j) {
             crate.addArt(needsLargeCrate[j]);
         }
         crates_.push_back(crate);

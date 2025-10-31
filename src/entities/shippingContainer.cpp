@@ -84,14 +84,6 @@ int ShippingContainer::getOversizedBoxCapacity() const {
     return oversizedBoxCapacity_;
 }
 
-float ShippingContainer::getFilledArt() {
-    return filledArt_;
-}
-
-void ShippingContainer::setFilledArt(float filledArt) {
-    filledArt_ = filledArt;
-}
-
 bool ShippingContainer::addBox(Box box) {
     // won't add the box if container is already full
     // TODO add checks for other types of boxes/pallets once we know what their limits are
