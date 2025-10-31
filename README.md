@@ -59,6 +59,16 @@ For CMake on Windows, download from [cmake.org](https://cmake.org/).
    ```bash
     ./feature2_main_tests
     ```
+
+   Compare expected outputs to actual outputs with a bash script in the main directory:
+   ```bash
+    ./run_all_tests.sh
+    ```
+
+   If this doesn't work, you may need to run the following to give it proper permissions:
+   ```bash
+    chmod +x run_all_tests.sh
+    ```
     
 
    NOTE: for the tests that require csv inputs, the csv file paths are specified by TEST_DATA_PATH, which is defined in CMakeLists.txt.
