@@ -68,6 +68,10 @@ std::vector<Box> ShippingContainer::getContents() const {
     return contents_;
 }
 
+std::vector<Art> ShippingContainer::getArtContents() const {
+    return artContents_;
+}
+
 ShippingContainerType ShippingContainer::getShippingContainerType() const {
     return shippingContainerType_;
 }
@@ -99,5 +103,16 @@ bool ShippingContainer::addBox(Box box) {
     }
     dimensions_.h = maxBoxHeight + SHIPPING_CONTAINER_THICKNESS;
 
+    return true;
+}
+
+bool ShippingContainer::addArt(Art art) {
+    if (shippingContainerType_ != STANDARD_CRATE) {
+        return false; // only crates can have art directly added
+    }
+    if (artContents_.size() >= TEMP_CRATE_STANDARD_BOX_CAPACITY) {
+        return false;
+    }
+    artContents_.push_back(art);
     return true;
 }

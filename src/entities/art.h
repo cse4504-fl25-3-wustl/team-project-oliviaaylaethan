@@ -21,6 +21,13 @@ const float PAPER_PRINT_GLAZING_ACRYLIC_DENSITY = 0.0094;
 const float PAPER_PRINT_GLAZING_GLASS_DENSITY  = 0.0098;
 const float PATIENT_BOARD_DENSITY  = 0.0347;
 
+// Pieces per box
+const int GLASS_ACRYLIC_FRAMED_PER_BOX = 6;
+const int GLASS_ACRYLIC_SUNRISE_PER_BOX = 8;
+const int CANVAS_PER_BOX = 6; // TODO: piazza says we can say 6 for now, but test cases used 4
+const int ACOUSTIC_PANEL_PER_BOX = 6; // TODO: Piazza says 4
+const int MIRROR_PER_BOX = 6;
+
 
 // available materials (Glass and Acrylic are ONLY for the glazing of framed PAPER PRINTS, not their own material)
 enum MaterialType {
@@ -57,6 +64,7 @@ private:
     GlazingType glazeType_;
     std::string frame1Moulding_; // TODO if this impacts calculations, change from string
     HardwareSpec hardware_;
+    int perBoxCount_;
 
 public:
     Art();
@@ -79,4 +87,5 @@ public:
     bool needsCustomPackaging();
     bool needsCanvasPacking();
     bool isOversizedInstallation();
+    int getPerBoxCount();
 };

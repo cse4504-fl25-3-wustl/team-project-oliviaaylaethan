@@ -82,6 +82,15 @@ Response PackingInteractor::packAllArt(Request request) {
         boxes_.push_back(box);
     }
 
+    // Pack mirrors in crates
+    for (size_t i = 0; i < needsMirrorPacking.size(); i += TEMP_CRATE_STANDARD_BOX_CAPACITY) {
+        ShippingContainer crate = ShippingContainer::makeStandardCrate();
+        for (size_t j = i; j < i + TEMP_CRATE_STANDARD_BOX_CAPACITY && j < needsMirrorPacking.size(); ++j) {
+            crate.addArt(needsMirrorPacking[j]);
+        }
+        crates_.push_back(crate);
+    }
+
     // Place all boxes on pallets
     vector<Box> tempBoxes = boxes_;
     int remaining = tempBoxes.size();

@@ -23,35 +23,45 @@ Art::Art(int lineNo, std::string tagNo,
     switch (material_) {
         case MaterialType::ACOUSTIC_PANEL:
             materialDensity_ = ACOUSTIC_PANEL_DENSITY;
+            perBoxCount_ = ACOUSTIC_PANEL_PER_BOX;
             break;
         case MaterialType::ACOUSTIC_PANEL_FRAMED:
             materialDensity_ = ACOUSTIC_PANEL_FRAMED_DENSITY;
+            perBoxCount_ = ACOUSTIC_PANEL_PER_BOX;
             break;
         case MaterialType::CANVAS_FRAMED:
             materialDensity_ = CANVAS_FRAMED_DENSITY;
+            perBoxCount_ = CANVAS_PER_BOX;
             break;
         case MaterialType::CANVAS_GALLERY:
             materialDensity_ = CANVAS_GALLERY_DENSITY;
+            perBoxCount_ = CANVAS_PER_BOX;
             break;
         case MaterialType::MIRROR:
             materialDensity_ = MIRROR_DENSITY;
+            perBoxCount_ = MIRROR_PER_BOX;
             break;
         case MaterialType::PAPER_PRINT_FRAMED:
             if(glazeType_ == GlazingType::GLAZING_ACRYLIC) {
                 materialDensity_ = PAPER_PRINT_GLAZING_ACRYLIC_DENSITY;
+                perBoxCount_ = GLASS_ACRYLIC_FRAMED_PER_BOX;
             }
             else if(glazeType_ == GlazingType::GLAZING_GLASS) {
                 materialDensity_ = PAPER_PRINT_GLAZING_GLASS_DENSITY;
+                perBoxCount_ = GLASS_ACRYLIC_FRAMED_PER_BOX;
             }
             else {
                 materialDensity_ = 0.0f;  // Default to 0 since we weren't given a density for glazeless paper prints
+                perBoxCount_ = GLASS_ACRYLIC_SUNRISE_PER_BOX;
             }
             break;
         case MaterialType::PATIENT_BOARD:
             materialDensity_ = PATIENT_BOARD_DENSITY;
+            perBoxCount_ = 0; // for now since unspecified
             break;
         default:
             materialDensity_ = 0.0f;  // Default to 0 if the material is unknown
+            perBoxCount_ = 0;
             break;
     }
 }
@@ -92,6 +102,10 @@ HardwareSpec Art::getHardware() {
 
 int Art::getWeight() {
     return std::ceil(outerWidth_ * outerHeight_ * materialDensity_);
+}
+
+int Art::getPerBoxCount() {
+    return perBoxCount_;
 }
 
 bool Art::needsCustomPackaging() {

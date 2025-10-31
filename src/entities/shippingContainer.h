@@ -46,6 +46,7 @@ private:
     Dimensions dimensions_;
     float tareWeight_; // Weight of the empty container
     std::vector<Box> contents_;
+    std::vector<Art> artContents_;
     ShippingContainerType shippingContainerType_;
 
     int standardBoxCapacity_;
@@ -63,8 +64,10 @@ public:
     Dimensions getDimensions() const;
     float getTareWeight() const;
     std::vector<Box> getContents() const;
+    std::vector<Art> getArtContents() const;
     ShippingContainerType getShippingContainerType() const;
     int getStandardBoxCapacity() const;
     int getOversizedBoxCapacity() const;
     bool addBox(Box box);
+    bool addArt(Art art);
 };

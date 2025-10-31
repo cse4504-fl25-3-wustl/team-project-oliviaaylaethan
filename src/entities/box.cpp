@@ -2,10 +2,20 @@
 
 Box::Box() : dimensions_{0, 0, 0}, boxType_(STANDARD_BOX), totalWeight_(0) {
     contents_ = std::vector<Art>();
+    capacity_ = STANDARD_BOX_CAPACITY;
 }
 
 Box::Box(Dimensions dimensions, BoxType boxType) : dimensions_(dimensions), boxType_(boxType), totalWeight_(0) {
     contents_ = std::vector<Art>();
+    if (boxType_ == STANDARD_BOX) {
+        capacity_ = STANDARD_BOX_CAPACITY;
+    }
+    else if (boxType_ == LARGE_BOX) {
+        capacity_ = LARGE_BOX_CAPACITY;
+    }
+    else {
+        capacity_ = 6;
+    }
 }
 
 Box Box::makeStandardBox() {
@@ -50,11 +60,13 @@ bool Box::fitsArt(Art artwork) {
 }
 
 bool Box::addArt(Art art) {
-    if(!fitsArt(art) || (boxType_ == STANDARD_BOX && contents_.size() >= STANDARD_BOX_CAPACITY) || (boxType_ == LARGE_BOX && contents_.size() >= LARGE_BOX_CAPACITY)) {
+    float fraction = 1.0f / art.getPerBoxCount();
+    if(!fitsArt(art) || (contents_.size() >= capacity_) || (filledArt_ + fraction > 1.0f)) {
         return false;
     }
     contents_.push_back(art);
     totalWeight_ += art.getWeight();
+    filledArt_ += fraction;
 
     // update height of box to reflect tallest artwork inside of it TODO ask about rules for nonstandard boxes
     bool needsTelescoping = false;

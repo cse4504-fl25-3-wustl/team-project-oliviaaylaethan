@@ -11,6 +11,16 @@ int CrateInfo::getTotalTareWeight() {
     return getTotalCrateCount() * STANDARD_CRATE_TARE_WEIGHT;
 }
 
+std::vector<Art> CrateInfo::getAllArt() {
+    std::vector<Art> allArt;
+    for (ShippingContainer crate : crates_) {
+        for (Art art : crate.getArtContents()) {
+            allArt.push_back(art);
+        }
+    }
+    return allArt;
+}
+
 std::string CrateInfo::getCrateWeightSummary() {
     return std::format("- Crates: {} lbs", getTotalTareWeight());
 }

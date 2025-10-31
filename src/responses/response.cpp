@@ -8,11 +8,22 @@ Response::Response(const std::vector<Box>& boxes,
                 const Requirements requirements) :
 
     boxInfo_(boxes),
-    artInfo_(boxInfo_.getAllArt()),
     crateInfo_(crates),
     palletInfo_(pallets),
-    hardwareInfo_(boxInfo_.getAllArt()),
-    requirements_(requirements) {}    
+    requirements_(requirements)
+    {
+        std::vector<Art> allArt;
+
+        auto boxArt = boxInfo_.getAllArt();
+        auto crateArt = crateInfo_.getAllArt();
+
+        allArt.reserve(boxArt.size() + crateArt.size());
+        allArt.insert(allArt.end(), boxArt.begin(), boxArt.end());
+        allArt.insert(allArt.end(), crateArt.begin(), crateArt.end());
+
+        artInfo_ = ArtInfo(allArt);
+        hardwareInfo_ = HardwareInfo(allArt);
+    }
 
 std::vector<std::string> Response::getWeightSummary() {
     std::vector<std::string> summary = {"\n\n--------- WEIGHT SUMMARY ---------"};

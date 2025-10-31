@@ -31,6 +31,7 @@ class ArtInfo {
         // Map of Art pieces that represent each line number
         std::map<int, Art> artTypes_;
     public:
+        ArtInfo() {};
         ArtInfo(const std::vector<Art>& pieces);
         int getTotalCount();
         int getStandardCount();
@@ -49,6 +50,7 @@ class CrateInfo {
         std::vector<ShippingContainer> crates_;
     public:
         CrateInfo(const std::vector<ShippingContainer>& crates);
+        std::vector<Art> getAllArt();
         int getTotalCrateCount();
         int getTotalTareWeight();
         std::string getCrateWeightSummary();
@@ -76,6 +78,7 @@ class HardwareInfo {
     private:
         std::vector<Art> pieces_;
     public:
+        HardwareInfo() {};
         HardwareInfo(const std::vector<Art>& pieces);
         std::vector<std::string> getLineItemHWSummary();
         int getWallHardwareCount();
