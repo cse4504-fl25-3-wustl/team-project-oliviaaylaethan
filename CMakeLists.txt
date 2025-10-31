@@ -86,6 +86,18 @@ target_link_libraries(
   nlohmann_json::nlohmann_json
 )
 
+add_executable(
+    feature2_main_tests
+    testing/responses/feature2MainTest.cpp
+)
+target_link_libraries(
+    feature2_main_tests
+    core_lib
+    GTest::gtest
+    GTest::gtest_main
+    nlohmann_json::nlohmann_json
+)
+
 include(GoogleTest)
 gtest_discover_tests(all_tests)
 
