@@ -132,7 +132,7 @@ Response PackingInteractor::packAllArt(Request request) {
         ShippingContainer pallet;
         int capacity = 0;
 
-        if (useStandard <= useOversized || remaining < OVERSIZE_PALLET_STANDARD_BOX_CAPACITY) {
+        if (useStandard < useOversized || remaining < OVERSIZE_PALLET_STANDARD_BOX_CAPACITY) {
             pallet = ShippingContainer::makeStandardPallet();
             capacity = STANDARD_PALLET_STANDARD_BOX_CAPACITY;
         } else {
