@@ -16,7 +16,7 @@ Response::Response(const std::vector<Box>& boxes,
         auto crateArt = crateInfo_.getAllArt();
         allArt.insert(allArt.end(), crateArt.begin(), crateArt.end());
 
-        artInfo_ = ArtInfo(allArt);
+        artInfo_ = ArtInfo(allArt, &requirements_);
         hardwareInfo_ = HardwareInfo(allArt);
     }
 

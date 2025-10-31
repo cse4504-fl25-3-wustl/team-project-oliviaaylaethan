@@ -109,13 +109,16 @@ int Art::getPerBoxCount() {
     return perBoxCount_;
 }
 
-bool Art::needsCustomPackaging() {
-    // art needs custom packing if dimensions exceed 43.5 x 88 (43.5 x 88 STILL FITS and does NOT need custom packing)
-    // --> if any dimension exceeds 88, needs custom
-    // --> if both dimensions exceed 46, needs custom
-    // --> if only ONE dimension exceeds 46, do NOT need custom
+bool Art::needsCustomPackaging(const float custom_packing_needed_threshold_smaller_dim) { // by default assumes the client does NOT accept crates
+    // for PALLET packaging:
+        // art needs custom packing if dimensions exceed 43.5 x 88 (43.5 x 88 STILL FITS and does NOT need custom packing)
+        // --> if any dimension exceeds 88, needs custom
+        // --> if both dimensions exceed 43.5, needs custom
+        // --> if only ONE dimension exceeds 43.5, do NOT need custom
+    // for CRATE packaging:
+        // same rules as above but replace 43.5 with 46
     if ((outerWidth_ > CUSTOM_PACKING_NEEDED_THRESHOLD_LARGER_DIM || outerHeight_ > CUSTOM_PACKING_NEEDED_THRESHOLD_LARGER_DIM)
-        || (outerWidth_ > CRATE_LIMIT && outerHeight_ > CRATE_LIMIT)) {
+        || (outerWidth_ > custom_packing_needed_threshold_smaller_dim && outerHeight_ > custom_packing_needed_threshold_smaller_dim)) {
         return true;
     }
     return false;
@@ -123,7 +126,7 @@ bool Art::needsCustomPackaging() {
 
 // Crate Threshold: >46"
 bool Art::needsCratePacking() {
-    return (outerWidth_ > CRATE_LIMIT || outerHeight_ > CRATE_LIMIT) && !needsCustomPackaging();
+    return (outerWidth_ > CRATE_LIMIT || outerHeight_ > CRATE_LIMIT) && !needsCustomPackaging(CRATE_LIMIT);
 }
 
 bool Art::needsLargeCratePacking() {

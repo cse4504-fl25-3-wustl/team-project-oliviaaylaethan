@@ -85,7 +85,7 @@ public:
     std::string getFrame1Moulding();
     HardwareSpec getHardware();
     int getWeight();
-    bool needsCustomPackaging();
+    bool needsCustomPackaging(float custom_packing_needed_threshold_smaller_dim = LARGE_BOX_LIMIT); // TODO get rid of this default (need to fix test cases function calls for that)
     bool needsCratePacking();
     bool needsLargeCratePacking();
     bool needsCanvasPacking();

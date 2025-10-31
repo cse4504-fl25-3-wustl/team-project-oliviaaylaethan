@@ -30,9 +30,11 @@ class ArtInfo {
 
         // Map of Art pieces that represent each line number
         std::map<int, Art> artTypes_;
+
+        Requirements* requirements_; // pointer, no ownership
     public:
-        ArtInfo() {};
-        ArtInfo(const std::vector<Art>& pieces);
+        ArtInfo() {}
+        ArtInfo(const std::vector<Art>& pieces, Requirements* req);
         int getTotalCount();
         int getStandardCount();
         int getOversizedCount();
@@ -44,6 +46,41 @@ class ArtInfo {
         std::vector<std::string> getTotalWeightSummary();
         int getTotalWeight();
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 class CrateInfo {
     private:

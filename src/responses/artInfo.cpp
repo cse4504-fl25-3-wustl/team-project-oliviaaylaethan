@@ -1,8 +1,9 @@
 #include "response.h"
+#include "../entities/requirements.h"
 #include <format>
 #include <map>
-
-ArtInfo::ArtInfo(const std::vector<Art>& pieces) : pieces_(pieces) {
+ArtInfo::ArtInfo(const std::vector<Art>& pieces, Requirements* requirements) 
+    : pieces_(pieces), requirements_(requirements) {
     for (auto& art : pieces_) {
         int lineNo = art.getLineNumber();
         quantities_[lineNo]++;
@@ -46,8 +47,15 @@ int ArtInfo::getCustomCount() {
     Art art;
     for (int i = 0; i < totalCount; i++) {
         art = pieces_[i];
-        if (art.needsCustomPackaging()) {
-            count++;
+        if(requirements_->getAcceptsCrates()) {
+            if (art.needsCustomPackaging(CRATE_LIMIT)) {
+                count++;
+            }
+        }
+        else {
+            if (art.needsCustomPackaging(LARGE_BOX_LIMIT)) {
+                count++;
+            }
         }
     }
     return count;

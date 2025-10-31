@@ -46,7 +46,7 @@ bool Box::fitsArt(Art artwork) {
     }
     else if (boxType_ == LARGE_BOX) {
         // if art does NOT need custom packaging, it should be able to fit in a large box
-        return !artwork.needsCustomPackaging();
+        return !artwork.needsCustomPackaging(LARGE_BOX_LIMIT);
     }
     else { // TODO check real rules for other box types
         if (artwork.getOuterHeight() < dimensions_.l && artwork.getOuterWidth() < dimensions_.h) {
