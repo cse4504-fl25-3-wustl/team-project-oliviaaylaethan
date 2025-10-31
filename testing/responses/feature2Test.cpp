@@ -16,7 +16,7 @@ protected:
     void SetUp() override {
         // Set up paths for testing
         testDataPath = std::string(TEST_DATA_PATH) + "/inputsFeature2/"; // Path to test data directory
-        requirementsFilePath = std::string(TEST_DATA_PATH) + "/inputsFeature1/Site_requirements.csv";
+        requirementsFilePath = std::string(TEST_DATA_PATH) + "/siteRequirements/feature_2_site.csv";
     }
 
     json loadExpectedOutput(const std::string& csvFilePath) {
@@ -54,15 +54,15 @@ TEST_P(Feature2Test, VerifyEndToEndOutput) {
         int expectedValue = expectedOutput[key].get<int>();
         int actualValue;
 
-        if (key == "total_pieces") {
+        if (std::string(key).compare("total_pieces") == 0) {
             actualValue = response.getArtInfo().getTotalCount();
-        } else if (key == "standard_box_count") {
+        } else if (std::string(key).compare("standard_box_count") == 0) {
             actualValue = response.getBoxInfo().getStandardBoxCount();
-        } else if (key == "large_box_count") {
+        } else if (std::string(key).compare("large_box_count") == 0) {
             actualValue = response.getBoxInfo().getLargeBoxCount();
-        } else if (key == "crate_count") {
+        } else if (std::string(key).compare("crate_count") == 0) {
             actualValue = response.getCrateInfo().getTotalCrateCount();
-        } else if (key == "custom_piece_count") {
+        } else if (std::string(key).compare("custom_piece_count") == 0) {
             actualValue = response.getArtInfo().getCustomCount();
         } else {
             FAIL() << "Unexpected key: " << key;

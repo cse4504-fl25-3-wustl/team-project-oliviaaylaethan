@@ -10,7 +10,7 @@ protected:
     void SetUp() override {
         // Create a standard pallet for testing
         testDataPath = std::string(TEST_DATA_PATH) + "/inputsFeature1/"; // Path to test data directory
-        requirementsFilePath = testDataPath + "Site_requirements.csv";
+        requirementsFilePath = std::string(TEST_DATA_PATH) + "/siteRequirements/feature_1_site.csv";
         inputPrefix = "Input";
     }
 };
