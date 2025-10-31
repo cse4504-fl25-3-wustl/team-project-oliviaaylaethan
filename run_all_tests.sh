@@ -14,18 +14,18 @@ NC='\033[0m' # No Color
 
 process_csv_files() {
     local input_dir="$1"
-    local client_config="$2"    
+    local client_config="$2"
 
     while IFS= read -r -d '' csv_file; do
         total_tests=$((total_tests + 1))
         csv_file=$(realpath "$csv_file")
-        
+
         executable=$(find "$(dirname "$0")/build" -type f -name "main" -exec realpath {} \;)
         output_path="$(dirname "$0")/build/bashOutput.json"
-        
+
         rm -f "$output_path"
 
-        "$executable" "$csv_file" "$client_config" "$output_path"
+        "$executable" "$csv_file" "$client_config" "$output_path" > /dev/null 2>&1
 
         if [ -f "$output_path" ]; then
             expected_output_path="$(dirname "$csv_file")/expected_output.json"
@@ -46,13 +46,14 @@ process_csv_files() {
 }
 
 INPUT_DIR="$(realpath ./testing/testdata/inputsFeature2)"
-CLIENT_CONFIG="$(realpath ./testing/testdata/siteRequirements/feature_2_site.csv)"
+FEATURE_1_CONFIG="$(realpath ./testing/testdata/siteRequirements/feature_1_site.csv)"
+FEATURE_2_CONFIG="$(realpath ./testing/testdata/siteRequirements/feature_2_site.csv)"
 
 # pass client configuration that does not allow crates
-process_csv_files "$INPUT_DIR"/box_packing $CLIENT_CONFIG
-process_csv_files "$INPUT_DIR"/pallet_packing $CLIENT_CONFIG
+process_csv_files "$INPUT_DIR/box_packing" $FEATURE_1_CONFIG
+process_csv_files "$INPUT_DIR/pallet_packing" $FEATURE_1_CONFIG
 # pass client configuration that allows crates
-process_csv_files "$INPUT_DIR"/crate_packing $CLIENT_CONFIG
+process_csv_files "$INPUT_DIR/crate_packing" $FEATURE_2_CONFIG
 
 # Print summary after all calls
 if [ $failed_tests -gt 0 ]; then
