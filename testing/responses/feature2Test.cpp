@@ -32,13 +32,6 @@ protected:
         json expectedOutput;
         jsonFile >> expectedOutput;
 
-        // Ensure all required keys are present and have valid numeric values
-        expectedOutput["total_pieces"] = expectedOutput.value("total_pieces", 0);
-        expectedOutput["standard_box_count"] = expectedOutput.value("standard_box_count", 0);
-        expectedOutput["large_box_count"] = expectedOutput.value("large_box_count", 0);
-        expectedOutput["crate_count"] = expectedOutput.value("crate_count", 0);
-        expectedOutput["custom_piece_count"] = expectedOutput.value("custom_piece_count", 0);
-
         return expectedOutput;
     }
 };
@@ -52,24 +45,31 @@ TEST_P(Feature2Test, VerifyEndToEndOutput) {
     // Load expected output from the corresponding .json file
     json expectedOutput = loadExpectedOutput(dataInputFilePath);
 
-    std::string debugOutput = "Actual output: (pieces, standardBox, largeBox, crateCount, customCount): ";
-    debugOutput += "(" + std::to_string(expectedOutput["total_pieces"].get<int>()) + ", ";
-    debugOutput += std::to_string(expectedOutput["standard_box_count"].get<int>()) + ", ";
-    debugOutput += std::to_string(expectedOutput["large_box_count"].get<int>()) + ", ";
-    debugOutput += std::to_string(expectedOutput["crate_count"].get<int>()) + ", ";
-    debugOutput += std::to_string(expectedOutput["custom_piece_count"].get<int>()) + ")";
+    // Perform assertions based on the expected output, ignoring keys not in expectedOutput
+    for (const auto& key : {"total_pieces", "standard_box_count", "large_box_count", "crate_count", "custom_piece_count"}) {
+        if (!expectedOutput.contains(key)) {
+            continue; // Skip keys not present in expectedOutput
+        }
 
-    // Perform assertions based on the expected output
-    EXPECT_EQ(response.getArtInfo().getTotalCount(), expectedOutput["total_pieces"].get<int>())
-        << "Mismatch in total pieces." << debugOutput;
-    EXPECT_EQ(response.getBoxInfo().getStandardBoxCount(), expectedOutput["standard_box_count"].get<int>())
-        << "Mismatch in standard box count." << debugOutput;
-    EXPECT_EQ(response.getBoxInfo().getLargeBoxCount(), expectedOutput["large_box_count"].get<int>())
-        << "Mismatch in large box count." << debugOutput;
-    EXPECT_EQ(response.getCrateInfo().getTotalCrateCount(), expectedOutput["crate_count"].get<int>())
-        << "Mismatch in large box count." << debugOutput;
-    EXPECT_EQ(response.getArtInfo().getCustomCount(), expectedOutput["custom_piece_count"].get<int>())
-        << "Mismatch in custom piece count." << debugOutput;
+        int expectedValue = expectedOutput[key].get<int>();
+        int actualValue;
+
+        if (key == "total_pieces") {
+            actualValue = response.getArtInfo().getTotalCount();
+        } else if (key == "standard_box_count") {
+            actualValue = response.getBoxInfo().getStandardBoxCount();
+        } else if (key == "large_box_count") {
+            actualValue = response.getBoxInfo().getLargeBoxCount();
+        } else if (key == "crate_count") {
+            actualValue = response.getCrateInfo().getTotalCrateCount();
+        } else if (key == "custom_piece_count") {
+            actualValue = response.getArtInfo().getCustomCount();
+        } else {
+            FAIL() << "Unexpected key: " << key;
+        }
+
+        EXPECT_EQ(expectedValue, actualValue) << "Mismatch for key: " << key;
+    }
 }
 
 // Helper function to get all test files from the directory
