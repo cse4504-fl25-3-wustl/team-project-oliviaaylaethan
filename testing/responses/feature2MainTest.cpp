@@ -16,7 +16,13 @@ protected:
     void SetUp() override {
         testDataPath = std::string(TEST_DATA_PATH) + "/inputsFeature2/";
         requirementsFilePath = std::string(TEST_DATA_PATH) + "/inputsFeature1/Site_requirements.csv";
-        executablePath = std::filesystem::absolute("main").string();
+
+        // need this for test compatibility between windows and mac
+        #ifdef _WIN32
+            executablePath = std::filesystem::absolute("main.exe").string();
+        #else
+            executablePath = std::filesystem::absolute("main").string();
+        #endif
     }
 
     json loadJsonFile(const std::string& path) {
@@ -40,7 +46,12 @@ protected:
             ASSERT_TRUE(actual.contains(key)) << "Actual JSON missing key: " << key;
 
             // Compare values
-            EXPECT_EQ(actual[key], it.value()) << "Mismatch for key: " << key;
+            std::cout << "[JSON Compare] Checking key: " << key << std::endl;
+            EXPECT_EQ(actual[key], it.value()) 
+                << "Mismatch for key: \"" << key << "\"\n"
+                << "Actual:   " << actual[key].dump(2) << "\n"
+                << "Expected: " << it.value().dump(2);
+
         }
     }
 
@@ -63,10 +74,10 @@ TEST_P(Feature2IntegrationTest, CompareProgramOutputToExpected) {
     std::filesystem::path generatedOutputPath = tempDir / "output.json";
 
     // Run main
-    std::string command = executablePath + " \"" + csvPath.string() + "\" \"" +
-                          requirementsFilePath + "\" \"" + generatedOutputPath.string() + "\"";
+    std::string command = executablePath + " \"" + csvPath.generic_string() + "\" \"" +
+                      requirementsFilePath + "\" \"" + generatedOutputPath.generic_string() + "\"";
 
-    std::cout << "Command: " << command << std::endl;
+    //std::cout << "Command: " << command << std::endl;
     int result = std::system(command.c_str());
     ASSERT_EQ(result, 0) << "Executable failed for input: " << csvPath;
 

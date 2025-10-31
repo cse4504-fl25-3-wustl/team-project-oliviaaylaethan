@@ -1,3 +1,4 @@
+#include <gtest/gtest.h>
 #include "responseTest.h"
 
 class Feature1Test : public ::testing::Test {

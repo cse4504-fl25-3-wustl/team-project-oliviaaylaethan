@@ -1,3 +1,4 @@
+#include <gtest/gtest.h>
 #include "responseTest.h"
 
 // Test fixture for ShippingContainer tests

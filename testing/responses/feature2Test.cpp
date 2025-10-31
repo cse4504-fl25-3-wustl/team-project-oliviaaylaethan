@@ -1,3 +1,4 @@
+#include <gtest/gtest.h>
 #include "responseTest.h"
 #include <filesystem>
 #include <fstream>
