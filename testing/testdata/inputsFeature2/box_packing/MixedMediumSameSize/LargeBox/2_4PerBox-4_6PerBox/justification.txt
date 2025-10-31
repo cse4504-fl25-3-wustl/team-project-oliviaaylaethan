@@ -1,0 +1,8 @@
+Canvas fits 4 per box. Paper print fits 6 per box.
+
+1 canvas in box -> box is 25% filled
+1 paper print is 1/6 of box -> ~17% filled
+
+(1/4)*2 + (1/6)*3 = 1
+
+2 canvas and 3 paper prints fit in one large box, leaving 1 paper print left. Add extra to one large box -> 2 large boxes
