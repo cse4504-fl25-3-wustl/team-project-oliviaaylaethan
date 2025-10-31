@@ -77,7 +77,7 @@ For CMake on Windows, download from [cmake.org](https://cmake.org/).
 * **Ethan** - Interactor
 
 # Testing Assignment
-* ***Olivia**
+* **Olivia**
    * Packing Interactor
       * packAllArt
 * **Ayla**
@@ -101,7 +101,7 @@ Workflow: all of us will commit directly to the feature2 branch
 
 Responsibilities:
  
-* ***Olivia**
+* **Olivia**
    * change input to accept command line args
    * change output to json
 * **Ethan**
