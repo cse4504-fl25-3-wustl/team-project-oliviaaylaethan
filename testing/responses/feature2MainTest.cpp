@@ -15,7 +15,7 @@ protected:
 
     void SetUp() override {
         testDataPath = std::string(TEST_DATA_PATH) + "/inputsFeature2/";
-        requirementsFilePath = std::string(TEST_DATA_PATH) + "/inputsFeature1/Site_requirements.csv";
+        requirementsFilePath = std::string(TEST_DATA_PATH) + "/siteRequirements/feature_2_site.csv";
 
         // need this for test compatibility between windows and mac
         #ifdef _WIN32
