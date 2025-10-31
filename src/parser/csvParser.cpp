@@ -55,7 +55,8 @@ std::string CsvParser::trim(const std::string& str) {
 MaterialType CsvParser::mapToMaterial(const std::string& medium) { // FIXME these mappings might be wrong
     std::string m = trim(medium);
     if (m == "Paper Print - Framed") return PAPER_PRINT_FRAMED;
-    if (m == "Canvas - Float Frame") return CANVAS_GALLERY;
+    if (m == "Canvas - Float Frame") return CANVAS_FRAMED;
+    if (m == "Canvas - Gallery") return CANVAS_GALLERY;
     if (m == "Print - Framed with Title Plate") return CANVAS_FRAMED;
     if (m == "Wall Décor") return ACOUSTIC_PANEL;
     if (m == "Mirror") return MIRROR;
