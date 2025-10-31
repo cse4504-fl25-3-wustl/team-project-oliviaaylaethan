@@ -1,4 +1,5 @@
 #include "art.h"
+#include "shippingContainer.h"
 #include <cmath>
 
 // Default constructor
@@ -111,13 +112,22 @@ int Art::getPerBoxCount() {
 bool Art::needsCustomPackaging() {
     // art needs custom packing if dimensions exceed 43.5 x 88 (43.5 x 88 STILL FITS and does NOT need custom packing)
     // --> if any dimension exceeds 88, needs custom
-    // --> if both dimensions exceed 43.5, needs custom
-    // --> if only ONE dimension exceeds 43.5, do NOT need custom
+    // --> if both dimensions exceed 46, needs custom
+    // --> if only ONE dimension exceeds 46, do NOT need custom
     if ((outerWidth_ > CUSTOM_PACKING_NEEDED_THRESHOLD_LARGER_DIM || outerHeight_ > CUSTOM_PACKING_NEEDED_THRESHOLD_LARGER_DIM)
-        || (outerWidth_ > CUSTOM_PACKING_NEEDED_THRESHOLD_SMALLER_DIM && outerHeight_ > CUSTOM_PACKING_NEEDED_THRESHOLD_SMALLER_DIM)) {
+        || (outerWidth_ > CRATE_LIMIT && outerHeight_ > CRATE_LIMIT)) {
         return true;
     }
     return false;
+}
+
+// Crate Threshold: >46"
+bool Art::needsCratePacking() {
+    return (outerWidth_ > CRATE_LIMIT || outerHeight_ > CRATE_LIMIT) && !needsCustomPackaging();
+}
+
+bool Art::needsLargeCratePacking() {
+    return (outerWidth_ > CRATE_LARGE_THRESHOLD || outerHeight_ > CRATE_LARGE_THRESHOLD);
 }
 
 bool Art::needsCanvasPacking() {

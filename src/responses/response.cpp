@@ -12,13 +12,8 @@ Response::Response(const std::vector<Box>& boxes,
     palletInfo_(pallets),
     requirements_(requirements)
     {
-        std::vector<Art> allArt;
-
-        auto boxArt = boxInfo_.getAllArt();
+        std::vector<Art> allArt = boxInfo_.getAllArt();
         auto crateArt = crateInfo_.getAllArt();
-
-        allArt.reserve(boxArt.size() + crateArt.size());
-        allArt.insert(allArt.end(), boxArt.begin(), boxArt.end());
         allArt.insert(allArt.end(), crateArt.begin(), crateArt.end());
 
         artInfo_ = ArtInfo(allArt);

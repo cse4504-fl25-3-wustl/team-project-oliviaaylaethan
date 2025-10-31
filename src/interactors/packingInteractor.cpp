@@ -31,16 +31,20 @@ float PackingInteractor::computeMinTareWeight(int numBoxes) {
 Response PackingInteractor::packAllArt(Request request) {
     vector<Art> needsStandardBox = vector<Art>();
     vector<Art> needsLargeBox = vector<Art>();
-    vector<Art> needsMirrorPacking = vector<Art>();
+    vector<Art> needsCrate = vector<Art>();
+    vector<Art> needsLargeCrate = vector<Art>();
     vector<Art> needsCustomPallet = vector<Art>();
 
     Box standardBox = Box::makeStandardBox();
     Box largeBox = Box::makeLargeBox();
 
+
     // segment art pieces by size and material
     for (Art piece : request.getArtPieces()) {
-        if (piece.getMaterial() == MIRROR) {
-            needsMirrorPacking.push_back(piece); // Mirrors always use crates
+        if (piece.getMaterial() == MIRROR || (piece.needsCratePacking() && !piece.needsLargeCratePacking())) {
+            needsCrate.push_back(piece);
+        } else if (piece.needsCratePacking() && piece.needsLargeCratePacking()) {
+            needsLargeCrate.push_back(piece);
         } else if (standardBox.fitsArt(piece)) {
             needsStandardBox.push_back(piece);
         } else if (largeBox.fitsArt(piece)) {
@@ -82,11 +86,32 @@ Response PackingInteractor::packAllArt(Request request) {
         boxes_.push_back(box);
     }
 
+
+// Material	If <33" both dimensions	If >33" either dimension
+// Glass/Acrylic	25 pieces per crate	18 pieces per crate
+// Canvas	18 pieces per crate	12 pieces per crate
+// Mirrors	24-25 pieces directly in crate	(no boxes)
+// const int CRATE_LARGE_THRESHOLD = 33;
+// const int GLASS_ACRYLIC_SMALL_CRATE_CAPACITY = 25;
+// const int GLASS_ACRYLIC_LARGE_CRATE_CAPACITY = 18;
+// const int CANVAS_SMALL_CRATE_CAPACITY = 18;
+// const int CANVAS_LARGE_CRATE_CAPACITY = 12;
+// const int MIRROR_CRATE_CAPACITY = 24;
+
+
     // Pack mirrors in crates
-    for (size_t i = 0; i < needsMirrorPacking.size(); i += TEMP_CRATE_STANDARD_BOX_CAPACITY) {
+    for (size_t i = 0; i < needsCrate.size(); i += GLASS_ACRYLIC_SMALL_CRATE_CAPACITY) {
         ShippingContainer crate = ShippingContainer::makeStandardCrate();
-        for (size_t j = i; j < i + TEMP_CRATE_STANDARD_BOX_CAPACITY && j < needsMirrorPacking.size(); ++j) {
-            crate.addArt(needsMirrorPacking[j]);
+        for (size_t j = i; j < i + GLASS_ACRYLIC_SMALL_CRATE_CAPACITY && j < needsCrate.size(); ++j) {
+            crate.addArt(needsCrate[j]);
+        }
+        crates_.push_back(crate);
+    }
+
+    for (size_t i = 0; i < needsLargeCrate.size(); i += GLASS_ACRYLIC_LARGE_CRATE_CAPACITY) {
+        ShippingContainer crate = ShippingContainer::makeStandardCrate();
+        for (size_t j = i; j < i + GLASS_ACRYLIC_LARGE_CRATE_CAPACITY && j < needsLargeCrate.size(); ++j) {
+            crate.addArt(needsLargeCrate[j]);
         }
         crates_.push_back(crate);
     }
@@ -126,23 +151,33 @@ Response PackingInteractor::packAllArt(Request request) {
 
 
     // Pack custom crates and pallets based on material rules
-    for (Art piece : needsCustomPallet) {
-        if (piece.getMaterial() == MIRROR) {
-            ShippingContainer crate = ShippingContainer::makeStandardCrate();
-            Box mirrorBox = Box::makeLargeBox();
-            mirrorBox.addArt(piece);
-            crate.addBox(mirrorBox); // Use addBox instead of directly modifying contents_
-            crates_.push_back(crate);
-        } else {
-            Box customBox = Box::makeLargeBox();
-            customBox.addArt(piece);
-            boxes_.push_back(customBox);
+    // Box* currentBox = nullptr;
+    // for (Art piece : needsCustomPacking) {
+    //     if (piece.getMaterial() == MIRROR) {
+    //         ShippingContainer* currentCrate = nullptr;
+    //         if (!crates_.empty()) {
+    //             currentCrate = &crates_.back();
+    //             if (!currentCrate->addArt(piece)) {
+    //                 currentCrate = nullptr;
+    //             }
+    //         }
+    //         if (!currentCrate) {
+    //             crates_.emplace_back(ShippingContainer::makeStandardCrate());
+    //             crates_.back().addArt(piece);
+    //         }
+    //     } else {
+    //         // Oversize box + pallet
+    //         if (!currentBox || !currentBox->addArt(piece)) {
+    //             boxes_.push_back(Box::makeLargeBox());
+    //             currentBox = &boxes_.back();
+    //             currentBox->addArt(piece);
 
-            ShippingContainer pallet = ShippingContainer::makeOversizePallet();
-            pallet.addBox(customBox);
-            pallets_.push_back(pallet);
-        }
-    }
+    //             pallets_.push_back(ShippingContainer::makeOversizePallet());
+    //             pallets_.back().addBox(*currentBox);
+    //         }
+    //     }
+    // }
+
 
     return Response(boxes_, pallets_, crates_, request.getRequirements());
 }

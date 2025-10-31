@@ -50,8 +50,8 @@ ShippingContainer ShippingContainer::makeStandardCrate() {
     return ShippingContainer(
         STANDARD_CRATE_DIMENSIONS,
         STANDARD_CRATE_TARE_WEIGHT,
-        TEMP_CRATE_STANDARD_BOX_CAPACITY,
-        TEMP_CRATE_OVERSIZED_BOX_CAPACITY,
+        GLASS_ACRYLIC_SMALL_CRATE_CAPACITY,
+        GLASS_ACRYLIC_LARGE_CRATE_CAPACITY,
         STANDARD_CRATE
     );
 }
@@ -84,6 +84,14 @@ int ShippingContainer::getOversizedBoxCapacity() const {
     return oversizedBoxCapacity_;
 }
 
+float ShippingContainer::getFilledArt() {
+    return filledArt_;
+}
+
+void ShippingContainer::setFilledArt(float filledArt) {
+    filledArt_ = filledArt;
+}
+
 bool ShippingContainer::addBox(Box box) {
     // won't add the box if container is already full
     // TODO add checks for other types of boxes/pallets once we know what their limits are
@@ -110,7 +118,7 @@ bool ShippingContainer::addArt(Art art) {
     if (shippingContainerType_ != STANDARD_CRATE) {
         return false; // only crates can have art directly added
     }
-    if (artContents_.size() >= TEMP_CRATE_STANDARD_BOX_CAPACITY) {
+    if (artContents_.size() >= GLASS_ACRYLIC_SMALL_CRATE_CAPACITY) {
         return false;
     }
     artContents_.push_back(art);

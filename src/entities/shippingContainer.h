@@ -8,9 +8,18 @@ const float SHIPPING_CONTAINER_THICKNESS = 8.0f;
 // Crate info
 const Dimensions STANDARD_CRATE_DIMENSIONS = {50, 38, SHIPPING_CONTAINER_THICKNESS};
 const float STANDARD_CRATE_TARE_WEIGHT = 125;
-const int TEMP_CRATE_OVERSIZED_BOX_CAPACITY = 3; // TODO determine real values later
-const int TEMP_CRATE_STANDARD_BOX_CAPACITY = 4; // TODO determine real values later
 const int STANDARD_PALLET_CANVAS_BOX_CAPACITY = 12;
+
+// Material	If <33" both dimensions	If >33" either dimension
+// Glass/Acrylic	25 pieces per crate	18 pieces per crate
+// Canvas	18 pieces per crate	12 pieces per crate
+// Mirrors	24-25 pieces directly in crate	(no boxes)
+const int CRATE_LARGE_THRESHOLD = 33;
+const int GLASS_ACRYLIC_SMALL_CRATE_CAPACITY = 25;
+const int GLASS_ACRYLIC_LARGE_CRATE_CAPACITY = 18;
+const int CANVAS_SMALL_CRATE_CAPACITY = 18;
+const int CANVAS_LARGE_CRATE_CAPACITY = 12;
+const int MIRROR_CRATE_CAPACITY = 24;
 
 // Pallet info
 // For standard shipments
@@ -51,6 +60,7 @@ private:
 
     int standardBoxCapacity_;
     int oversizedBoxCapacity_; 
+    float filledArt_ = 0.0f;
     
 public:
     ShippingContainer();
@@ -70,4 +80,6 @@ public:
     int getOversizedBoxCapacity() const;
     bool addBox(Box box);
     bool addArt(Art art);
+    float getFilledArt();
+    void setFilledArt(float filledArt);
 };
