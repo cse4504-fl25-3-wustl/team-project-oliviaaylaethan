@@ -48,10 +48,11 @@ protected:
             // Compare values
             std::cout << "[JSON Compare] Checking key: " << key << std::endl;
             EXPECT_EQ(actual[key], it.value()) 
+                << "\n\n\n\n\n"
                 << "Mismatch for key: \"" << key << "\"\n"
                 << "Actual:   " << actual[key].dump(2) << "\n"
-                << "Expected: " << it.value().dump(2);
-
+                << "Expected: " << it.value().dump(2)
+                << "\n\n\n\n\n";
         }
     }
 
