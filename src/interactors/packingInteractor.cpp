@@ -1,4 +1,5 @@
 #include "packingInteractor.h"
+#include <limits>
 
 using namespace std;
 

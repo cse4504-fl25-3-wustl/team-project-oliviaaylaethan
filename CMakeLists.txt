@@ -91,7 +91,6 @@ target_link_libraries(
   core_lib
   GTest::gtest
   GTest::gtest_main
-  nlohmann_json::nlohmann_json
 )
 
 add_executable(
@@ -103,7 +102,6 @@ target_link_libraries(
     core_lib
     GTest::gtest
     GTest::gtest_main
-    nlohmann_json::nlohmann_json
 )
 
 include(GoogleTest)
