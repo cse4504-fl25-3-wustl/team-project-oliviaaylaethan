@@ -25,8 +25,8 @@ const float PATIENT_BOARD_DENSITY  = 0.0347;
 // Pieces per box
 const int GLASS_ACRYLIC_FRAMED_PER_BOX = 6;
 const int GLASS_ACRYLIC_SUNRISE_PER_BOX = 8;
-const int CANVAS_PER_BOX = 6; // TODO: piazza says we can say 6 for now, but test cases used 4
-const int ACOUSTIC_PANEL_PER_BOX = 6; // TODO: Piazza says 4
+const int CANVAS_PER_BOX = 4; // TODO: piazza says we can say 6 for now, but test cases used 4
+const int ACOUSTIC_PANEL_PER_BOX = 4; // TODO: Piazza says 4
 const int MIRROR_PER_BOX = 6;
 
 

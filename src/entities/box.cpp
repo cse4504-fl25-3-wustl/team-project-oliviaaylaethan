@@ -61,12 +61,12 @@ bool Box::fitsArt(Art artwork) {
 
 bool Box::addArt(Art art) {
     float fraction = 1.0f / art.getPerBoxCount();
-    if(!fitsArt(art) || (contents_.size() >= capacity_) || (filledArt_ + fraction > 1.0f)) {
+    if(!fitsArt(art) || (contents_.size() >= capacity_) || (filledFrac_ + fraction > 1.0f)) {
         return false;
     }
     contents_.push_back(art);
     totalWeight_ += art.getWeight();
-    filledArt_ += fraction;
+    filledFrac_ += fraction;
 
     // update height of box to reflect tallest artwork inside of it TODO ask about rules for nonstandard boxes
     bool needsTelescoping = false;
@@ -107,4 +107,8 @@ int Box::getTotalWeight() const {
 
 std::vector<Art> Box::getContents() const {
     return contents_;
+}
+
+float Box::getFilledFrac() const {
+    return filledFrac_;
 }

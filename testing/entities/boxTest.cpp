@@ -47,11 +47,11 @@ TEST (BoxTest, addArt) {
     EXPECT_FALSE(box.addArt(art3)); // should fail
     EXPECT_EQ(box.getContents().size(), 2); // two art pieces should be in the box
 
-    for (int i = 0; i < 4; i++) { // fill the box to capacity
+    for (int i = 0; i < 2; i++) { // fill the box to capacity
         EXPECT_TRUE(box.addArt(art1));
     }
     EXPECT_FALSE(box.addArt(art1)); // should fail, box is at capacity
-    EXPECT_EQ(box.getContents().size(), 6); // box should be at capacity
+    EXPECT_EQ(box.getContents().size(), 4); // box should be at capacity
 
     EXPECT_TRUE(largeBox.addArt(art1)); // should succeed in large box
     EXPECT_TRUE(largeBox.addArt(art2)); // should succeed in large box  

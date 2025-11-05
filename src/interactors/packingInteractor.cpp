@@ -41,7 +41,6 @@ Response PackingInteractor::packAllArt(Request request) {
     Box standardBox = Box::makeStandardBox();
     Box largeBox = Box::makeLargeBox();
 
-
     // segment art pieces by size and material
     for (Art piece : request.getArtPieces()) {
         if ((piece.getMaterial() == MIRROR || (piece.needsCratePacking() && !piece.needsLargeCratePacking())) && allowCrates) {
@@ -58,35 +57,48 @@ Response PackingInteractor::packAllArt(Request request) {
     }
     
     // Pack large boxes FIRST
-    for (size_t i = 0; i < needsLargeBox.size(); i += LARGE_BOX_CAPACITY) {
-        Box box = Box::makeLargeBox();
-        for (size_t j = i; j < i + LARGE_BOX_CAPACITY && j < needsLargeBox.size(); ++j) {
-            box.addArt(needsLargeBox[j]);
-        }
-
-        // add some pieces that COULD fit in a standard box to a large box with extra capacity (to save space)
-        bool boxNotFull = (box.getContents().size() < LARGE_BOX_CAPACITY);
-        if(boxNotFull) {
-            int numEmptySpaces = LARGE_BOX_CAPACITY - box.getContents().size();
-            // only add those smaller pieces if they exist
-            while (!needsStandardBox.empty() && numEmptySpaces > 0) {
-                box.addArt(needsStandardBox.back());
-                needsStandardBox.pop_back();
-                numEmptySpaces--;
+    size_t i = 0;
+    if (!needsLargeBox.empty()) {
+        while (i < needsLargeBox.size()) {
+            bool added = largeBox.addArt(needsLargeBox[i]);
+            if (added) {
+                // successfully added, move to next piece
+                ++i;
+            } else {
+                // box full (by fraction or capacity), push it and start a new one
+                boxes_.push_back(largeBox);
+                largeBox = Box::makeLargeBox();
             }
         }
 
-        boxes_.push_back(box);
+        // don’t forget to push the last partially-filled box
+        if (!largeBox.getContents().empty()) {
+            boxes_.push_back(largeBox);
+        }
+
+        // add some pieces that COULD fit in a standard box to a large box with extra capacity (to save space)
+        while (!needsStandardBox.empty() && largeBox.getFilledFrac() < 1.0f) {
+            if (!largeBox.addArt(needsStandardBox.back())) break;
+            needsStandardBox.pop_back();
+        }
     }
 
-
     // Pack standard boxes
-    for (size_t i = 0; i < needsStandardBox.size(); i += STANDARD_BOX_CAPACITY) {
-        Box box = Box::makeStandardBox();
-        for (size_t j = i; j < i + STANDARD_BOX_CAPACITY && j < needsStandardBox.size(); ++j) {
-            box.addArt(needsStandardBox[j]);
+    i = 0;
+    while (i < needsStandardBox.size()) {
+        bool added = standardBox.addArt(needsStandardBox[i]);
+        if (added) {
+            // successfully added, move to next piece
+            ++i;
+        } else {
+            // box full (by fraction or capacity), push it and start a new one
+            boxes_.push_back(standardBox);
+            standardBox = Box::makeStandardBox();
         }
-        boxes_.push_back(box);
+    }
+
+    if (!standardBox.getContents().empty()) {
+        boxes_.push_back(standardBox);
     }
 
 
