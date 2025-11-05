@@ -30,6 +30,8 @@ float PackingInteractor::computeMinTareWeight(int numBoxes) {
 }
 
 Response PackingInteractor::packAllArt(Request request) {
+    bool allowCrates = request.getRequirements().getAcceptsCrates().value_or(true);
+
     vector<Art> needsStandardBox = vector<Art>();
     vector<Art> needsLargeBox = vector<Art>();
     vector<Art> needsCrate = vector<Art>();
@@ -42,9 +44,9 @@ Response PackingInteractor::packAllArt(Request request) {
 
     // segment art pieces by size and material
     for (Art piece : request.getArtPieces()) {
-        if (piece.getMaterial() == MIRROR || (piece.needsCratePacking() && !piece.needsLargeCratePacking())) {
+        if ((piece.getMaterial() == MIRROR || (piece.needsCratePacking() && !piece.needsLargeCratePacking())) && allowCrates) {
             needsCrate.push_back(piece);
-        } else if (piece.needsCratePacking() && piece.needsLargeCratePacking()) {
+        } else if (piece.needsCratePacking() && piece.needsLargeCratePacking() && allowCrates) {
             needsLargeCrate.push_back(piece);
         } else if (standardBox.fitsArt(piece)) {
             needsStandardBox.push_back(piece);
