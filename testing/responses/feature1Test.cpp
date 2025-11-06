@@ -131,3 +131,15 @@ TEST_F(Feature1Test, Input4_EndToEnd) {
     EXPECT_FLOAT_EQ(294, response.getArtInfo().getTotalWeight() + response.getPalletInfo().getTotalTareWeight() + response.getCrateInfo().getTotalTareWeight()) 
         << "Expected total shipment weight of 294 lbs (234 + 60)";
 }
+
+TEST_F(Feature1Test, Input5_EndToEnd) {
+    requirementsFilePath = std::string(TEST_DATA_PATH) + "/siteRequirements/feature_2_site.csv";
+
+    std::string dataInputFilePath = std::string(TEST_DATA_PATH) + "/inputsFeature2/box_packing/VaryingSizes/88.5x35.5/input.csv";
+    EXPECT_TRUE(parser.isValidFile(dataInputFilePath));
+    Response response = ResponseTest::generateResponse(dataInputFilePath, requirementsFilePath);
+
+    EXPECT_EQ(1, response.getArtInfo().getTotalCount());
+    EXPECT_EQ(0, response.getArtInfo().getStandardCount());
+    EXPECT_EQ(1, response.getArtInfo().getOversizedCount());
+}

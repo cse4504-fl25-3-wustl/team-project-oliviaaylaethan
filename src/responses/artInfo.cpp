@@ -7,6 +7,7 @@ ArtInfo::ArtInfo(const std::vector<Art>& pieces, Requirements* requirements)
     for (auto& art : pieces_) {
         int lineNo = art.getLineNumber();
         quantities_[lineNo]++;
+        //TODO: leads to conflicts when there are duplicate of same line #
         artTypes_[lineNo] = art;
     }
 }
