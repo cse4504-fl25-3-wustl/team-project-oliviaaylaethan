@@ -102,16 +102,16 @@ Response PackingInteractor::packAllArt(Request request) {
     }
 
 
-// Material	If <33" both dimensions	If >33" either dimension
-// Glass/Acrylic	25 pieces per crate	18 pieces per crate
-// Canvas	18 pieces per crate	12 pieces per crate
-// Mirrors	24-25 pieces directly in crate	(no boxes)
-// const int CRATE_LARGE_THRESHOLD = 33;
-// const int GLASS_ACRYLIC_SMALL_CRATE_CAPACITY = 25;
-// const int GLASS_ACRYLIC_LARGE_CRATE_CAPACITY = 18;
-// const int CANVAS_SMALL_CRATE_CAPACITY = 18;
-// const int CANVAS_LARGE_CRATE_CAPACITY = 12;
-// const int MIRROR_CRATE_CAPACITY = 24;
+    // Material	If <33" both dimensions	If >33" either dimension
+    // Glass/Acrylic	25 pieces per crate	18 pieces per crate
+    // Canvas	18 pieces per crate	12 pieces per crate
+    // Mirrors	24-25 pieces directly in crate	(no boxes)
+    // const int CRATE_LARGE_THRESHOLD = 33;
+    // const int GLASS_ACRYLIC_SMALL_CRATE_CAPACITY = 25;
+    // const int GLASS_ACRYLIC_LARGE_CRATE_CAPACITY = 18;
+    // const int CANVAS_SMALL_CRATE_CAPACITY = 18;
+    // const int CANVAS_LARGE_CRATE_CAPACITY = 12;
+    // const int MIRROR_CRATE_CAPACITY = 24;
 
 
     // Pack mirrors in crates
@@ -132,8 +132,19 @@ Response PackingInteractor::packAllArt(Request request) {
     }
 
     // Place all boxes on pallets
-    vector<Box> tempBoxes = boxes_;
+    vector<Box> ordered = vector<Box>();
+
+    for (int i = 0; i < boxes_.size(); i++) {
+        if (boxes_[i].getBoxType() == BoxType::LARGE_BOX) {
+            ordered.insert(ordered.begin(), boxes_[i]);
+        } else {
+            ordered.push_back(boxes_[i]);
+        }
+    }
+
+    vector<Box> tempBoxes = ordered;
     int remaining = tempBoxes.size();
+
     while (remaining > 0) {
         // Check which choice yields lower total tare weight
         float useStandard = (remaining >= STANDARD_PALLET_STANDARD_BOX_CAPACITY)
@@ -149,13 +160,16 @@ Response PackingInteractor::packAllArt(Request request) {
 
         if (useStandard < useOversized || remaining < OVERSIZE_PALLET_STANDARD_BOX_CAPACITY) {
             pallet = ShippingContainer::makeStandardPallet();
-            capacity = STANDARD_PALLET_STANDARD_BOX_CAPACITY;
         } else {
             pallet = ShippingContainer::makeOversizePallet();
-            capacity = OVERSIZE_PALLET_STANDARD_BOX_CAPACITY;
         }
 
+        capacity = pallet.getStandardBoxCapacity();
+
         for (int j = 0; j < capacity && !tempBoxes.empty(); ++j) {
+            if (tempBoxes.back().getBoxType() == BoxType::LARGE_BOX) {
+                capacity = pallet.getOversizedBoxCapacity();
+            }
             pallet.addBox(tempBoxes.back());
             tempBoxes.pop_back();
         }
@@ -163,35 +177,6 @@ Response PackingInteractor::packAllArt(Request request) {
         pallets_.push_back(std::move(pallet));
         remaining = tempBoxes.size();
     }   
-
-
-    // Pack custom crates and pallets based on material rules
-    // Box* currentBox = nullptr;
-    // for (Art piece : needsCustomPacking) {
-    //     if (piece.getMaterial() == MIRROR) {
-    //         ShippingContainer* currentCrate = nullptr;
-    //         if (!crates_.empty()) {
-    //             currentCrate = &crates_.back();
-    //             if (!currentCrate->addArt(piece)) {
-    //                 currentCrate = nullptr;
-    //             }
-    //         }
-    //         if (!currentCrate) {
-    //             crates_.emplace_back(ShippingContainer::makeStandardCrate());
-    //             crates_.back().addArt(piece);
-    //         }
-    //     } else {
-    //         // Oversize box + pallet
-    //         if (!currentBox || !currentBox->addArt(piece)) {
-    //             boxes_.push_back(Box::makeLargeBox());
-    //             currentBox = &boxes_.back();
-    //             currentBox->addArt(piece);
-
-    //             pallets_.push_back(ShippingContainer::makeOversizePallet());
-    //             pallets_.back().addBox(*currentBox);
-    //         }
-    //     }
-    // }
 
 
     return Response(boxes_, pallets_, crates_, request.getRequirements());
