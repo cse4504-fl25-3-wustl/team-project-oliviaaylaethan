@@ -39,11 +39,11 @@ For CMake on Windows, download from [cmake.org](https://cmake.org/).
 
    After building, an executable named `main` on MacOS, or `main.exe` on Windows, will be created in the `build` directory. Run it with this command on Mac:
    ```bash
-   ./main
+   ./main <art_data_file.csv> <requirements_file.csv> optional:<output_file_path>
    ```
    or this command on Windows:
    ```bash
-   Debug/main.exe
+   Debug/main.exe <art_data_file.csv> <requirements_file.csv> optional:<output_file_path>
    ```
 
    Note: The program takes input files as absolute paths.
@@ -55,6 +55,25 @@ For CMake on Windows, download from [cmake.org](https://cmake.org/).
    ctest
    ```
 
+   Run expected outputs vs actual outputs test (Feature 2) for MacOS:
+   ```bash
+    ./feature2_main_tests
+    ```
+
+   Compare expected outputs to actual outputs with a bash script in the main directory:
+   ```bash
+    ./run_all_tests.sh
+    ```
+
+   If this doesn't work, you may need to run the following to give it proper permissions:
+   ```bash
+    chmod +x run_all_tests.sh
+    ```
+    
+   If on Windows, you may need to also run this command to convert the file's line endings:
+   ```bash
+   dos2unix run_all_tests.sh
+   ```
 
    NOTE: for the tests that require csv inputs, the csv file paths are specified by TEST_DATA_PATH, which is defined in CMakeLists.txt.
 
@@ -72,7 +91,7 @@ For CMake on Windows, download from [cmake.org](https://cmake.org/).
 * **Ethan** - Interactor
 
 # Testing Assignment
-* ***Olivia**
+* **Olivia**
    * Packing Interactor
       * packAllArt
 * **Ayla**
@@ -89,3 +108,17 @@ For CMake on Windows, download from [cmake.org](https://cmake.org/).
       * addBox
    * CSV Parser
       * parseFiles
+    
+# Feature 2 Work Plan
+
+Workflow: all of us will commit directly to the feature2 branch
+
+Responsibilities:
+ 
+* **Olivia**
+   * change input to accept command line args
+   * change output to json
+* **Ethan**
+   * add test cases from our class github repo
+* **Ayla**
+   * update code to pass new test cases

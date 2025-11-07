@@ -1,0 +1,3 @@
+Mirrors are supposed to be packed onto crates. However, if crates are not allowed then we will follow client's rules in that only 8 pieces per box (large or standard).
+
+8 mirrors -> 2 large boxes

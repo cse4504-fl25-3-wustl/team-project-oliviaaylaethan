@@ -54,20 +54,25 @@ std::string CsvParser::trim(const std::string& str) {
 // Map Final Medium to MaterialType
 MaterialType CsvParser::mapToMaterial(const std::string& medium) { // FIXME these mappings might be wrong
     std::string m = trim(medium);
-    if (m == "Paper Print - Framed") return PAPER_PRINT_FRAMED;
-    if (m == "Canvas - Float Frame") return CANVAS_GALLERY;
-    if (m == "Print - Framed with Title Plate") return CANVAS_FRAMED;
-    if (m == "Wall Décor") return ACOUSTIC_PANEL;
-    if (m == "Mirror") return MIRROR;
-    if (m == "Metal Print") return PATIENT_BOARD;
+    std::transform(m.begin(), m.end(), m.begin(), ::tolower); // Convert to lowercase
+
+    if (m == "paper print - framed") return PAPER_PRINT_FRAMED;
+    if (m == "canvas - float frame") return CANVAS_FRAMED;
+    if (m == "canvas - gallery") return CANVAS_GALLERY;
+    if (m == "print - framed with title plate") return CANVAS_FRAMED;
+    if (m == "wall décor") return ACOUSTIC_PANEL;
+    if (m == "mirror") return MIRROR;
+    if (m == "metal print") return PATIENT_BOARD;
     return ACOUSTIC_PANEL; // default/fallback
 }
 
 // Map Glazing string to GlazingType
 GlazingType CsvParser::mapToGlazing(const std::string& glaze) {
     std::string g = trim(glaze);
-    if (g == "Regular Glass" || g == "Regular glass") return GLAZING_GLASS;
-    if (g == "Acrylic") return GLAZING_ACRYLIC;
+    std::transform(g.begin(), g.end(), g.begin(), ::tolower); // Convert to lowercase
+
+    if (g == "regular glass") return GLAZING_GLASS;
+    if (g == "acrylic") return GLAZING_ACRYLIC;
     return GLAZING_NONE;
 }
 
@@ -104,6 +109,11 @@ std::vector<Art> CsvParser::parseArtCsv(const std::string& filename) {
         std::replace(line.begin(), line.end(), '\t', ',');
         std::vector<std::string> tokens = commaSplitter(line);
 
+        // in case input is badly-formatted (multiple DIFFERENT types of art correspond to 1 line number),
+        // use this unique id to mimic properly-formatted line number
+        // ex: test case input.csv for 1Large1Standard1Custom puts every type of art as line number 1
+        int uniqueArtId = 0;
+
         while (tokens.size() < 9) tokens.push_back("");
 
         try {
@@ -116,9 +126,10 @@ std::vector<Art> CsvParser::parseArtCsv(const std::string& filename) {
             GlazingType glaze = mapToGlazing(tokens[6]);
             std::string frame = tokens[7];
             HardwareSpec hw = mapToHardware(tokens[8]);
+            ++uniqueArtId;
 
             for (int i = 0; i < qty; i++) {
-                Art art(lineNo, tag, material, width, height, glaze, frame, hw);
+                Art art(lineNo, tag, material, width, height, glaze, frame, hw, uniqueArtId);
                 artList.push_back(art);
             }
         } catch (const std::exception& e) {

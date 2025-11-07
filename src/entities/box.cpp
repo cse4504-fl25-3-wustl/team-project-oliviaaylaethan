@@ -2,10 +2,20 @@
 
 Box::Box() : dimensions_{0, 0, 0}, boxType_(STANDARD_BOX), totalWeight_(0) {
     contents_ = std::vector<Art>();
+    capacity_ = STANDARD_BOX_CAPACITY;
 }
 
 Box::Box(Dimensions dimensions, BoxType boxType) : dimensions_(dimensions), boxType_(boxType), totalWeight_(0) {
     contents_ = std::vector<Art>();
+    if (boxType_ == STANDARD_BOX) {
+        capacity_ = STANDARD_BOX_CAPACITY;
+    }
+    else if (boxType_ == LARGE_BOX) {
+        capacity_ = LARGE_BOX_CAPACITY;
+    }
+    else {
+        capacity_ = 6;
+    }
 }
 
 Box Box::makeStandardBox() {
@@ -25,12 +35,18 @@ Box Box::makeUPSLargeBox() {
 }
 
 bool Box::fitsArt(Art artwork) {
-    // Rule: As long as at least ONE dimension of an art piece is 36" or less, it will fit in a standard size box. Boxes can be telescoped to a max height of 84"
+    // Rule: As long as at least ONE dimension of an art piece is 36" or less, it will fit in a standard size box. Boxes can be telescoped to a max height of 88"
     if (boxType_ == STANDARD_BOX) {
-        if (artwork.getOuterHeight() <= STANDARD_BOX_MAX_ART_DIMENSION || artwork.getOuterWidth() <= STANDARD_BOX_MAX_ART_DIMENSION) {
+        bool shortEnough = (artwork.getOuterHeight() <= MAX_BOX_HEIGHT && artwork.getOuterWidth() <= MAX_BOX_HEIGHT);
+        bool couldFitWithTelescoping = (artwork.getOuterHeight() <= STANDARD_BOX_TELESCOPED_THRESHOLD || artwork.getOuterWidth() <= STANDARD_BOX_TELESCOPED_THRESHOLD);
+        if (shortEnough && couldFitWithTelescoping) {
             return true;
         }
         return false;
+    }
+    else if (boxType_ == LARGE_BOX) {
+        // if art does NOT need custom packaging, it should be able to fit in a large box
+        return !artwork.needsCustomPackaging(LARGE_BOX_LIMIT);
     }
     else { // TODO check real rules for other box types
         if (artwork.getOuterHeight() < dimensions_.l && artwork.getOuterWidth() < dimensions_.h) {
@@ -44,14 +60,22 @@ bool Box::fitsArt(Art artwork) {
 }
 
 bool Box::addArt(Art art) {
-    if(!fitsArt(art) || (boxType_ == STANDARD_BOX && contents_.size() >= STANDARD_BOX_CAPACITY) || (boxType_ == LARGE_BOX && contents_.size() >= LARGE_BOX_CAPACITY)) {
+    float fraction = 1.0f / art.getPerBoxCount();
+    if(!fitsArt(art) || (contents_.size() >= capacity_) || (filledFrac_ + fraction > 1.0f)) {
         return false;
     }
     contents_.push_back(art);
     totalWeight_ += art.getWeight();
+    filledFrac_ += fraction;
 
     // update height of box to reflect tallest artwork inside of it TODO ask about rules for nonstandard boxes
-    bool needsTelescoping = (art.getOuterHeight() > STANDARD_BOX_MAX_ART_DIMENSION || art.getOuterWidth() > STANDARD_BOX_MAX_ART_DIMENSION);
+    bool needsTelescoping = false;
+    if (boxType_ == STANDARD_BOX) {
+        needsTelescoping = (art.getOuterHeight() > STANDARD_BOX_TELESCOPED_THRESHOLD || art.getOuterWidth() > STANDARD_BOX_TELESCOPED_THRESHOLD);
+    }
+    else if (boxType_ == LARGE_BOX) {
+        needsTelescoping = TODO_PLACEHOLDER_BOOL; // TODO FIXME ask if large boxes can be telescoped
+    }
     if (needsTelescoping) {
         float artTelescopedHeight;
         if ( art.getOuterHeight() > art.getOuterWidth() ) {
@@ -83,4 +107,8 @@ int Box::getTotalWeight() const {
 
 std::vector<Art> Box::getContents() const {
     return contents_;
+}
+
+float Box::getFilledFrac() const {
+    return filledFrac_;
 }

@@ -1,9 +1,19 @@
-cmake_minimum_required(VERSION 4.0)
+cmake_minimum_required(VERSION 3.28)
 project(team_project_oliviaaylaethan)
 
 set(CMAKE_CXX_STANDARD 20)
 
+# ensures FAIL() in test files doesn't incorrectly compile as 0() on Windows
+if(WIN32)
+    add_compile_definitions(
+        WIN32_LEAN_AND_MEAN
+        NOMINMAX
+    )
+endif()
+
+
 include(FetchContent)
+
 FetchContent_Declare(
   googletest
   URL https://github.com/google/googletest/archive/279f8479469d22fa772adb454068f854472e1eb9.zip
@@ -11,6 +21,13 @@ FetchContent_Declare(
 # For Windows: Prevent overriding the parent project's compiler/linker settings
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
+
+FetchContent_Declare(
+    nlohmann_json
+    GIT_REPOSITORY https://github.com/nlohmann/json.git
+    GIT_TAG v3.12.0
+)
+FetchContent_MakeAvailable(nlohmann_json)
 
 # Create static library for source files
 add_library(core_lib
@@ -22,6 +39,7 @@ add_library(core_lib
     src/parser/csvParser.cpp
     src/requests/request.cpp
     src/responses/response.cpp
+    src/responses/responseSummary.cpp
     src/responses/artInfo.cpp
     src/responses/boxInfo.cpp
     src/responses/crateInfo.cpp
@@ -37,6 +55,8 @@ target_include_directories(core_lib PUBLIC
     src/responses
 )
 
+target_link_libraries(core_lib PUBLIC nlohmann_json::nlohmann_json) # Ensure nlohmann_json is linked
+
 # Set the executable name to 'main'
 add_executable(
     main
@@ -46,6 +66,14 @@ target_link_libraries(
     main
     core_lib
 )
+
+# --- INSERT STATIC LINKING FLAGS HERE FOR WINDOWS PORTABILITY ---
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    target_link_options(main PRIVATE
+        -static-libgcc
+        -static-libstdc++
+    )
+endif()
 
 enable_testing()
 
@@ -63,12 +91,24 @@ add_executable(
   testing/entities/shippingContainerTest.cpp
   testing/interactors/packingInteractorTest.cpp
   testing/responses/responseTest.cpp
+  testing/responses/feature1Test.cpp
 )
 target_link_libraries(
   all_tests
   core_lib
   GTest::gtest
   GTest::gtest_main
+)
+
+add_executable(
+    feature2_main_tests
+    testing/responses/feature2MainTest.cpp
+)
+target_link_libraries(
+    feature2_main_tests
+    core_lib
+    GTest::gtest
+    GTest::gtest_main
 )
 
 include(GoogleTest)

@@ -21,7 +21,7 @@ ShippingContainer ShippingContainer::makeStandardPallet() {
         STANDARD_PALLET_DIMENSIONS,
         STANDARD_PALLET_TARE_WEIGHT,
         STANDARD_PALLET_STANDARD_BOX_CAPACITY,
-        TEMP_PALLET_OVERSIZED_BOX_CAPACITY,
+        STANDARD_PALLET_OVERSIZED_BOX_CAPACITY,
         STANDARD_PALLET
     );
 }
@@ -41,7 +41,7 @@ ShippingContainer ShippingContainer::makeOversizePallet() {
         OVERSIZE_PALLET_DIMENSIONS,
         OVERSIZE_PALLET_TARE_WEIGHT,
         OVERSIZE_PALLET_STANDARD_BOX_CAPACITY,
-        TEMP_PALLET_OVERSIZED_BOX_CAPACITY,
+        OVERSIZE_PALLET_OVERSIZED_BOX_CAPACITY,
         OVERSIZE_PALLET
     );
 }
@@ -50,8 +50,8 @@ ShippingContainer ShippingContainer::makeStandardCrate() {
     return ShippingContainer(
         STANDARD_CRATE_DIMENSIONS,
         STANDARD_CRATE_TARE_WEIGHT,
-        TEMP_CRATE_STANDARD_BOX_CAPACITY,
-        TEMP_CRATE_OVERSIZED_BOX_CAPACITY,
+        GLASS_ACRYLIC_SMALL_CRATE_CAPACITY,
+        GLASS_ACRYLIC_LARGE_CRATE_CAPACITY,
         STANDARD_CRATE
     );
 }
@@ -66,6 +66,10 @@ float ShippingContainer::getTareWeight() const {
 
 std::vector<Box> ShippingContainer::getContents() const {
     return contents_;
+}
+
+std::vector<Art> ShippingContainer::getArtContents() const {
+    return artContents_;
 }
 
 ShippingContainerType ShippingContainer::getShippingContainerType() const {
@@ -92,12 +96,23 @@ bool ShippingContainer::addBox(Box box) {
     // update height of pallet if new box is taller than others
     float maxBoxHeight = 0.0f;
     for (const Box& box : contents_) {
-        float boxHeight = box.getDimensions().h; // TODO do we know that the h dimension will always be "height" or could a box be turned on its side?
+        float boxHeight = box.getDimensions().h;
         if (boxHeight > maxBoxHeight) {
             maxBoxHeight = boxHeight;
         }
     }
-    dimensions_.h = maxBoxHeight + 8.0f; // FIXME is this meant to be 8 inches for CRATES or for PALLETS? Or both?
+    dimensions_.h = maxBoxHeight + SHIPPING_CONTAINER_THICKNESS;
 
+    return true;
+}
+
+bool ShippingContainer::addArt(Art art) {
+    if (shippingContainerType_ != STANDARD_CRATE) {
+        return false; // only crates can have art directly added
+    }
+    if (artContents_.size() >= GLASS_ACRYLIC_SMALL_CRATE_CAPACITY) {
+        return false;
+    }
+    artContents_.push_back(art);
     return true;
 }

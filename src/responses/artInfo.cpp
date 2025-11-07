@@ -1,11 +1,15 @@
 #include "response.h"
+#include "../entities/requirements.h"
 #include <format>
 #include <map>
-
-ArtInfo::ArtInfo(const std::vector<Art>& pieces) : pieces_(pieces) {
+ArtInfo::ArtInfo(const std::vector<Art>& pieces, Requirements* requirements) 
+    : pieces_(pieces), requirements_(requirements) {
     for (auto& art : pieces_) {
-        int lineNo = art.getLineNumber();
+        int lineNo = art.getUniqueID(); // unique ID increments by 1 every time csv has a new line (new art specifications).
+                                        // *SHOULD* be able to use lineNo for this, but some of the test cases are formatted wrong
+                                        // like 1Large1Standard1Custom, so this is workaround since we can't correct the tests ourselves
         quantities_[lineNo]++;
+        //TODO: leads to conflicts when there are duplicate of same line # (fixed by getUniqueID instead of getLineNo)
         artTypes_[lineNo] = art;
     }
 }
@@ -20,7 +24,7 @@ int ArtInfo::getStandardCount() {
     Art art;
     for (int i = 0; i < totalCount; i++) {
         art = pieces_[i];
-        if (!art.isOversized()) {
+        if (!art.isOversizedInstallation()) {
             count++;
         }
     }
@@ -33,8 +37,28 @@ int ArtInfo::getOversizedCount() {
     Art art;
     for (int i = 0; i < totalCount; i++) {
         art = pieces_[i];
-        if (art.isOversized()) {
+        if (art.isOversizedInstallation()) {
             count++;
+        }
+    }
+    return count;
+}
+
+int ArtInfo::getCustomCount() {
+    int totalCount = getTotalCount();
+    int count = 0;
+    Art art;
+    for (int i = 0; i < totalCount; i++) {
+        art = pieces_[i];
+        if(requirements_->getAcceptsCrates()) {
+            if (art.needsCustomPackaging(CRATE_LIMIT)) {
+                count++;
+            }
+        }
+        else {
+            if (art.needsCustomPackaging(LARGE_BOX_LIMIT)) {
+                count++;
+            }
         }
     }
     return count;
@@ -62,7 +86,7 @@ std::vector<std::string> ArtInfo::getOversizedSummary() {
     summary.push_back("\nOversized Items Flagged:");
     for (auto& [lineNo, art] : artTypes_) {
         // Check if oversized
-        if (art.isOversized()) {
+        if (art.isOversizedInstallation()) {
             summary.push_back(std::format("- {}\"x{}\" (Qty: {}) - {} lbs each",
                 art.getOuterHeight(),
                 art.getOuterWidth(),
@@ -77,7 +101,7 @@ std::vector<std::string> ArtInfo::getOversizedSummary() {
 std::vector<Art> ArtInfo::getOversizedItems() {
     std::vector<Art> oversized;
     for (auto& art: pieces_) {
-        if (art.isOversized()) {
+        if (art.isOversizedInstallation()) {
             oversized.push_back(art);
         }
     }
@@ -95,7 +119,7 @@ std::vector<std::string> ArtInfo::getTotalWeightSummary() {
         art = pieces_[i];
 
         // Check if oversized
-        if (art.isOversized()) {
+        if (art.isOversizedInstallation()) {
             oversizedWeight += art.getWeight();
             oversizedCount++;
         }

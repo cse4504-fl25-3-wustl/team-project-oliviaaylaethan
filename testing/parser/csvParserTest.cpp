@@ -17,7 +17,7 @@ protected:
     
     void SetUp() override {
         // Path to test data directory
-        testDataPath = std::string(TEST_DATA_PATH) + "/"; 
+        testDataPath = std::string(TEST_DATA_PATH) + "/parserData/"; 
     }
 };
 
@@ -125,16 +125,10 @@ TEST_F(CsvParserTest, ParseFiles_VerifyArtworkDetails) {
     EXPECT_EQ(artPieces[0].getGlazeType(), GLAZING_GLASS);
     
     // Second artwork - Canvas Float Frame
-    EXPECT_EQ(artPieces[1].getLineNumber(), 2);
-    EXPECT_FLOAT_EQ(artPieces[1].getOuterWidth(), 36.0f);
-    EXPECT_FLOAT_EQ(artPieces[1].getOuterHeight(), 48.0f);
-    EXPECT_EQ(artPieces[1].getMaterial(), CANVAS_GALLERY); // Canvas Float Frame maps to CANVAS_GALLERY
-
-    // Second artwork - Canvas Float Frame
     EXPECT_EQ(artPieces[2].getLineNumber(), 2);
     EXPECT_FLOAT_EQ(artPieces[2].getOuterWidth(), 36.0f);
     EXPECT_FLOAT_EQ(artPieces[2].getOuterHeight(), 48.0f);
-    EXPECT_EQ(artPieces[2].getMaterial(), CANVAS_GALLERY); // Canvas Float Frame maps to CANVAS_GALLERY
+    EXPECT_EQ(artPieces[2].getMaterial(), CANVAS_FRAMED);
     
     // Third artwork - Metal Print
     EXPECT_EQ(artPieces[3].getLineNumber(), 3);
