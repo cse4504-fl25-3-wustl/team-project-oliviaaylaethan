@@ -1,0 +1,48 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*' # Triggers on version tags
+
+permissions:
+  contents: write
+
+
+jobs:
+  build-mac:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Build Mac App
+        run: ./gradlew clean build createMacApp
+
+      - name: Upload Mac DMG
+        uses: actions/upload-artifact@v4
+        with:
+          name: mac-dmg
+          path: app/build/distributions/mac/*.dmg
+          retention-days: 1
+
+  build-windows:
+    runs-on: windows-latest
+
+  create-release:
+    needs: [build-mac, build-windows]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download Mac DMG
+        uses: actions/download-artifact@v4
+        with:
+          name: mac-dmg 
+          path: ./artifacts/mac
