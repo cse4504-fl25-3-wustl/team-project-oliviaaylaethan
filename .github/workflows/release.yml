@@ -8,7 +8,6 @@ on:
 permissions:
   contents: write
 
-
 jobs:
   build-mac:
     runs-on: macos-latest
@@ -17,32 +16,79 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up JDK
-        uses: actions/setup-java@v4
-        with:
-          java-version: '21'
-          distribution: 'temurin'
+      - name: Set up C++ tools
+        run: |
+          brew install cmake
+          brew install make
+          # Add other dependencies if needed
 
-      - name: Build Mac App
-        run: ./gradlew clean build createMacApp
+      - name: Build Mac Executable
+        run: |
+          mkdir build
+          cd build
+          cmake ..
+          cmake --build .
 
-      - name: Upload Mac DMG
+      - name: Upload Mac Executable
         uses: actions/upload-artifact@v4
         with:
-          name: mac-dmg
-          path: app/build/distributions/mac/*.dmg
+          name: mac-executable
+          path: build/main  # Replace with actual binary name
           retention-days: 1
 
   build-windows:
     runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up C++ tools
+        run: |
+          choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System'
+          # Add other dependencies if needed
+
+      - name: Build Windows Executable
+        run: |
+          mkdir build
+          cd build
+          cmake ..
+          cmake --build . --config Release
+          # Replace with your actual build commands
+
+      - name: Upload Windows Executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-executable
+          path: build/Release/main.exe  # Replace with actual binary name
+          retention-days: 1
 
   create-release:
     needs: [build-mac, build-windows]
     runs-on: ubuntu-latest
 
     steps:
-      - name: Download Mac DMG
+      - name: Download Mac Executable
         uses: actions/download-artifact@v4
         with:
-          name: mac-dmg 
+          name: mac-executable
           path: ./artifacts/mac
+
+      - name: Download Windows Executable
+        uses: actions/download-artifact@v4
+        with:
+          name: windows-executable
+          path: ./artifacts/windows
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+              ./artifacts/mac/main
+              ./artifacts/windows/main.exe
+          name: Release ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
