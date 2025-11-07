@@ -5,9 +5,11 @@
 ArtInfo::ArtInfo(const std::vector<Art>& pieces, Requirements* requirements) 
     : pieces_(pieces), requirements_(requirements) {
     for (auto& art : pieces_) {
-        int lineNo = art.getLineNumber();
+        int lineNo = art.getUniqueID(); // unique ID increments by 1 every time csv has a new line (new art specifications).
+                                        // *SHOULD* be able to use lineNo for this, but some of the test cases are formatted wrong
+                                        // like 1Large1Standard1Custom, so this is workaround since we can't correct the tests ourselves
         quantities_[lineNo]++;
-        //TODO: leads to conflicts when there are duplicate of same line #
+        //TODO: leads to conflicts when there are duplicate of same line # (fixed by getUniqueID instead of getLineNo)
         artTypes_[lineNo] = art;
     }
 }

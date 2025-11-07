@@ -5,9 +5,9 @@
 // Default constructor
 Art::Art() : lineNumber_(0), tagNumber_(""), material_(MaterialType::CANVAS_FRAMED),
              materialDensity_(0.0f), outerWidth_(0.0f), outerHeight_(0.0f), glazeType_(GlazingType::GLAZING_NONE),
-             frame1Moulding_(""), hardware_(HardwareSpec::NONE) {}
+             frame1Moulding_(""), hardware_(HardwareSpec::NONE), uniqueArtId_(0) {}
 
-// Constructor to initialize the Art object
+// Constructor to initialize the Art object (assuming properly formatted input csv)
 Art::Art(int lineNo, std::string tagNo, 
            MaterialType material, float outerWidth, float outerHeight, 
            GlazingType glazeType, std::string frame1Moulding, HardwareSpec hardware)
@@ -18,7 +18,72 @@ Art::Art(int lineNo, std::string tagNo,
       outerHeight_(outerHeight), 
       glazeType_(glazeType), 
       frame1Moulding_(frame1Moulding), 
-      hardware_(hardware)
+      hardware_(hardware),
+      uniqueArtId_(-1)
+{
+    // Set the materialDensity_ based on the material
+    switch (material_) {
+        case MaterialType::ACOUSTIC_PANEL:
+            materialDensity_ = ACOUSTIC_PANEL_DENSITY;
+            perBoxCount_ = ACOUSTIC_PANEL_PER_BOX;
+            break;
+        case MaterialType::ACOUSTIC_PANEL_FRAMED:
+            materialDensity_ = ACOUSTIC_PANEL_FRAMED_DENSITY;
+            perBoxCount_ = ACOUSTIC_PANEL_PER_BOX;
+            break;
+        case MaterialType::CANVAS_FRAMED:
+            materialDensity_ = CANVAS_FRAMED_DENSITY;
+            perBoxCount_ = CANVAS_PER_BOX;
+            break;
+        case MaterialType::CANVAS_GALLERY:
+            materialDensity_ = CANVAS_GALLERY_DENSITY;
+            perBoxCount_ = CANVAS_PER_BOX;
+            break;
+        case MaterialType::MIRROR:
+            materialDensity_ = MIRROR_DENSITY;
+            perBoxCount_ = MIRROR_PER_BOX;
+            break;
+        case MaterialType::PAPER_PRINT_FRAMED:
+            if(glazeType_ == GlazingType::GLAZING_ACRYLIC) {
+                materialDensity_ = PAPER_PRINT_GLAZING_ACRYLIC_DENSITY;
+                perBoxCount_ = GLASS_ACRYLIC_FRAMED_PER_BOX;
+            }
+            else if(glazeType_ == GlazingType::GLAZING_GLASS) {
+                materialDensity_ = PAPER_PRINT_GLAZING_GLASS_DENSITY;
+                perBoxCount_ = GLASS_ACRYLIC_FRAMED_PER_BOX;
+            }
+            else {
+                materialDensity_ = 0.0f;  // Default to 0 since we weren't given a density for glazeless paper prints
+                perBoxCount_ = GLASS_ACRYLIC_SUNRISE_PER_BOX;
+            }
+            break;
+        case MaterialType::PATIENT_BOARD:
+            materialDensity_ = PATIENT_BOARD_DENSITY;
+            perBoxCount_ = 0; // for now since unspecified
+            break;
+        default:
+            materialDensity_ = 0.0f;  // Default to 0 if the material is unknown
+            perBoxCount_ = 0;
+            break;
+    }
+}
+
+
+
+
+// Constructor to initialize the Art object (with uniqueID)
+Art::Art(int lineNo, std::string tagNo, 
+           MaterialType material, float outerWidth, float outerHeight, 
+           GlazingType glazeType, std::string frame1Moulding, HardwareSpec hardware, int uniqueID)
+    : lineNumber_(lineNo), 
+      tagNumber_(tagNo), 
+      material_(material), 
+      outerWidth_(outerWidth), 
+      outerHeight_(outerHeight), 
+      glazeType_(glazeType), 
+      frame1Moulding_(frame1Moulding), 
+      hardware_(hardware),
+      uniqueArtId_(uniqueID)
 {
     // Set the materialDensity_ based on the material
     switch (material_) {
@@ -68,6 +133,10 @@ Art::Art(int lineNo, std::string tagNo,
 }
 
 // Getter functions to access private member variables
+
+int Art::getUniqueID() {
+    return uniqueArtId_;
+}
 
 int Art::getLineNumber() {
     return lineNumber_;

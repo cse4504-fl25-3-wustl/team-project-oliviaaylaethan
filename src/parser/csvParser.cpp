@@ -109,6 +109,11 @@ std::vector<Art> CsvParser::parseArtCsv(const std::string& filename) {
         std::replace(line.begin(), line.end(), '\t', ',');
         std::vector<std::string> tokens = commaSplitter(line);
 
+        // in case input is badly-formatted (multiple DIFFERENT types of art correspond to 1 line number),
+        // use this unique id to mimic properly-formatted line number
+        // ex: test case input.csv for 1Large1Standard1Custom puts every type of art as line number 1
+        int uniqueArtId = 0;
+
         while (tokens.size() < 9) tokens.push_back("");
 
         try {
@@ -121,9 +126,10 @@ std::vector<Art> CsvParser::parseArtCsv(const std::string& filename) {
             GlazingType glaze = mapToGlazing(tokens[6]);
             std::string frame = tokens[7];
             HardwareSpec hw = mapToHardware(tokens[8]);
+            ++uniqueArtId;
 
             for (int i = 0; i < qty; i++) {
-                Art art(lineNo, tag, material, width, height, glaze, frame, hw);
+                Art art(lineNo, tag, material, width, height, glaze, frame, hw, uniqueArtId);
                 artList.push_back(art);
             }
         } catch (const std::exception& e) {

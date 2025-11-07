@@ -29,6 +29,7 @@ class ArtInfo {
         std::map<int, int> quantities_;
 
         // Map of Art pieces that represent each line number
+        // NEW: WILL REPRESENT EACH UNIQUE TYPE OF ART (with uniqueArtId_)
         std::map<int, Art> artTypes_;
 
         Requirements* requirements_; // pointer, no ownership
@@ -161,12 +162,14 @@ class Response {
         PalletInfo palletInfo_;
         HardwareInfo hardwareInfo_;
         Requirements requirements_;
+        std::vector<Art> allArt_;
 
     public:
         Response(const std::vector<Box>& boxes,
                 const std::vector<ShippingContainer>& pallets,
                 const std::vector<ShippingContainer>& crates,
-                const Requirements requirements);
+                const Requirements requirements,
+                const std::vector<Art>& allArt);
 
         std::vector<std::string> getWeightSummary();
         std::vector<std::vector<std::string>> getPackingSummary();

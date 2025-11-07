@@ -67,6 +67,9 @@ private:
     HardwareSpec hardware_;
     int perBoxCount_;
 
+    int uniqueArtId_; // mimics lineNumber_ for separating unique types of art if csv has multiple lines listed with same line number
+    
+
 public:
     Art();
 
@@ -75,7 +78,13 @@ public:
         MaterialType material, float outerWidth, float outerHeight, 
         GlazingType glazeType, std::string frame1Moulding, HardwareSpec hardware);
 
+    // constructor with uniqueID workaround for badly-formatted input csv files
+    Art(int lineNo, std::string tagNo, 
+        MaterialType material, float outerWidth, float outerHeight, 
+        GlazingType glazeType, std::string frame1Moulding, HardwareSpec hardware, int artID);
+
 	// gets values of private instance variables so other files can use them
+    int getUniqueID();
 	int getLineNumber();
     std::string getTagNumber();
     MaterialType getMaterial();

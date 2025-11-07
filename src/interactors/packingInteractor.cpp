@@ -71,15 +71,16 @@ Response PackingInteractor::packAllArt(Request request) {
             }
         }
 
-        // don’t forget to push the last partially-filled box
-        if (!largeBox.getContents().empty()) {
-            boxes_.push_back(largeBox);
-        }
-
         // add some pieces that COULD fit in a standard box to a large box with extra capacity (to save space)
         while (!needsStandardBox.empty() && largeBox.getFilledFrac() < 1.0f) {
             if (!largeBox.addArt(needsStandardBox.back())) break;
             needsStandardBox.pop_back();
+        }
+
+        
+        // don’t forget to push the last partially-filled box
+        if (!largeBox.getContents().empty()) {
+            boxes_.push_back(largeBox);
         }
     }
 
@@ -179,7 +180,7 @@ Response PackingInteractor::packAllArt(Request request) {
     }   
 
 
-    return Response(boxes_, pallets_, crates_, request.getRequirements());
+    return Response(boxes_, pallets_, crates_, request.getRequirements(), request.getArtPieces());
 }
 
 std::vector<Box> PackingInteractor::getBoxes() {
