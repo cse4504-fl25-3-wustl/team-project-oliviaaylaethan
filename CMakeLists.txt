@@ -75,6 +75,15 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     )
 endif()
 
+# --- MAC STATIC LINKING FLAGS ---
+if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    target_link_options(main PRIVATE
+        -stdlib=libc++ # Use libc++ standard library
+        -static-libclang # Statically link clang runtime
+        -static-libstdc++
+    )
+endif()
+
 enable_testing()
 
 # Define the path to your test data directory so that test csv files are accessible across Windows vs Mac
