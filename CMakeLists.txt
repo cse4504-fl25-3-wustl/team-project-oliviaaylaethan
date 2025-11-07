@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 4.0)
+cmake_minimum_required(VERSION 3.28)
 project(team_project_oliviaaylaethan)
 
 set(CMAKE_CXX_STANDARD 20)
@@ -65,6 +65,13 @@ add_executable(
 target_link_libraries(
     main
     core_lib
+)
+
+# --- INSERT STATIC LINKING FLAGS HERE FOR WINDOWS PORTABILITY ---
+target_link_options(main PRIVATE
+    # Statically link the C++ and C runtimes to avoid missing DLL errors in Git Bash
+    -static-libgcc
+    -static-libstdc++
 )
 
 enable_testing()

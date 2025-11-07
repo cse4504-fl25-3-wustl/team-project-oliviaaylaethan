@@ -70,6 +70,10 @@ For CMake on Windows, download from [cmake.org](https://cmake.org/).
     chmod +x run_all_tests.sh
     ```
     
+   If on Windows, you may need to also run this command to convert the file's line endings:
+   ```bash
+   dos2unix run_all_tests.sh
+   ```
 
    NOTE: for the tests that require csv inputs, the csv file paths are specified by TEST_DATA_PATH, which is defined in CMakeLists.txt.
 
