@@ -4,6 +4,7 @@ total_tests=0
 passed_tests=0
 failed_tests=0
 failed_paths=()
+passed_paths=()
 
 # Define color codes
 RED='\033[0;31m'
@@ -32,6 +33,7 @@ process_csv_files() {
             if python3 testing/compare.py "$output_path" "$expected_output_path"; then
                 echo -e "${GREEN}TEST PASSED:${NC} $csv_file"
                 passed_tests=$((passed_tests + 1))
+                passed_paths+=("$csv_file")
             else
                 echo -e "${RED}TEST FAILED:${NC} $csv_file"
                 failed_tests=$((failed_tests + 1))
@@ -56,6 +58,13 @@ process_csv_files "$INPUT_DIR/pallet_packing" $FEATURE_1_CONFIG
 process_csv_files "$INPUT_DIR/crate_packing" $FEATURE_2_CONFIG
 
 # Print summary after all calls
+if [ $passed_tests -gt 0 ]; then
+    echo -e "\n\n${GREEN}\033[1m--------------- PASSED TEST PATHS ---------------\033[0m${NC}"
+    for path in "${passed_paths[@]}"; do
+        echo "$path"
+    done
+fi
+
 if [ $failed_tests -gt 0 ]; then
     echo -e "\n\n${RED}\033[1m--------------- FAILED TEST PATHS ---------------\033[0m${NC}"
     for path in "${failed_paths[@]}"; do
