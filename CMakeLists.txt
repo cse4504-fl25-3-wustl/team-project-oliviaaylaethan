@@ -68,11 +68,12 @@ target_link_libraries(
 )
 
 # --- INSERT STATIC LINKING FLAGS HERE FOR WINDOWS PORTABILITY ---
-target_link_options(main PRIVATE
-    # Statically link the C++ and C runtimes to avoid missing DLL errors in Git Bash
-    -static-libgcc
-    -static-libstdc++
-)
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    target_link_options(main PRIVATE
+        -static-libgcc
+        -static-libstdc++
+    )
+endif()
 
 enable_testing()
 
