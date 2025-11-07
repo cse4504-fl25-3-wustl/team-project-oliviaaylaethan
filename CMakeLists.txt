@@ -30,7 +30,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(nlohmann_json)
 
 # Create static library for source files
-add_library(core_lib
+add_library(core_lib STATIC
     src/entities/art.cpp
     src/entities/box.cpp
     src/entities/requirements.cpp
