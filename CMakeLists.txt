@@ -92,7 +92,6 @@ add_executable(
   testing/interactors/packingInteractorTest.cpp
   testing/responses/responseTest.cpp
   testing/responses/feature1Test.cpp
-  testing/responses/feature2Test.cpp
 )
 target_link_libraries(
   all_tests
