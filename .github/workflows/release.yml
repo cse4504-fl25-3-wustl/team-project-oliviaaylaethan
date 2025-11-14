@@ -54,6 +54,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Cache wxWidgets
+        id: cache-wxwidgets
+        uses: actions/cache@v4
+        with:
+          path: C:\wxWidgets-install
+          key: wxwidgets-${{ runner.os }}-v3.2.4
+          restore-keys: |
+            wxwidgets-${{ runner.os }}-
+
       - name: Ensure Chocolatey is installed
         run: |
           if (-Not (Get-Command choco -ErrorAction SilentlyContinue)) {
@@ -62,16 +71,23 @@ jobs:
             iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
           }
 
-      - name: Install wxWidgets with Chocolatey
+      - name: Install wxWidgets from source
+        if: steps.cache-wxwidgets.outputs.cache-hit != 'true'
         run: |
-          choco install wxwidgets -y
+          git clone --depth 1 --branch v3.2.4 https://github.com/wxWidgets/wxWidgets.git C:\wxWidgets
+          cd C:\wxWidgets
+          mkdir build-release
+          cd build-release
+          cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DwxBUILD_SHARED=OFF
+          cmake --build . --config Release
+          cmake --install . --prefix C:\wxWidgets-install
 
       - name: Build Windows Executable
         run: |
-          $env:WXWIN = "C:/wxWidgets-3.1.2"
+          $env:wxWidgets_ROOT_DIR = "C:\wxWidgets-install"
           mkdir build
           cd build
-          cmake -G "Ninja" ..
+          cmake -G "Ninja" -DCMAKE_PREFIX_PATH="C:\wxWidgets-install" ..
           cmake --build . --config Release
 
       - name: Upload Windows Executable
