@@ -31,7 +31,7 @@ jobs:
 
       - name: Build Mac Executable
         run: |
-          mkdir build
+          mkdir -p build
           cd build
           cmake ..
           cmake --build .
@@ -75,7 +75,7 @@ jobs:
 
       - name: Build Windows Executable
         run: |
-          mkdir build
+          if (-not (Test-Path build)) { mkdir build }
           cd build
           cmake -A x64 -DCMAKE_BUILD_TYPE=Release ..
           cmake --build . --config Release
