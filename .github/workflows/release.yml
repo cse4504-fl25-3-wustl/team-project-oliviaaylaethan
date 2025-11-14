@@ -59,17 +59,17 @@ jobs:
         uses: actions/cache@v4
         with:
           path: C:\wxWidgets
-          key: wxwidgets-prebuilt-${{ runner.os }}-v3.2.4-vc14x-x64
+          key: wxwidgets-mingw-${{ runner.os }}-v3.2.4-gcc1320-x64
           restore-keys: |
-            wxwidgets-prebuilt-${{ runner.os }}-
+            wxwidgets-mingw-${{ runner.os }}-
 
-      - name: Download and extract pre-built wxWidgets
+      - name: Download and extract pre-built wxWidgets (MinGW)
         if: steps.cache-wxwidgets.outputs.cache-hit != 'true'
         run: |
-          $url = "https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.4/wxMSW-3.2.4_vc14x_x64_Dev.7z"
-          $runtimeUrl = "https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.4/wxMSW-3.2.4_vc14x_x64_ReleaseDLL.7z"
+          $url = "https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.4/wxMSW-3.2.4_gcc1320_x64_Dev.7z"
+          $runtimeUrl = "https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.4/wxMSW-3.2.4_gcc1320_x64_ReleaseDLL.7z"
           
-          Write-Host "Downloading wxWidgets binaries..."
+          Write-Host "Downloading wxWidgets MinGW binaries..."
           Invoke-WebRequest -Uri $url -OutFile "wxWidgets-dev.7z"
           Invoke-WebRequest -Uri $runtimeUrl -OutFile "wxWidgets-runtime.7z"
           
@@ -88,11 +88,11 @@ jobs:
         run: |
           $env:WXWIN = "C:\wxWidgets"
           $env:wxWidgets_ROOT_DIR = "C:\wxWidgets"
-          $env:wxWidgets_LIB_DIR = "C:\wxWidgets\lib\vc14x_x64_dll"
+          $env:wxWidgets_LIB_DIR = "C:\wxWidgets\lib\gcc1320_x64_dll"
           
           mkdir build
           cd build
-          cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DwxWidgets_ROOT_DIR="C:\wxWidgets" -DwxWidgets_LIB_DIR="C:\wxWidgets\lib\vc14x_x64_dll" ..
+          cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DwxWidgets_ROOT_DIR="C:\wxWidgets" -DwxWidgets_LIB_DIR="C:\wxWidgets\lib\gcc1320_x64_dll" ..
           cmake --build . --config Release
 
       - name: Upload Windows Executable
