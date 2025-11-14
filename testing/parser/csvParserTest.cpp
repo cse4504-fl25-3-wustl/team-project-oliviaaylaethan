@@ -29,7 +29,7 @@ TEST_F(CsvParserTest, ParseFiles_ValidFiles) {
     std::string reqFile = testDataPath + "test_requirements.csv";
     
     // Act
-    Request request = parser.parseFiles(artFile, reqFile);
+    Request request = parser.parseFiles(artFile, reqFile, false);
     
     EXPECT_TRUE(parser.isValidFile(artFile));
     EXPECT_TRUE(parser.isValidFile(reqFile));
@@ -55,7 +55,7 @@ TEST_F(CsvParserTest, ParseFiles_InvalidArtFile) {
     std::string validReqFile = testDataPath + "test_requirements.csv";
     
     // Act
-    Request request = parser.parseFiles(invalidArtFile, validReqFile);
+    Request request = parser.parseFiles(invalidArtFile, validReqFile, false);
     
     // Assert - Should return empty Request
     std::vector<Art> artPieces = request.getArtPieces();
@@ -68,7 +68,7 @@ TEST_F(CsvParserTest, ParseFiles_InvalidRequirementsFile) {
     std::string invalidReqFile = testDataPath + "nonexistent_requirements.csv";
     
     // Act
-    Request request = parser.parseFiles(validArtFile, invalidReqFile);
+    Request request = parser.parseFiles(validArtFile, invalidReqFile, false);
     
     // Assert - Should still parse art file
     std::vector<Art> artPieces = request.getArtPieces();
@@ -81,7 +81,7 @@ TEST_F(CsvParserTest, ParseFiles_EmptyArtFile) {
     std::string validReqFile = testDataPath + "test_requirements.csv";
     
     // Act
-    Request request = parser.parseFiles(emptyArtFile, validReqFile);
+    Request request = parser.parseFiles(emptyArtFile, validReqFile, false);
     
     // Assert - Should have no artworks
     std::vector<Art> artPieces = request.getArtPieces();
@@ -98,7 +98,7 @@ TEST_F(CsvParserTest, ParseFiles_BothInvalidFiles) {
     std::string invalidReqFile = testDataPath + "nonexistent_requirements.csv";
     
     // Act
-    Request request = parser.parseFiles(invalidArtFile, invalidReqFile);
+    Request request = parser.parseFiles(invalidArtFile, invalidReqFile, false);
     
     // Assert - Should return empty Request
     std::vector<Art> artPieces = request.getArtPieces();
@@ -111,7 +111,7 @@ TEST_F(CsvParserTest, ParseFiles_VerifyArtworkDetails) {
     std::string reqFile = testDataPath + "test_requirements.csv";
     
     // Act
-    Request request = parser.parseFiles(artFile, reqFile);
+    Request request = parser.parseFiles(artFile, reqFile, false);
     std::vector<Art> artPieces = request.getArtPieces();
     
     // Assert
@@ -145,7 +145,7 @@ TEST_F(CsvParserTest, ParseFiles_VerifyRequirementsDetails) {
     std::string reqFile = testDataPath + "test_requirements.csv";
     
     // Act
-    Request request = parser.parseFiles(artFile, reqFile);
+    Request request = parser.parseFiles(artFile, reqFile, false);
     Requirements requirements = request.getRequirements();
     
     // Assert - Verify all requirements fields

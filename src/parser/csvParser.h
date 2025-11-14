@@ -13,8 +13,17 @@ private:
     std::vector<Art> parseArtCsv(const std::string& filePath);
     Requirements parseRequirementsCsv(const std::string& filePath);
     std::vector<std::string> commaSplitter(std::string line);
+    Requirements generateDefaultRequirements(const std::string& acceptsCratesValue);
+    
 public:
     CsvParser();
     bool isValidFile(const std::string& filePath);
-    Request parseFiles(std::string artFilePath, std::string siteFilePath);
+    
+    // New method overload to handle Y/N substitute (pass the substitute string as siteFilePath)
+    Request parseFiles(std::string artFilePath, std::string siteFilePath, bool isSubstitute);
+    
+    // New constants to represent the requirements field values
+    static const std::string ACCEPTS_CRATES_YES;
+    static const std::string ACCEPTS_CRATES_NO;
+
 };

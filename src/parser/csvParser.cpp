@@ -6,6 +6,9 @@
 #include <string>
 #include <algorithm>
 
+const std::string CsvParser::ACCEPTS_CRATES_YES = "Y";
+const std::string CsvParser::ACCEPTS_CRATES_NO = "N";
+
 CsvParser::CsvParser() {}
 
 bool CsvParser::isValidFile(const std::string & filePath) {
@@ -19,19 +22,73 @@ bool CsvParser::isValidFile(const std::string & filePath) {
     return true;
 }
 
-Request CsvParser::parseFiles(std::string artFilePath, std::string siteFilePath) {
+// --- New Default Requirements Generator ---
+Requirements CsvParser::generateDefaultRequirements(const std::string& acceptsCratesValue) {
+    Requirements siteRequirements = Requirements();
+    
+    // Based on your default file: Location,Client,Accepts pallets,Accepts crates,LD Access,LG required,Inside Delivery,Service type
+    // N/A,N/A,Y,<Y/N>,N/A,N,N/A,N/A
+    
+    // Since you don't use enum constants for these fields, we'll use string literal indices 
+    // to mimic the structure of the CSV line, ensuring only AcceptsCrates changes.
+    std::vector<std::string> defaultRequirementsList = {
+        "N/A",  // JOB_SITE_LOCATION
+        "N/A",  // CLIENT_NAME
+        "Y",    // ACCEPTS_PALLETS (Fixed to Y)
+        acceptsCratesValue, // ACCEPTS_CRATES (This is the only dynamic value)
+        "N/A",  // HAS_LOADING_DOCK
+        "N",    // NEEDS_LIFTGATE
+        "N/A",  // NEEDS_INSIDE_DELIVERY
+        "N/A"   // SERVICE_TYPE
+    };
+
+    try {
+        // Assume you have defined the indices in Requirements.h, e.g.,
+        // static const int JOB_SITE_LOCATION = 0;
+        siteRequirements.setJobSiteLocation(defaultRequirementsList[0]);
+        siteRequirements.setClientName(defaultRequirementsList[1]);
+        siteRequirements.setAcceptsPallets(defaultRequirementsList[2]);
+        siteRequirements.setAcceptsCrates(defaultRequirementsList[3]);
+        siteRequirements.setHasLoadingDock(defaultRequirementsList[4]);
+        siteRequirements.setNeedsLiftgate(defaultRequirementsList[5]);
+        siteRequirements.setNeedsInsideDelivery(defaultRequirementsList[6]);
+        siteRequirements.setServiceType(defaultRequirementsList[7]);
+    } catch (const std::exception& e) {
+        std::cerr << "Error generating default requirements: " << e.what() << std::endl;
+    }
+    
+    return siteRequirements;
+}
+
+Request CsvParser::parseFiles(std::string artFilePath, std::string siteFilePath, bool isSubstitute) {
     bool artFileValid = isValidFile(artFilePath);
     bool siteFileValid = isValidFile(siteFilePath);
 
     if (!artFileValid) {
+        std::cerr << "Art file invalid, returning empty request." << std::endl;
         return Request();
     }
     
     std::vector<Art> artworks = parseArtCsv(artFilePath);
-
     Requirements siteRequirements = Requirements();
-    if (siteFileValid) {
-        siteRequirements = parseRequirementsCsv(siteFilePath);
+
+    if (isSubstitute) {
+        // If it's a substitute ('Y' or 'N' flag)
+        std::cout << "Generating requirements from substitute flag: " << siteFilePath << std::endl;
+        if (siteFilePath == ACCEPTS_CRATES_YES || siteFilePath == "y") {
+            siteRequirements = generateDefaultRequirements(ACCEPTS_CRATES_YES);
+        } else { // 'N' or 'n'
+            siteRequirements = generateDefaultRequirements(ACCEPTS_CRATES_NO);
+        }
+    } else {
+        // If it's a file path
+        bool siteFileValid = isValidFile(siteFilePath);
+        if (siteFileValid) {
+            siteRequirements = parseRequirementsCsv(siteFilePath);
+        } else {
+            // File path provided but invalid. Use empty default.
+            std::cerr << "Error: Requirements file invalid. Using default (empty) requirements." << std::endl;
+        }
     }
 
     // to show parsed data for debugging, won't need in final version
