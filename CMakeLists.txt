@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.28)
+cmake_minimum_required(VERSION 3.10)
 project(team_project_oliviaaylaethan)
 
 set(CMAKE_CXX_STANDARD 20)
@@ -125,20 +125,33 @@ include(GoogleTest)
 gtest_discover_tests(all_tests)
 
 # GUI application setup - fetch wxWidgets
+
 FetchContent_Declare(
     wxWidgets
     GIT_REPOSITORY https://github.com/wxWidgets/wxWidgets.git
-    GIT_TAG master
+    GIT_TAG v3.3.1
     GIT_SHALLOW TRUE
 )
 
-# Configure wxWidgets build options
+# Configure wxWidgets build options - disable everything except what we need
 set(wxBUILD_SHARED OFF CACHE BOOL "Build wx libraries as shared libs")
 set(wxBUILD_SAMPLES OFF CACHE BOOL "Build wxWidgets samples")
 set(wxBUILD_TESTS OFF CACHE BOOL "Build wxWidgets tests")
 set(wxBUILD_DEMOS OFF CACHE BOOL "Build wxWidgets demos")
 set(wxBUILD_BENCHMARKS OFF CACHE BOOL "Build wxWidgets benchmarks")
 set(wxBUILD_INSTALL OFF CACHE BOOL "Do not install wxWidgets")
+set(wxUSE_MEDIACTRL OFF CACHE BOOL "Disable media control")
+set(wxUSE_WEBVIEW OFF CACHE BOOL "Disable webview")
+set(wxUSE_HELP OFF CACHE BOOL "Disable help")
+set(wxUSE_HTML OFF CACHE BOOL "Disable HTML")
+set(wxUSE_XRC OFF CACHE BOOL "Disable XRC resources")
+set(wxUSE_AUI OFF CACHE BOOL "Disable AUI docking")
+set(wxUSE_RIBBON OFF CACHE BOOL "Disable ribbon")
+set(wxUSE_PROPGRID OFF CACHE BOOL "Disable property grid")
+set(wxUSE_RICHTEXT OFF CACHE BOOL "Disable rich text")
+set(wxUSE_STC OFF CACHE BOOL "Disable styled text control")
+set(wxUSE_GLCANVAS OFF CACHE BOOL "Disable OpenGL canvas")
+set(wxBUILD_COMPATIBILITY "3.0" CACHE STRING "Minimum compatibility version")
 
 FetchContent_MakeAvailable(wxWidgets)
 
