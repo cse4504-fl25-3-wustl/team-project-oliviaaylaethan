@@ -78,6 +78,10 @@ jobs:
           cpack -G DragNDrop
           # Remove quarantine from DMG as well
           xattr -cr *.dmg || true
+          # Rename DMG to include arm64 architecture
+          for dmg in *.dmg; do
+            mv "$dmg" "${dmg%.dmg}-arm64.dmg"
+          done
 
       - name: Upload macOS DMG (Apple Silicon)
         uses: actions/upload-artifact@v4
@@ -155,6 +159,10 @@ jobs:
           cpack -G DragNDrop
           # Remove quarantine from DMG as well
           xattr -cr *.dmg || true
+          # Rename DMG to include x86_64 architecture
+          for dmg in *.dmg; do
+            mv "$dmg" "${dmg%.dmg}-x86_64.dmg"
+          done
 
       - name: Upload macOS DMG (Intel)
         uses: actions/upload-artifact@v4
