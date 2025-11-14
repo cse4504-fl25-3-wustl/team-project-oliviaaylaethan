@@ -1,11 +1,6 @@
 #include <wx/wx.h>
 #include <wx/filepicker.h>
-#include "../interactors/packingInteractor.h"
-#include "../parser/csvParser.h"
-#include "../responses/response.h"
-#include "../responses/responseSummary.h"
-#include <fstream>
-#include <iostream>
+#include "estimator.cpp"
 #include <nlohmann/json.hpp>
 #include <filesystem>
  
@@ -130,8 +125,8 @@ void PackingFrame::OnRunEstimator(wxCommandEvent& event)
 
     if (dataPath.IsEmpty() || reqPath.IsEmpty()) {
         wxMessageBox("Please select both input files first.",
-                     "Missing input",
-                     wxOK | wxICON_WARNING);
+                    "Missing input",
+                    wxOK | wxICON_WARNING);
         return;
     }
 
@@ -143,46 +138,44 @@ void PackingFrame::OnRunEstimator(wxCommandEvent& event)
     std::string dataInputFile = dataPath.ToStdString();
     std::string requirementsInputFile = reqPath.ToStdString();
 
-    // Configure output path
+    // Output file
     std::string outputFilePath =
         std::filesystem::current_path().string() + "/output.json";
 
-    try
-    {
-        CsvParser parser;
+    // Build stable argument array
+    std::string arg0 = "estimator";
+    std::string arg1 = dataInputFile;
+    std::string arg2 = requirementsInputFile;
 
-        if (!parser.isValidFile(dataInputFile) ||
-            !parser.isValidFile(requirementsInputFile))
-        {
-            logBox_->AppendText("Error: One or both input files are invalid.\n");
-            return;
-        }
+    char* argv[] = {
+        arg0.data(),
+        arg1.data(),
+        arg2.data()
+    };
 
-        Request request = parser.parseFiles(dataInputFile, requirementsInputFile);
-
-        PackingInteractor packingInteractor;
-        Response response = packingInteractor.packAllArt(request);
-
-        // JSON output
-        ResponseSummary responseSummary(response);
-        nlohmann::json j = responseSummary;
-
-        std::ofstream file(outputFilePath);
-        file << j.dump(4);
-        file.close();
-
-        logBox_->AppendText("Estimation complete!\n");
-        logBox_->AppendText("Output saved to: " +
-                            wxString(outputFilePath) + "\n");
-
-        logBox_->AppendText("JSON Output:\n");
-        logBox_->AppendText(wxString(j.dump(4)) + "\n");
+    // Call estimator
+    if (Estimator::RunEstimator(3, argv) != 0) {
+        logBox_->AppendText("Error running estimator.\n");
+        return;
     }
-    catch (const std::exception& e)
-    {
-        logBox_->AppendText("ERROR: ");
-        logBox_->AppendText(e.what());
-        logBox_->AppendText("\n");
+
+    // ---- Read JSON from file ----
+    std::ifstream inFile(outputFilePath);
+    if (!inFile.is_open()) {
+        logBox_->AppendText("Error: Could not open output file.\n");
+        return;
     }
+
+    nlohmann::json data;
+    inFile >> data;
+
+    // Finish up
+    logBox_->AppendText("Estimation complete!\n");
+    logBox_->AppendText("Output saved to: " +
+                        wxString(outputFilePath) + "\n");
+
+    logBox_->AppendText("JSON Output:\n");
+    logBox_->AppendText(wxString(data.dump(4)) + "\n");
+
 }
 

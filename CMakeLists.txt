@@ -45,6 +45,7 @@ add_library(core_lib STATIC
     src/responses/crateInfo.cpp
     src/responses/hardwareInfo.cpp
     src/responses/palletInfo.cpp
+    src/gui/estimator.cpp
 )
 
 target_include_directories(core_lib PUBLIC
