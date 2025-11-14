@@ -22,6 +22,24 @@ For CMake on Windows, download from [cmake.org](https://cmake.org/).
    brew install wxwidgets
    ```
 
+   On Windows:
+   https://wxwidgets.org/downloads/#v3.3.1_msw
+   
+   Download Windows Binaries:
+   - Visual Studio
+      - Header files
+      - Development files
+
+   Unzip files and move to this folder:
+      C:\wxWidgets
+
+   Inside should include:
+      -lib
+      - licence.txt
+      - wxwidgets.props
+      - build
+      - include
+
 2. **Create a Build Directory**
 
    Make a new directory for the build files that CMake generates (this directory name is included in .gitignore):
@@ -37,12 +55,33 @@ For CMake on Windows, download from [cmake.org](https://cmake.org/).
    cmake ..
    ```
 
+   Note: On Windows, use powershell.
+
 4. **Build the Project**
 
    Use the generated build system to compile the project:
    ```bash
    cmake --build .
    ```
+
+   To run GUI on Windows, add files from C:\wxWidgets\lib\vc14x_x64_dll below to build/Debug:
+   (All of these files are debug. 331ud_. Release files are 331u_ with no d and should be included)
+   - wxbase331ud_net_vc14x_x64.dll
+   - wxbase331ud_vc14x_x64.dll
+   - wxbase331ud_xml_vc14x_x64.dll
+   - wxmsw331ud_adv_vc14x_x64.dll
+   - wxmsw331ud_aui_vc14x_x64.dll
+   - wxmsw331ud_core_vc14x_x64.dll
+   - wxmsw331ud_gl_vc14x_x64.dll
+   - wxmsw331ud_html_vc14x_x64.dll
+   - wxmsw331ud_media_vc14x_x64.dll
+   - wxmsw331ud_propgrid_vc14x_x64.dll
+   - wxmsw331ud_qa_vc14x_x64.dll
+   - wxmsw331ud_ribbon_vc14x_x64.dll
+   - wxmsw331ud_richtext_vc14x_x64.dll
+   - wxmsw331ud_stc_vc14x_x64.dll
+   - wxmsw331ud_webview_vc14x_x64.dll
+   - wxmsw331ud_xrc_vc14x_x64.dll
 
 5. **Run the Program**
 
@@ -56,6 +95,17 @@ For CMake on Windows, download from [cmake.org](https://cmake.org/).
    ```
 
    Note: The program takes input files as absolute paths.
+
+   Run GUI on Mac:
+   ```bash
+   ./packingapp
+   ```
+
+   Run GUI on Windows:
+   ```bash
+   Debug/packingapp.exe
+   ```
+   
 
 6. **Test the Program**
 

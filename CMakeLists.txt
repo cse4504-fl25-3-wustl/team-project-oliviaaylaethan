@@ -128,8 +128,20 @@ gtest_discover_tests(all_tests)
 find_package(wxWidgets REQUIRED COMPONENTS net core base) 
 if(wxWidgets_USE_FILE) # not defined in CONFIG mode 
     include(${wxWidgets_USE_FILE}) 
-endif() 
-add_executable(packingapp src/gui/packingapp.cpp) 
+endif()
+
+# On Windows, build a WIN32 subsystem app (no console, no main())
+# On macOS/Linux, build normally.
+if (WIN32)
+    add_executable(packingapp WIN32
+        src/gui/packingapp.cpp
+    )
+else()
+    add_executable(packingapp
+        src/gui/packingapp.cpp
+    )
+endif()
+
 target_link_libraries(packingapp core_lib ${wxWidgets_LIBRARIES}) 
 target_include_directories(packingapp PRIVATE src/gui)
 
