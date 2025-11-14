@@ -87,7 +87,7 @@ jobs:
           retention-days: 1
 
   build-mac-intel:
-    runs-on: macos-13  # macOS 13 is the last Intel runner
+    runs-on: macos-latest  # Use ARM runner but cross-compile to Intel
 
     steps:
       - name: Checkout code
@@ -133,7 +133,7 @@ jobs:
             cp -r wxwidgets-cache/* build/_deps/ 2>/dev/null || true
           fi
 
-      - name: Build Mac Executable (Intel)
+      - name: Build Mac Executable (Intel via cross-compile)
         run: |
           cd build
           cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES=x86_64 ..

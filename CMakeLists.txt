@@ -2,14 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 project(team_project_oliviaaylaethan)
 
 set(CMAKE_CXX_STANDARD 20)
-
-# ensures FAIL() in test files doesn't incorrectly compile as 0() on Windows
-if(WIN32)
-    add_compile_definitions(
-        WIN32_LEAN_AND_MEAN
-        NOMINMAX
-    )
-endif()
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 
 include(FetchContent)
