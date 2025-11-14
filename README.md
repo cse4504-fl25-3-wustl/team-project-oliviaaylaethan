@@ -11,7 +11,11 @@ brew install cmake
 
 For CMake on Windows, download from [cmake.org](https://cmake.org/).
 
+
+
 ### Build and Run Instructions
+
+Using GitHub releases? Download the appropriate file, then skip to step 5!
 
 1. **Install Prerequisites**
 
@@ -64,26 +68,20 @@ For CMake on Windows, download from [cmake.org](https://cmake.org/).
    cmake --build .
    ```
 
-   To run GUI on Windows, add files from C:\wxWidgets\lib\vc14x_x64_dll below to build/Debug:
-   (All of these files are debug. 331ud_. Release files are 331u_ with no d and should NOT be included)
-   - wxbase331ud_net_vc14x_x64.dll
-   - wxbase331ud_vc14x_x64.dll
-   - wxbase331ud_xml_vc14x_x64.dll
-   - wxmsw331ud_adv_vc14x_x64.dll
-   - wxmsw331ud_aui_vc14x_x64.dll
-   - wxmsw331ud_core_vc14x_x64.dll
-   - wxmsw331ud_gl_vc14x_x64.dll
-   - wxmsw331ud_html_vc14x_x64.dll
-   - wxmsw331ud_media_vc14x_x64.dll
-   - wxmsw331ud_propgrid_vc14x_x64.dll
-   - wxmsw331ud_qa_vc14x_x64.dll
-   - wxmsw331ud_ribbon_vc14x_x64.dll
-   - wxmsw331ud_richtext_vc14x_x64.dll
-   - wxmsw331ud_stc_vc14x_x64.dll
-   - wxmsw331ud_webview_vc14x_x64.dll
-   - wxmsw331ud_xrc_vc14x_x64.dll
-
 5. **Run the Program**
+
+   **If downloading from GitHub Actions:**
+   
+   Download the appropriate file. For Windows, run the installer. For Mac, open the .dmg and drag and drop the PackingApp to the Applications folder.
+
+   On Mac, run this command as well to override security protections:
+   ```bash
+   xattr -cr /Applications/PackingApp.app
+   ```
+
+   Then, open the program.
+
+   **If building locally:**
 
    After building, an executable named `main` on MacOS, or `main.exe` on Windows, will be created in the `build` directory. Run it with this command on Mac:
    ```bash
@@ -105,6 +103,8 @@ For CMake on Windows, download from [cmake.org](https://cmake.org/).
    ```bash
    Debug/packingapp.exe
    ```
+
+   
    
 
 6. **Test the Program**
