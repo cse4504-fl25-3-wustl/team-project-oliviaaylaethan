@@ -1,15 +1,8 @@
-cmake_minimum_required(VERSION 3.28)
+cmake_minimum_required(VERSION 3.10)
 project(team_project_oliviaaylaethan)
 
 set(CMAKE_CXX_STANDARD 20)
-
-# ensures FAIL() in test files doesn't incorrectly compile as 0() on Windows
-if(WIN32)
-    add_compile_definitions(
-        WIN32_LEAN_AND_MEAN
-        NOMINMAX
-    )
-endif()
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 
 include(FetchContent)
@@ -124,11 +117,33 @@ target_link_libraries(
 include(GoogleTest)
 gtest_discover_tests(all_tests)
 
-# GUI application setup 
-find_package(wxWidgets REQUIRED COMPONENTS net core base) 
-if(wxWidgets_USE_FILE) # not defined in CONFIG mode 
-    include(${wxWidgets_USE_FILE}) 
-endif()
+# GUI application setup - fetch wxWidgets
+
+FetchContent_Declare(
+    wxWidgets
+    GIT_REPOSITORY https://github.com/wxWidgets/wxWidgets.git
+    GIT_TAG v3.3.1
+    GIT_SHALLOW TRUE
+)
+
+# Configure wxWidgets build options - disable everything except what we need
+set(wxBUILD_SHARED OFF CACHE BOOL "Build wx libraries as shared libs")
+set(wxBUILD_SAMPLES OFF CACHE BOOL "Build wxWidgets samples")
+set(wxBUILD_TESTS OFF CACHE BOOL "Build wxWidgets tests")
+set(wxBUILD_DEMOS OFF CACHE BOOL "Build wxWidgets demos")
+set(wxBUILD_BENCHMARKS OFF CACHE BOOL "Build wxWidgets benchmarks")
+set(wxBUILD_INSTALL OFF CACHE BOOL "Do not install wxWidgets")
+set(wxUSE_MEDIACTRL OFF CACHE BOOL "Disable media control")
+set(wxUSE_WEBVIEW OFF CACHE BOOL "Disable webview")
+set(wxUSE_XRC OFF CACHE BOOL "Disable XRC resources")
+set(wxUSE_AUI OFF CACHE BOOL "Disable AUI docking")
+set(wxUSE_RIBBON OFF CACHE BOOL "Disable ribbon")
+set(wxUSE_PROPGRID OFF CACHE BOOL "Disable property grid")
+set(wxUSE_RICHTEXT OFF CACHE BOOL "Disable rich text")
+set(wxUSE_STC OFF CACHE BOOL "Disable styled text control")
+set(wxUSE_GLCANVAS OFF CACHE BOOL "Disable OpenGL canvas")
+
+FetchContent_MakeAvailable(wxWidgets)
 
 # On Windows, build a WIN32 subsystem app (no console, no main())
 # On macOS/Linux, build normally.
@@ -142,8 +157,23 @@ else()
     )
 endif()
 
-target_link_libraries(packingapp core_lib ${wxWidgets_LIBRARIES}) 
+target_link_libraries(packingapp 
+    core_lib 
+    wx::net 
+    wx::core 
+    wx::base
+) 
 target_include_directories(packingapp PRIVATE src/gui)
+
+# Static linking for packingapp on Windows
+if(WIN32 AND MINGW)
+    target_link_options(packingapp PRIVATE
+        -static-libgcc
+        -static-libstdc++
+        -static
+        -Wl,--subsystem,windows
+    )
+endif()
 
 # CPack configuration for DragNDrop
 if(APPLE)
@@ -166,16 +196,32 @@ if(APPLE)
     install(TARGETS packingapp BUNDLE DESTINATION ".")
 endif()
 
-# Configure CPack for Windows EXE generator
+# Configure CPack for Windows NSIS installer
 if(WIN32)
     install(TARGETS packingapp DESTINATION "bin")
+    
+    set(CPACK_PACKAGE_NAME "PackingApp")
+    set(CPACK_PACKAGE_VENDOR "Team Olivia Ayla Ethan")
+    set(CPACK_PACKAGE_VERSION "1.0.0")
+    set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "PackingApp - Art Packing Calculator")
+    
     set(CPACK_GENERATOR "NSIS")
     set(CPACK_PACKAGE_FILE_NAME "PackingAppInstaller")
-    set(CPACK_NSIS_DISPLAY_NAME "PackingApp Installer")
+    set(CPACK_NSIS_DISPLAY_NAME "PackingApp")
     set(CPACK_NSIS_PACKAGE_NAME "PackingApp")
-    set(CPACK_NSIS_MUI_ICON "${CMAKE_SOURCE_DIR}/resources/app_icon.ico")
-    set(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\packingapp.exe")
+    set(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\\\packingapp.exe")
     set(CPACK_NSIS_EXECUTABLES_DIRECTORY "bin")
+    
+    # Create Start Menu shortcuts
+    set(CPACK_NSIS_CREATE_ICONS_EXTRA
+        "CreateShortCut '$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\PackingApp.lnk' '$INSTDIR\\\\bin\\\\packingapp.exe'"
+    )
+    set(CPACK_NSIS_DELETE_ICONS_EXTRA
+        "Delete '$SMPROGRAMS\\\\$START_MENU\\\\PackingApp.lnk'"
+    )
+    
+    # Modify PATH to include bin directory
+    set(CPACK_NSIS_MODIFY_PATH ON)
 endif()
 
 # Include CPack

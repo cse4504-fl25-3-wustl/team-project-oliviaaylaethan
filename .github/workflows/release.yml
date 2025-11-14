@@ -9,42 +9,166 @@ permissions:
   contents: write
 
 jobs:
-  build-mac:
+  build-mac-arm:
     runs-on: macos-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Cache Homebrew
+      - name: Cache Homebrew packages
         uses: actions/cache@v4
         with:
           path: |
-            /Users/runner/Library/Caches/Homebrew
+            ~/Library/Caches/Homebrew
             /usr/local/Homebrew
-          key: homebrew-${{ runner.os }}-${{ hashFiles('**/Brewfile') }}
+          key: homebrew-${{ runner.os }}-${{ hashFiles('.github/workflows/release.yml') }}
           restore-keys: |
             homebrew-${{ runner.os }}-
 
+      - name: Cache wxWidgets source and build
+        uses: actions/cache@v4
+        with:
+          path: |
+            wxwidgets-cache
+          key: wxwidgets-mac-arm-${{ runner.os }}-v3.3.1-${{ hashFiles('CMakeLists.txt') }}
+          restore-keys: |
+            wxwidgets-mac-arm-${{ runner.os }}-v3.3.1-
+
+      - name: Cache ccache
+        uses: actions/cache@v4
+        with:
+          path: ~/.ccache
+          key: ccache-mac-arm-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            ccache-mac-arm-${{ runner.os }}-
+
       - name: Set up C++ tools
         run: |
-          brew install cmake
-          brew install make
-          brew install wxwidgets
-          # Add other dependencies if needed
+          brew install cmake ninja ccache
+          echo "$(brew --prefix)/opt/ccache/libexec" >> $GITHUB_PATH
+
+      - name: Clear build directory and restore cache
+        run: |
+          rm -rf build
+          mkdir -p build/_deps
+          if [ -d wxwidgets-cache ]; then
+            cp -r wxwidgets-cache/* build/_deps/ 2>/dev/null || true
+          fi
 
       - name: Build Mac Executable
         run: |
-          mkdir build
           cd build
-          cmake ..
-          cmake --build .
+          cmake -G Ninja -DCMAKE_BUILD_TYPE=Release ..
+          cmake --build . --parallel $(sysctl -n hw.ncpu)
 
-      - name: Upload Mac Executable
+      - name: Save wxWidgets cache
+        run: |
+          mkdir -p wxwidgets-cache
+          cp -r build/_deps/wxwidgets-* wxwidgets-cache/ 2>/dev/null || true
+
+      - name: Remove quarantine attribute (unsigned workaround)
+        run: |
+          cd build
+          xattr -cr packingapp.app || true
+
+      - name: Create macOS DMG
+        run: |
+          cd build
+          cpack -G DragNDrop
+          # Remove quarantine from DMG as well
+          xattr -cr *.dmg || true
+          # Rename DMG to include arm64 architecture
+          for dmg in *.dmg; do
+            mv "$dmg" "${dmg%.dmg}-arm64.dmg"
+          done
+
+      - name: Upload macOS DMG (Apple Silicon)
         uses: actions/upload-artifact@v4
         with:
-          name: mac-executable
-          path: build/main  # Replace with actual binary name
+          name: mac-arm-installer
+          path: build/*.dmg
+          retention-days: 1
+
+  build-mac-intel:
+    runs-on: macos-latest  # Use ARM runner but cross-compile to Intel
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Cache Homebrew packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Caches/Homebrew
+            /usr/local/Homebrew
+          key: homebrew-${{ runner.os }}-${{ hashFiles('.github/workflows/release.yml') }}
+          restore-keys: |
+            homebrew-${{ runner.os }}-
+
+      - name: Cache wxWidgets source and build
+        uses: actions/cache@v4
+        with:
+          path: |
+            wxwidgets-cache
+          key: wxwidgets-mac-intel-${{ runner.os }}-v3.3.1-${{ hashFiles('CMakeLists.txt') }}
+          restore-keys: |
+            wxwidgets-mac-intel-${{ runner.os }}-v3.3.1-
+
+      - name: Cache ccache
+        uses: actions/cache@v4
+        with:
+          path: ~/.ccache
+          key: ccache-mac-intel-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            ccache-mac-intel-${{ runner.os }}-
+
+      - name: Set up C++ tools
+        run: |
+          brew install cmake ninja ccache
+          echo "$(brew --prefix)/opt/ccache/libexec" >> $GITHUB_PATH
+
+      - name: Clear build directory and restore cache
+        run: |
+          rm -rf build
+          mkdir -p build/_deps
+          if [ -d wxwidgets-cache ]; then
+            cp -r wxwidgets-cache/* build/_deps/ 2>/dev/null || true
+          fi
+
+      - name: Build Mac Executable (Intel via cross-compile)
+        run: |
+          cd build
+          cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES=x86_64 ..
+          cmake --build . --parallel $(sysctl -n hw.ncpu)
+
+      - name: Save wxWidgets cache
+        run: |
+          mkdir -p wxwidgets-cache
+          cp -r build/_deps/wxwidgets-* wxwidgets-cache/ 2>/dev/null || true
+
+      - name: Remove quarantine attribute (unsigned workaround)
+        run: |
+          cd build
+          xattr -cr packingapp.app || true
+
+      - name: Create macOS DMG (Intel)
+        run: |
+          cd build
+          cpack -G DragNDrop
+          # Remove quarantine from DMG as well
+          xattr -cr *.dmg || true
+          # Rename DMG to include x86_64 architecture
+          for dmg in *.dmg; do
+            mv "$dmg" "${dmg%.dmg}-x86_64.dmg"
+          done
+
+      - name: Upload macOS DMG (Intel)
+        uses: actions/upload-artifact@v4
+        with:
+          name: mac-intel-installer
+          path: build/*.dmg
           retention-days: 1
 
   build-windows:
@@ -54,71 +178,79 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Cache wxWidgets binaries
-        id: cache-wxwidgets
+      - name: Cache wxWidgets source and build
         uses: actions/cache@v4
         with:
-          path: C:\wxWidgets
-          key: wxwidgets-msvc-${{ runner.os }}-v3.3.1
+          path: |
+            wxwidgets-cache
+          key: wxwidgets-windows-${{ runner.os }}-v3.3.1-${{ hashFiles('CMakeLists.txt') }}
           restore-keys: |
-            wxwidgets-msvc-${{ runner.os }}-
+            wxwidgets-windows-${{ runner.os }}-v3.3.1-
 
-      - name: Download and extract wxWidgets MSVC binaries
-        if: steps.cache-wxwidgets.outputs.cache-hit != 'true'
+      - name: Install NSIS
+        run: choco install nsis -y
+
+      - name: Clear build directory and restore cache
         run: |
-          $devUrl = "https://github.com/wxWidgets/wxWidgets/releases/download/v3.3.1/wxMSW-3.3.1_vc14x_x64_Dev.7z"
-
-          Invoke-WebRequest -Uri $devUrl -OutFile "wx-dev.7z"
-          7z x wx-dev.7z -oC:\wxWidgets
-          Remove-Item wx-dev.7z
+          if (Test-Path build) { Remove-Item -Recurse -Force build }
+          mkdir build\_deps -Force
+          if (Test-Path wxwidgets-cache) {
+            Copy-Item -Recurse -Force wxwidgets-cache\* build\_deps\ -ErrorAction SilentlyContinue
+          }
 
       - name: Configure + Build (Release, Static)
         run: |
-          $env:WXWIN = "C:\wxWidgets"
-          mkdir build
           cd build
-          cmake -A x64 `
-            -DwxWidgets_ROOT_DIR="C:\wxWidgets" `
-            -DwxWidgets_LIB_DIR="C:\wxWidgets\lib\vc_x64_lib" `
-            -DwxWidgets_USE_STATIC=ON `
-            -DwxWidgets_USE_UNICODE=ON `
-            -DwxWidgets_USE_NET=ON `
-            -DwxWidgets_USE_XML=ON `
-            -DwxWidgets_USE_CORE=ON `
-            -DwxWidgets_USE_BASE=ON ..
-          cmake --build . --config Release
+          cmake -A x64 -DCMAKE_BUILD_TYPE=Release ..
+          cmake --build . --config Release --parallel $env:NUMBER_OF_PROCESSORS
 
-      - name: Upload Windows Executable
+      - name: Save wxWidgets cache
+        run: |
+          if (-not (Test-Path wxwidgets-cache)) { mkdir wxwidgets-cache }
+          Copy-Item -Recurse -Force build\_deps\wxwidgets-* wxwidgets-cache\ -ErrorAction SilentlyContinue
+
+      - name: Create Windows NSIS Installer
+        run: |
+          cd build
+          cpack -G NSIS -C Release
+
+      - name: Upload Windows Installer
         uses: actions/upload-artifact@v4
         with:
-          name: windows-executable
-          path: build/packingapp.exe
-          retention-days: 3
-
+          name: windows-installer
+          path: build/*.exe
+          retention-days: 1
 
   create-release:
-    needs: [build-mac, build-windows]
+    needs: [build-mac-arm, build-mac-intel, build-windows]
     runs-on: ubuntu-latest
 
     steps:
-      - name: Download Mac Executable
+      - name: Download macOS DMG (Apple Silicon)
         uses: actions/download-artifact@v4
         with:
-          name: mac-executable
-          path: ./artifacts/mac
+          name: mac-arm-installer
+          path: ./artifacts/mac-arm
 
-      - name: Download Windows Executable
+      - name: Download macOS DMG (Intel)
         uses: actions/download-artifact@v4
         with:
-          name: windows-executable
+          name: mac-intel-installer
+          path: ./artifacts/mac-intel
+
+      - name: Download Windows Installer
+        uses: actions/download-artifact@v4
+        with:
+          name: windows-installer
           path: ./artifacts/windows
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           files: |
-              ./artifacts/mac/*.dmg
-              ./artifacts/windows/packingapp.exe
+              ./artifacts/mac-arm/*.dmg
+              ./artifacts/mac-intel/*.dmg
+              ./artifacts/windows/*.exe
           name: Release ${{ github.ref_name }}
           draft: false
           prerelease: false
