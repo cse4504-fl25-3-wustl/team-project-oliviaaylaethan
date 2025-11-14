@@ -43,16 +43,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up C++ tools
-        run: |
-          choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System'
-          # Add other dependencies if needed
-
       - name: Build Windows Executable
         run: |
           mkdir build
           cd build
-          cmake ..
+          cmake -G "Ninja" ..
           cmake --build . --config Release
 
       - name: Upload Windows Executable
