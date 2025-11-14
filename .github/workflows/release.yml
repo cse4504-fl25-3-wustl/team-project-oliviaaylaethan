@@ -54,11 +54,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Install wxWidgets
+        run: |
+          git clone https://github.com/microsoft/vcpkg.git
+          cd vcpkg
+          ./bootstrap-vcpkg.bat
+          ./vcpkg integrate install
+          ./vcpkg install wxwidgets
+
       - name: Build Windows Executable
         run: |
           mkdir build
           cd build
-          cmake -G "Ninja" ..
+          cmake -G "Ninja" -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake ..
           cmake --build . --config Release
 
       - name: Upload Windows Executable
