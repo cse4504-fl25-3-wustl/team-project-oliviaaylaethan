@@ -40,10 +40,17 @@ jobs:
           cmake ..
           cmake --build .
 
+      - name: Remove quarantine attribute (unsigned workaround)
+        run: |
+          cd build
+          xattr -cr packingapp.app || true
+
       - name: Create macOS DMG
         run: |
           cd build
           cpack -G DragNDrop
+          # Remove quarantine from DMG as well
+          xattr -cr *.dmg || true
 
       - name: Upload macOS DMG
         uses: actions/upload-artifact@v4
