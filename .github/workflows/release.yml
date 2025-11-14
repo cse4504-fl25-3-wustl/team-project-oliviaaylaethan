@@ -11,6 +11,9 @@ permissions:
 jobs:
   build-mac:
     runs-on: macos-latest
+    strategy:
+      matrix:
+        arch: [x86_64, arm64] # Build Intel and Apple Silicon separately
 
     steps:
       - name: Checkout code
@@ -26,30 +29,29 @@ jobs:
           restore-keys: |
             homebrew-${{ runner.os }}-
 
-      - name: Set up C++ tools
+      - name: Install dependencies
         run: |
-          brew install cmake
-          brew install make
-          brew install wxwidgets
-          # Add other dependencies if needed
+          brew install cmake make wxwidgets
 
-      - name: Build Mac Executable
+      - name: Build Mac Executable (${{ matrix.arch }})
         run: |
-          mkdir build
-          cd build
-          cmake ..
-          cmake --build .
+          mkdir -p build-${{ matrix.arch }}
+          cd build-${{ matrix.arch }}
+          cmake .. \
+            -DCMAKE_OSX_ARCHITECTURES=${{ matrix.arch }} \
+            -DwxWidgets_USE_STATIC=ON \
+            -DwxWidgets_USE_UNICODE=ON
+          cmake --build . --config Release
 
       - name: Upload Mac Executable
         uses: actions/upload-artifact@v4
         with:
-          name: mac-executable
-          path: build/main  # Replace with actual binary name
-          retention-days: 1
+          name: mac-executable-${{ matrix.arch }}
+          path: build-${{ matrix.arch }}/packingapp
+          retention-days: 3
 
   build-windows:
     runs-on: windows-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -67,7 +69,6 @@ jobs:
         if: steps.cache-wxwidgets.outputs.cache-hit != 'true'
         run: |
           $devUrl = "https://github.com/wxWidgets/wxWidgets/releases/download/v3.3.1/wxMSW-3.3.1_vc14x_x64_Dev.7z"
-
           Invoke-WebRequest -Uri $devUrl -OutFile "wx-dev.7z"
           7z x wx-dev.7z -oC:\wxWidgets
           Remove-Item wx-dev.7z
@@ -95,17 +96,21 @@ jobs:
           path: build/packingapp.exe
           retention-days: 3
 
-
   create-release:
     needs: [build-mac, build-windows]
     runs-on: ubuntu-latest
-
     steps:
-      - name: Download Mac Executable
+      - name: Download Mac Executables
         uses: actions/download-artifact@v4
         with:
-          name: mac-executable
-          path: ./artifacts/mac
+          name: mac-executable-x86_64
+          path: ./artifacts/mac/intel
+
+      - name: Download Mac Executables
+        uses: actions/download-artifact@v4
+        with:
+          name: mac-executable-arm64
+          path: ./artifacts/mac/silicon
 
       - name: Download Windows Executable
         uses: actions/download-artifact@v4
@@ -117,11 +122,11 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-              ./artifacts/mac/*.dmg
-              ./artifacts/windows/packingapp.exe
+            ./artifacts/mac/intel/packingapp
+            ./artifacts/mac/silicon/packingapp
+            ./artifacts/windows/packingapp.exe
           name: Release ${{ github.ref_name }}
           draft: false
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
