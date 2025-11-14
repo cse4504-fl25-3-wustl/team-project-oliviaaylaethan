@@ -59,48 +59,48 @@ jobs:
         uses: actions/cache@v4
         with:
           path: C:\wxWidgets
-          key: wxwidgets-mingw-${{ runner.os }}-v3.2.4-gcc1320-x64
+          key: wxwidgets-msvc-${{ runner.os }}-v3.3.1
           restore-keys: |
-            wxwidgets-mingw-${{ runner.os }}-
+            wxwidgets-msvc-${{ runner.os }}-
 
-      - name: Download and extract pre-built wxWidgets (MinGW)
+      - name: Download and extract wxWidgets MSVC binaries
         if: steps.cache-wxwidgets.outputs.cache-hit != 'true'
         run: |
-          $url = "https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.4/wxMSW-3.2.4_gcc1320_x64_Dev.7z"
-          $runtimeUrl = "https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.4/wxMSW-3.2.4_gcc1320_x64_ReleaseDLL.7z"
-          
-          Write-Host "Downloading wxWidgets MinGW binaries..."
-          Invoke-WebRequest -Uri $url -OutFile "wxWidgets-dev.7z"
-          Invoke-WebRequest -Uri $runtimeUrl -OutFile "wxWidgets-runtime.7z"
-          
-          Write-Host "Extracting files..."
-          7z x wxWidgets-dev.7z -oC:\wxWidgets
-          7z x wxWidgets-runtime.7z -oC:\wxWidgets
-          
-          Write-Host "Downloading wxWidgets headers..."
-          $headerUrl = "https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.4/wxWidgets-3.2.4-headers.7z"
-          Invoke-WebRequest -Uri $headerUrl -OutFile "wxWidgets-headers.7z"
-          7z x wxWidgets-headers.7z -oC:\wxWidgets
-          
-          Remove-Item wxWidgets-dev.7z, wxWidgets-runtime.7z, wxWidgets-headers.7z
+          $devUrl = "https://github.com/wxWidgets/wxWidgets/releases/download/v3.3.1/wxMSW-3.3.1_vc14x_x64_Dev.7z"
+          $runtimeUrl = "https://github.com/wxWidgets/wxWidgets/releases/download/v3.3.1/wxMSW-3.3.1_vc14x_x64_ReleaseDLL.7z"
 
-      - name: Build Windows Executable
+          Invoke-WebRequest -Uri $devUrl -OutFile "wx-dev.7z"
+          Invoke-WebRequest -Uri $runtimeUrl -OutFile "wx-runtime.7z"
+
+          7z x wx-dev.7z -oC:\wxWidgets
+          7z x wx-runtime.7z -oC:\wxWidgets
+
+          Remove-Item wx-dev.7z, wx-runtime.7z
+
+      - name: Configure + Build (Release)
         run: |
           $env:WXWIN = "C:\wxWidgets"
-          $env:wxWidgets_ROOT_DIR = "C:\wxWidgets"
-          $env:wxWidgets_LIB_DIR = "C:\wxWidgets\lib\gcc1320_x64_dll"
-          
           mkdir build
           cd build
-          cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DwxWidgets_ROOT_DIR="C:\wxWidgets" -DwxWidgets_LIB_DIR="C:\wxWidgets\lib\gcc1320_x64_dll" ..
+          cmake -A x64 -DwxWidgets_ROOT_DIR="C:\wxWidgets" -DwxWidgets_LIB_DIR="C:\wxWidgets\lib\vc_x64_lib" -DCMAKE_BUILD_TYPE=Release ..
           cmake --build . --config Release
 
-      - name: Upload Windows Executable
+      - name: Copy wxWidgets DLLs into build folder
+        run: |
+          Copy-Item "C:\wxWidgets\lib\vc_x64_dll\*.dll" -Destination "build" -Force
+
+      - name: Create Windows ZIP package
+        run: |
+          cd build
+          powershell Compress-Archive -Path * -DestinationPath ../windows-package.zip -Force
+
+      - name: Upload Windows Build ZIP
         uses: actions/upload-artifact@v4
         with:
           name: windows-executable
-          path: build/packingapp.exe
-          retention-days: 1
+          path: windows-package.zip
+          retention-days: 3
+
 
   create-release:
     needs: [build-mac, build-windows]
@@ -124,7 +124,7 @@ jobs:
         with:
           files: |
               ./artifacts/mac/*.dmg
-              ./artifacts/windows/*.exe
+              ./artifacts/windows/windows-package.zip
           name: Release ${{ github.ref_name }}
           draft: false
           prerelease: false
