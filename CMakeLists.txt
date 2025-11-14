@@ -124,11 +124,23 @@ target_link_libraries(
 include(GoogleTest)
 gtest_discover_tests(all_tests)
 
-# GUI application setup 
-find_package(wxWidgets REQUIRED COMPONENTS net core base) 
-if(wxWidgets_USE_FILE) # not defined in CONFIG mode 
-    include(${wxWidgets_USE_FILE}) 
-endif()
+# GUI application setup - fetch wxWidgets
+FetchContent_Declare(
+    wxWidgets
+    GIT_REPOSITORY https://github.com/wxWidgets/wxWidgets.git
+    GIT_TAG master
+    GIT_SHALLOW TRUE
+)
+
+# Configure wxWidgets build options
+set(wxBUILD_SHARED OFF CACHE BOOL "Build wx libraries as shared libs")
+set(wxBUILD_SAMPLES OFF CACHE BOOL "Build wxWidgets samples")
+set(wxBUILD_TESTS OFF CACHE BOOL "Build wxWidgets tests")
+set(wxBUILD_DEMOS OFF CACHE BOOL "Build wxWidgets demos")
+set(wxBUILD_BENCHMARKS OFF CACHE BOOL "Build wxWidgets benchmarks")
+set(wxBUILD_INSTALL OFF CACHE BOOL "Do not install wxWidgets")
+
+FetchContent_MakeAvailable(wxWidgets)
 
 # On Windows, build a WIN32 subsystem app (no console, no main())
 # On macOS/Linux, build normally.
@@ -142,7 +154,12 @@ else()
     )
 endif()
 
-target_link_libraries(packingapp core_lib ${wxWidgets_LIBRARIES}) 
+target_link_libraries(packingapp 
+    core_lib 
+    wx::net 
+    wx::core 
+    wx::base
+) 
 target_include_directories(packingapp PRIVATE src/gui)
 
 # Static linking for packingapp on Windows
@@ -179,24 +196,6 @@ endif()
 # Configure CPack for Windows NSIS installer
 if(WIN32)
     install(TARGETS packingapp DESTINATION "bin")
-    
-    # Install wxWidgets DLLs alongside the executable
-    if(DEFINED ENV{wxWidgets_LIB_DIR})
-        file(GLOB WXWIDGETS_DLLS "$ENV{wxWidgets_LIB_DIR}/*.dll")
-        install(FILES ${WXWIDGETS_DLLS} DESTINATION "bin")
-    endif()
-    
-    # Install MinGW runtime DLLs if needed
-    if(MINGW)
-        get_filename_component(MINGW_BIN_DIR ${CMAKE_CXX_COMPILER} DIRECTORY)
-        install(FILES 
-            "${MINGW_BIN_DIR}/libgcc_s_seh-1.dll"
-            "${MINGW_BIN_DIR}/libstdc++-6.dll"
-            "${MINGW_BIN_DIR}/libwinpthread-1.dll"
-            DESTINATION "bin"
-            OPTIONAL
-        )
-    endif()
     
     set(CPACK_PACKAGE_NAME "PackingApp")
     set(CPACK_PACKAGE_VENDOR "Team Olivia Ayla Ethan")

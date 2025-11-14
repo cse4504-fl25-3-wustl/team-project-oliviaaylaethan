@@ -16,22 +16,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Cache Homebrew
+      - name: Cache wxWidgets build
         uses: actions/cache@v4
         with:
-          path: |
-            /Users/runner/Library/Caches/Homebrew
-            /usr/local/Homebrew
-          key: homebrew-${{ runner.os }}-${{ hashFiles('**/Brewfile') }}
+          path: build/_deps/wxwidgets-*
+          key: wxwidgets-mac-${{ runner.os }}-master-${{ hashFiles('CMakeLists.txt') }}
           restore-keys: |
-            homebrew-${{ runner.os }}-
+            wxwidgets-mac-${{ runner.os }}-master-
 
       - name: Set up C++ tools
         run: |
           brew install cmake
-          brew install make
-          brew install wxwidgets
-          # Add other dependencies if needed
+          brew install ninja
 
       - name: Build Mac Executable
         run: |
@@ -66,50 +62,26 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Cache wxWidgets binaries
-        id: cache-wxwidgets
+      - name: Cache wxWidgets build
         uses: actions/cache@v4
         with:
-          path: C:\wxWidgets
-          key: wxwidgets-mingw-${{ runner.os }}-v3.2.4-gcc1320-x64
+          path: build/_deps/wxwidgets-*
+          key: wxwidgets-windows-${{ runner.os }}-master-${{ hashFiles('CMakeLists.txt') }}
           restore-keys: |
-            wxwidgets-mingw-${{ runner.os }}-
-
-      - name: Download and extract pre-built wxWidgets (MinGW)
-        if: steps.cache-wxwidgets.outputs.cache-hit != 'true'
-        run: |
-          $url = "https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.4/wxMSW-3.2.4_gcc1320_x64_Dev.7z"
-          
-          Write-Host "Downloading wxWidgets MinGW static binaries..."
-          Invoke-WebRequest -Uri $url -OutFile "wxWidgets-dev.7z"
-          
-          Write-Host "Extracting files..."
-          7z x wxWidgets-dev.7z -oC:\wxWidgets
-          
-          Write-Host "Downloading wxWidgets headers..."
-          $headerUrl = "https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.4/wxWidgets-3.2.4-headers.7z"
-          Invoke-WebRequest -Uri $headerUrl -OutFile "wxWidgets-headers.7z"
-          7z x wxWidgets-headers.7z -oC:\wxWidgets
-          
-          Remove-Item wxWidgets-dev.7z, wxWidgets-headers.7z
+            wxwidgets-windows-${{ runner.os }}-master-
 
       - name: Install NSIS
         run: choco install nsis -y
 
-      - name: Build Windows Executable (static)
+      - name: Build Windows Executable
         run: |
-          $env:WXWIN = "C:\wxWidgets"
-          $env:wxWidgets_ROOT_DIR = "C:\wxWidgets"
-          $env:wxWidgets_LIB_DIR = "C:\wxWidgets\lib\gcc1320_x64_lib"
-          
           mkdir build
           cd build
-          cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DwxWidgets_ROOT_DIR="C:\wxWidgets" -DwxWidgets_LIB_DIR="C:\wxWidgets\lib\gcc1320_x64_lib" ..
+          cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Release ..
           cmake --build . --config Release
 
       - name: Create Windows NSIS Installer
         run: |
-          $env:wxWidgets_LIB_DIR = "C:\wxWidgets\lib\gcc1320_x64_lib"
           cd build
           cpack -G NSIS
 
