@@ -67,43 +67,32 @@ jobs:
         if: steps.cache-wxwidgets.outputs.cache-hit != 'true'
         run: |
           $devUrl = "https://github.com/wxWidgets/wxWidgets/releases/download/v3.3.1/wxMSW-3.3.1_vc14x_x64_Dev.7z"
-          $runtimeUrl = "https://github.com/wxWidgets/wxWidgets/releases/download/v3.3.1/wxMSW-3.3.1_vc14x_x64_ReleaseDLL.7z"
 
-          Write-Host "Removing any previous wxWidgets folder..."
-          if (Test-Path "C:\wxWidgets") { Remove-Item "C:\wxWidgets" -Recurse -Force }
-
-          Write-Host "Downloading wxWidgets binaries..."
           Invoke-WebRequest -Uri $devUrl -OutFile "wx-dev.7z"
-          Invoke-WebRequest -Uri $runtimeUrl -OutFile "wx-runtime.7z"
+          7z x wx-dev.7z -oC:\wxWidgets
+          Remove-Item wx-dev.7z
 
-          Write-Host "Extracting wxWidgets binaries..."
-          7z x wx-dev.7z -oC:\wxWidgets -y
-          7z x wx-runtime.7z -oC:\wxWidgets -y
-
-          Remove-Item wx-dev.7z, wx-runtime.7z
-
-      - name: Configure + Build (Release)
+      - name: Configure + Build (Release, Static)
         run: |
           $env:WXWIN = "C:\wxWidgets"
           mkdir build
           cd build
-          cmake -A x64 -DwxWidgets_ROOT_DIR="C:\wxWidgets" -DwxWidgets_LIB_DIR="C:\wxWidgets\lib\vc_x64_lib" -DCMAKE_BUILD_TYPE=Release ..
+          cmake -A x64 `
+            -DwxWidgets_ROOT_DIR="C:\wxWidgets" `
+            -DwxWidgets_LIB_DIR="C:\wxWidgets\lib\vc_x64_lib" `
+            -DwxWidgets_USE_STATIC=ON `
+            -DwxWidgets_USE_UNICODE=ON `
+            -DwxWidgets_USE_NET=ON `
+            -DwxWidgets_USE_XML=ON `
+            -DwxWidgets_USE_CORE=ON `
+            -DwxWidgets_USE_BASE=ON ..
           cmake --build . --config Release
 
-      - name: Copy wxWidgets DLLs into build folder
-        run: |
-          Copy-Item "C:\wxWidgets\lib\vc_x64_dll\*.dll" -Destination "build" -Force
-
-      - name: Create Windows ZIP package
-        run: |
-          cd build
-          powershell Compress-Archive -Path * -DestinationPath ../windows-package.zip -Force
-
-      - name: Upload Windows Build ZIP
+      - name: Upload Windows Executable
         uses: actions/upload-artifact@v4
         with:
           name: windows-executable
-          path: windows-package.zip
+          path: build/packingapp.exe
           retention-days: 3
 
 
@@ -129,7 +118,7 @@ jobs:
         with:
           files: |
               ./artifacts/mac/*.dmg
-              ./artifacts/windows/windows-package.zip
+              ./artifacts/windows/packingapp.exe
           name: Release ${{ github.ref_name }}
           draft: false
           prerelease: false
