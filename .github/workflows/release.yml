@@ -68,9 +68,10 @@ jobs:
 
       - name: Build Windows Executable
         run: |
+          $env:WXWIN = "C:/wxWidgets-3.1.2"
           mkdir build
           cd build
-          cmake -G "Ninja" -DwxWidgets_ROOT_DIR="C:/wxWidgets-3.1.2" -DwxWidgets_LIB_DIR="C:/wxWidgets-3.1.2/lib" ..
+          cmake -G "Ninja" ..
           cmake --build . --config Release
 
       - name: Upload Windows Executable
