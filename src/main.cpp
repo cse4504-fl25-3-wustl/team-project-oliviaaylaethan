@@ -9,5 +9,10 @@
 #include <filesystem>
 
 int main(int argc, char* argv[]) {
-    return Estimator::RunEstimator(argc, argv);
+    std::optional<Response> responseOpt = Estimator::RunEstimator(argc, argv);
+    if (!responseOpt.has_value()) {
+        std::cout << "Error running estimator." << std::endl;
+        return 1;
+    }
+    return 0;
 }

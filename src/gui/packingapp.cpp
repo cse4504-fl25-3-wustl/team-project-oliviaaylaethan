@@ -167,10 +167,13 @@ void PackingFrame::OnRunEstimator(wxCommandEvent& event)
     };
 
     // Call estimator
-    if (Estimator::RunEstimator(4, argv) != 0) {
+    std::optional<Response> responseOpt = Estimator::RunEstimator(4, argv);
+    if (!responseOpt.has_value()) {
         logBox_->AppendText("Error running estimator.\n");
         return;
     }
+
+    Response response = responseOpt.value();
 
     // ---- Read JSON from file ----
     std::ifstream inFile(outputFilePath);
@@ -179,16 +182,14 @@ void PackingFrame::OnRunEstimator(wxCommandEvent& event)
         return;
     }
 
-    nlohmann::json data;
-    inFile >> data;
-
     // Finish up
     logBox_->AppendText("Estimation complete!\n");
     logBox_->AppendText("Output saved to: " +
                         wxString(outputFilePath) + "\n");
 
-    logBox_->AppendText("JSON Output:\n");
-    logBox_->AppendText(wxString(data.dump(4)) + "\n");
+    for (const auto& line : response.getWeightSummary()) {
+        logBox_->AppendText(line + "\n");
+    }
 
 }
 
