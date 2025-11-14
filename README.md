@@ -13,7 +13,16 @@ For CMake on Windows, download from [cmake.org](https://cmake.org/).
 
 ### Build and Run Instructions
 
-1. **Create a Build Directory**
+1. **Install Prerequisites**
+
+   Install wxwidgets first.
+
+   On Mac:
+   ```bash
+   brew install wxwidgets
+   ```
+
+2. **Create a Build Directory**
 
    Make a new directory for the build files that CMake generates (this directory name is included in .gitignore):
    ```bash
@@ -21,21 +30,21 @@ For CMake on Windows, download from [cmake.org](https://cmake.org/).
    cd build
    ```
 
-2. **Generate Build Files**
+3. **Generate Build Files**
 
    Run CMake to generate the build system:
    ```bash
    cmake ..
    ```
 
-3. **Build the Project**
+4. **Build the Project**
 
    Use the generated build system to compile the project:
    ```bash
    cmake --build .
    ```
 
-4. **Run the Program**
+5. **Run the Program**
 
    After building, an executable named `main` on MacOS, or `main.exe` on Windows, will be created in the `build` directory. Run it with this command on Mac:
    ```bash
@@ -48,7 +57,7 @@ For CMake on Windows, download from [cmake.org](https://cmake.org/).
 
    Note: The program takes input files as absolute paths.
 
-5. **Test the Program**
+6. **Test the Program**
 
    Run all tests with this command in the `build` directory:
    ```bash
