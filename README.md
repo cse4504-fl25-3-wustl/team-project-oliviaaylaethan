@@ -11,9 +11,40 @@ brew install cmake
 
 For CMake on Windows, download from [cmake.org](https://cmake.org/).
 
+
+
 ### Build and Run Instructions
 
-1. **Create a Build Directory**
+Using GitHub releases? Download the appropriate file, then skip to step 5!
+
+1. **Install Prerequisites**
+
+   Install wxwidgets first.
+
+   On Mac:
+   ```bash
+   brew install wxwidgets
+   ```
+
+   On Windows:
+   https://wxwidgets.org/downloads/#v3.3.1_msw
+   
+   Download Windows Binaries:
+   - Visual Studio
+      - Header files
+      - Development files
+
+   Unzip files and move to this folder:
+      C:\wxWidgets
+
+   Inside should include:
+      - lib
+      - licence.txt
+      - wxwidgets.props
+      - build
+      - include
+
+2. **Create a Build Directory**
 
    Make a new directory for the build files that CMake generates (this directory name is included in .gitignore):
    ```bash
@@ -21,21 +52,36 @@ For CMake on Windows, download from [cmake.org](https://cmake.org/).
    cd build
    ```
 
-2. **Generate Build Files**
+3. **Generate Build Files**
 
    Run CMake to generate the build system:
    ```bash
    cmake ..
    ```
 
-3. **Build the Project**
+   Note: On Windows, use powershell.
+
+4. **Build the Project**
 
    Use the generated build system to compile the project:
    ```bash
    cmake --build .
    ```
 
-4. **Run the Program**
+5. **Run the Program**
+
+   **If downloading from GitHub Actions:**
+   
+   Download the appropriate file. For Windows, run the installer. For Mac, open the .dmg and drag and drop the PackingApp to the Applications folder.
+
+   On Mac, run this command as well to override security protections:
+   ```bash
+   xattr -cr /Applications/PackingApp.app
+   ```
+
+   Then, open the program.
+
+   **If building locally:**
 
    After building, an executable named `main` on MacOS, or `main.exe` on Windows, will be created in the `build` directory. Run it with this command on Mac:
    ```bash
@@ -48,7 +94,20 @@ For CMake on Windows, download from [cmake.org](https://cmake.org/).
 
    Note: The program takes input files as absolute paths.
 
-5. **Test the Program**
+   Run GUI on Mac:
+   ```bash
+   ./packingapp
+   ```
+
+   Run GUI on Windows:
+   ```bash
+   Debug/packingapp.exe
+   ```
+
+   
+   
+
+6. **Test the Program**
 
    Run all tests with this command in the `build` directory:
    ```bash
