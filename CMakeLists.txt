@@ -133,8 +133,7 @@ add_executable(packingapp src/gui/packingapp.cpp)
 target_link_libraries(packingapp core_lib ${wxWidgets_LIBRARIES}) 
 target_include_directories(packingapp PRIVATE src/gui)
 
-
-# Ensure packingapp is a macOS .app bundle
+# CPack configuration for DragNDrop
 if(APPLE)
     set(MACOSX_BUNDLE_ICON_FILE app_icon.icns)
     set_source_files_properties(${CMAKE_SOURCE_DIR}/_deps/app_icon.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
@@ -143,10 +142,7 @@ if(APPLE)
         MACOSX_BUNDLE TRUE
         MACOSX_BUNDLE_INFO_PLIST ${CMAKE_SOURCE_DIR}/_deps/Info.plist
     )
-endif()
 
-# CPack configuration for DragNDrop
-if(APPLE)
     set(CPACK_GENERATOR "DragNDrop")
     set(CPACK_DMG_VOLUME_NAME "${CPACK_PACKAGE_NAME}")
     set(CPACK_DMG_FORMAT "UDBZ") # Compressed DMG
@@ -155,19 +151,19 @@ if(APPLE)
     set(CPACK_DMG_CONTENT
         "${CMAKE_BINARY_DIR}/packingapp.app /Applications"
     )
-endif()
-
-# Exclude unwanted directories from the DMG
-if(APPLE)
-    set(CPACK_DMG_EXCLUDE_DIRECTORIES
-        "${CMAKE_BINARY_DIR}/include"
-        "${CMAKE_BINARY_DIR}/lib"
-    )
-endif()
-
-# Ensure the .app bundle is installed to the correct location
-if(APPLE)
     install(TARGETS packingapp BUNDLE DESTINATION ".")
+endif()
+
+# Configure CPack for Windows EXE generator
+if(WIN32)
+    install(TARGETS packingapp DESTINATION "bin")
+    set(CPACK_GENERATOR "NSIS")
+    set(CPACK_PACKAGE_FILE_NAME "PackingAppInstaller")
+    set(CPACK_NSIS_DISPLAY_NAME "PackingApp Installer")
+    set(CPACK_NSIS_PACKAGE_NAME "PackingApp")
+    set(CPACK_NSIS_MUI_ICON "${CMAKE_SOURCE_DIR}/resources/app_icon.ico")
+    set(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\packingapp.exe")
+    set(CPACK_NSIS_EXECUTABLES_DIRECTORY "bin")
 endif()
 
 # Include CPack
