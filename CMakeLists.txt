@@ -132,3 +132,43 @@ endif()
 add_executable(packingapp src/gui/packingapp.cpp) 
 target_link_libraries(packingapp core_lib ${wxWidgets_LIBRARIES}) 
 target_include_directories(packingapp PRIVATE src/gui)
+
+
+# Ensure packingapp is a macOS .app bundle
+if(APPLE)
+    set(MACOSX_BUNDLE_ICON_FILE app_icon.icns)
+    set_source_files_properties(${CMAKE_SOURCE_DIR}/_deps/app_icon.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+
+    set_target_properties(packingapp PROPERTIES
+        MACOSX_BUNDLE TRUE
+        MACOSX_BUNDLE_INFO_PLIST ${CMAKE_SOURCE_DIR}/_deps/Info.plist
+    )
+endif()
+
+# CPack configuration for DragNDrop
+if(APPLE)
+    set(CPACK_GENERATOR "DragNDrop")
+    set(CPACK_DMG_VOLUME_NAME "${CPACK_PACKAGE_NAME}")
+    set(CPACK_DMG_FORMAT "UDBZ") # Compressed DMG
+
+    # Ensure the .app bundle is included in the DMG
+    set(CPACK_DMG_CONTENT
+        "${CMAKE_BINARY_DIR}/packingapp.app /Applications"
+    )
+endif()
+
+# Exclude unwanted directories from the DMG
+if(APPLE)
+    set(CPACK_DMG_EXCLUDE_DIRECTORIES
+        "${CMAKE_BINARY_DIR}/include"
+        "${CMAKE_BINARY_DIR}/lib"
+    )
+endif()
+
+# Ensure the .app bundle is installed to the correct location
+if(APPLE)
+    install(TARGETS packingapp BUNDLE DESTINATION ".")
+endif()
+
+# Include CPack
+include(CPack)
