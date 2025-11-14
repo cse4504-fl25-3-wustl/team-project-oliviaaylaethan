@@ -54,13 +54,12 @@ jobs:
           cd build
           cmake ..
           cmake --build . --config Release
-          # Replace with your actual build commands
 
       - name: Upload Windows Executable
         uses: actions/upload-artifact@v4
         with:
           name: windows-executable
-          path: build/Release/main.exe  # Replace with actual binary name
+          path: build/Release/main.exe
           retention-days: 1
 
   create-release:
@@ -84,8 +83,8 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-              ./artifacts/mac/main
-              ./artifacts/windows/main.exe
+              ./artifacts/mac/*.dmg
+              ./artifacts/windows/*.exe
           name: Release ${{ github.ref_name }}
           draft: false
           prerelease: false
