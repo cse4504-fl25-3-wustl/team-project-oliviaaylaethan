@@ -54,19 +54,23 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install wxWidgets
+      - name: Ensure Chocolatey is installed
         run: |
-          git clone https://github.com/microsoft/vcpkg.git
-          cd vcpkg
-          ./bootstrap-vcpkg.bat
-          ./vcpkg integrate install
-          ./vcpkg install wxwidgets
+          if (-Not (Get-Command choco -ErrorAction SilentlyContinue)) {
+            Set-ExecutionPolicy Bypass -Scope Process -Force; \
+            [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; \
+            iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+          }
+
+      - name: Install wxWidgets with Chocolatey
+        run: |
+          choco install wxwidgets -y
 
       - name: Build Windows Executable
         run: |
           mkdir build
           cd build
-          cmake -G "Ninja" -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake ..
+          cmake -G "Ninja" ..
           cmake --build . --config Release
 
       - name: Upload Windows Executable
