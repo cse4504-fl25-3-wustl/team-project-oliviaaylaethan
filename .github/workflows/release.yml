@@ -69,11 +69,16 @@ jobs:
           $devUrl = "https://github.com/wxWidgets/wxWidgets/releases/download/v3.3.1/wxMSW-3.3.1_vc14x_x64_Dev.7z"
           $runtimeUrl = "https://github.com/wxWidgets/wxWidgets/releases/download/v3.3.1/wxMSW-3.3.1_vc14x_x64_ReleaseDLL.7z"
 
+          Write-Host "Removing any previous wxWidgets folder..."
+          if (Test-Path "C:\wxWidgets") { Remove-Item "C:\wxWidgets" -Recurse -Force }
+
+          Write-Host "Downloading wxWidgets binaries..."
           Invoke-WebRequest -Uri $devUrl -OutFile "wx-dev.7z"
           Invoke-WebRequest -Uri $runtimeUrl -OutFile "wx-runtime.7z"
 
-          7z x wx-dev.7z -oC:\wxWidgets
-          7z x wx-runtime.7z -oC:\wxWidgets
+          Write-Host "Extracting wxWidgets binaries..."
+          7z x wx-dev.7z -oC:\wxWidgets -y
+          7z x wx-runtime.7z -oC:\wxWidgets -y
 
           Remove-Item wx-dev.7z, wx-runtime.7z
 
