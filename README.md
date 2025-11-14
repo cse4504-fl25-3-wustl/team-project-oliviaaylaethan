@@ -34,7 +34,7 @@ For CMake on Windows, download from [cmake.org](https://cmake.org/).
       C:\wxWidgets
 
    Inside should include:
-      -lib
+      - lib
       - licence.txt
       - wxwidgets.props
       - build
@@ -65,7 +65,7 @@ For CMake on Windows, download from [cmake.org](https://cmake.org/).
    ```
 
    To run GUI on Windows, add files from C:\wxWidgets\lib\vc14x_x64_dll below to build/Debug:
-   (All of these files are debug. 331ud_. Release files are 331u_ with no d and should be included)
+   (All of these files are debug. 331ud_. Release files are 331u_ with no d and should NOT be included)
    - wxbase331ud_net_vc14x_x64.dll
    - wxbase331ud_vc14x_x64.dll
    - wxbase331ud_xml_vc14x_x64.dll
