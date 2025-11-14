@@ -77,13 +77,13 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Release ..
+          cmake -A x64 -DCMAKE_BUILD_TYPE=Release ..
           cmake --build . --config Release
 
       - name: Create Windows NSIS Installer
         run: |
           cd build
-          cpack -G NSIS
+          cpack -G NSIS -C Release
 
       - name: Upload Windows Installer
         uses: actions/upload-artifact@v4
