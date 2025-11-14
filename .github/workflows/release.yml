@@ -16,10 +16,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Cache Homebrew
+        uses: actions/cache@v4
+        with:
+          path: |
+            /Users/runner/Library/Caches/Homebrew
+            /usr/local/Homebrew
+          key: homebrew-${{ runner.os }}-${{ hashFiles('**/Brewfile') }}
+          restore-keys: |
+            homebrew-${{ runner.os }}-
+
       - name: Set up C++ tools
         run: |
           brew install cmake
           brew install make
+          brew install wxwidgets
           # Add other dependencies if needed
 
       - name: Build Mac Executable
@@ -85,4 +96,4 @@ jobs:
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
+
