@@ -145,6 +145,16 @@ endif()
 target_link_libraries(packingapp core_lib ${wxWidgets_LIBRARIES}) 
 target_include_directories(packingapp PRIVATE src/gui)
 
+# Static linking for packingapp on Windows
+if(WIN32 AND MINGW)
+    target_link_options(packingapp PRIVATE
+        -static-libgcc
+        -static-libstdc++
+        -static
+        -Wl,--subsystem,windows
+    )
+endif()
+
 # CPack configuration for DragNDrop
 if(APPLE)
     set(MACOSX_BUNDLE_ICON_FILE app_icon.icns)
