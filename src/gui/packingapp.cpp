@@ -26,6 +26,7 @@ private:
 
     wxFilePickerCtrl* filePickerData_;
     wxFilePickerCtrl* filePickerReq_;
+    wxDirPickerCtrl* folderPickerOut_;
     wxTextCtrl* logBox_;
 };
  
@@ -84,6 +85,17 @@ PackingFrame::PackingFrame()
            0, wxLEFT | wxTOP, 10);
     sizer->Add(filePickerReq_, 0, wxEXPAND | wxALL, 10);
 
+    // Folder picker for output location
+    folderPickerOut_ = new wxDirPickerCtrl(
+        panel, wxID_ANY, "", "Select folder to save output.json",
+        wxDefaultPosition, wxDefaultSize,
+        wxDIRP_USE_TEXTCTRL | wxDIRP_DIR_MUST_EXIST
+    );
+    sizer->Add(new wxStaticText(panel, wxID_ANY, "Select output folder:"), 
+            0, wxLEFT | wxTOP, 10);
+    sizer->Add(folderPickerOut_, 0, wxEXPAND | wxALL, 10);
+
+
     // Run Estimator button
     wxButton* runButton = new wxButton(panel, ID_RunEstimator, "Run Estimator");
     sizer->Add(runButton, 0, wxALIGN_LEFT | wxALL, 10);
@@ -122,9 +134,10 @@ void PackingFrame::OnRunEstimator(wxCommandEvent& event)
 {
     wxString dataPath = filePickerData_->GetPath();
     wxString reqPath  = filePickerReq_->GetPath();
+    wxString outputPath = folderPickerOut_->GetPath();
 
-    if (dataPath.IsEmpty() || reqPath.IsEmpty()) {
-        wxMessageBox("Please select both input files first.",
+    if (dataPath.IsEmpty() || reqPath.IsEmpty() || outputPath.IsEmpty()) {
+        wxMessageBox("Please select both input files and output path.",
                     "Missing input",
                     wxOK | wxICON_WARNING);
         return;
@@ -133,28 +146,28 @@ void PackingFrame::OnRunEstimator(wxCommandEvent& event)
     logBox_->AppendText("Running estimator...\n");
     logBox_->AppendText("Art Data: " + dataPath + "\n");
     logBox_->AppendText("Requirements: " + reqPath + "\n");
+    logBox_->AppendText("Output Path: " + outputPath + "\n");
 
     // Convert wxString → std::string
     std::string dataInputFile = dataPath.ToStdString();
     std::string requirementsInputFile = reqPath.ToStdString();
-
-    // Output file
-    std::string outputFilePath =
-        std::filesystem::current_path().string() + "/output.json";
+    std::string outputFilePath = outputPath.ToStdString() + "/output.json";
 
     // Build stable argument array
     std::string arg0 = "estimator";
     std::string arg1 = dataInputFile;
     std::string arg2 = requirementsInputFile;
+    std::string arg3 = outputFilePath;
 
     char* argv[] = {
         arg0.data(),
         arg1.data(),
-        arg2.data()
+        arg2.data(),
+        arg3.data()
     };
 
     // Call estimator
-    if (Estimator::RunEstimator(3, argv) != 0) {
+    if (Estimator::RunEstimator(4, argv) != 0) {
         logBox_->AppendText("Error running estimator.\n");
         return;
     }
