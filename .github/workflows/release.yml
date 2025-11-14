@@ -40,11 +40,16 @@ jobs:
           cmake ..
           cmake --build .
 
-      - name: Upload Mac Executable
+      - name: Create macOS DMG
+        run: |
+          cd build
+          cpack -G DragNDrop
+
+      - name: Upload macOS DMG
         uses: actions/upload-artifact@v4
         with:
-          name: mac-executable
-          path: build/main  # Replace with actual binary name
+          name: mac-installer
+          path: build/*.dmg
           retention-days: 1
 
   build-windows:
@@ -84,6 +89,9 @@ jobs:
           
           Remove-Item wxWidgets-dev.7z, wxWidgets-runtime.7z, wxWidgets-headers.7z
 
+      - name: Install NSIS
+        run: choco install nsis -y
+
       - name: Build Windows Executable
         run: |
           $env:WXWIN = "C:\wxWidgets"
@@ -95,11 +103,17 @@ jobs:
           cmake -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DwxWidgets_ROOT_DIR="C:\wxWidgets" -DwxWidgets_LIB_DIR="C:\wxWidgets\lib\gcc1320_x64_dll" ..
           cmake --build . --config Release
 
-      - name: Upload Windows Executable
+      - name: Create Windows NSIS Installer
+        run: |
+          $env:wxWidgets_LIB_DIR = "C:\wxWidgets\lib\gcc1320_x64_dll"
+          cd build
+          cpack -G NSIS
+
+      - name: Upload Windows Installer
         uses: actions/upload-artifact@v4
         with:
-          name: windows-executable
-          path: build/packingapp.exe
+          name: windows-installer
+          path: build/*.exe
           retention-days: 1
 
   create-release:
@@ -107,16 +121,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Download Mac Executable
+      - name: Download macOS DMG
         uses: actions/download-artifact@v4
         with:
-          name: mac-executable
+          name: mac-installer
           path: ./artifacts/mac
 
-      - name: Download Windows Executable
+      - name: Download Windows Installer
         uses: actions/download-artifact@v4
         with:
-          name: windows-executable
+          name: windows-installer
           path: ./artifacts/windows
 
       - name: Create GitHub Release

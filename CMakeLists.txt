@@ -166,16 +166,50 @@ if(APPLE)
     install(TARGETS packingapp BUNDLE DESTINATION ".")
 endif()
 
-# Configure CPack for Windows EXE generator
+# Configure CPack for Windows NSIS installer
 if(WIN32)
     install(TARGETS packingapp DESTINATION "bin")
+    
+    # Install wxWidgets DLLs alongside the executable
+    if(DEFINED ENV{wxWidgets_LIB_DIR})
+        file(GLOB WXWIDGETS_DLLS "$ENV{wxWidgets_LIB_DIR}/*.dll")
+        install(FILES ${WXWIDGETS_DLLS} DESTINATION "bin")
+    endif()
+    
+    # Install MinGW runtime DLLs if needed
+    if(MINGW)
+        get_filename_component(MINGW_BIN_DIR ${CMAKE_CXX_COMPILER} DIRECTORY)
+        install(FILES 
+            "${MINGW_BIN_DIR}/libgcc_s_seh-1.dll"
+            "${MINGW_BIN_DIR}/libstdc++-6.dll"
+            "${MINGW_BIN_DIR}/libwinpthread-1.dll"
+            DESTINATION "bin"
+            OPTIONAL
+        )
+    endif()
+    
+    set(CPACK_PACKAGE_NAME "PackingApp")
+    set(CPACK_PACKAGE_VENDOR "Team Olivia Ayla Ethan")
+    set(CPACK_PACKAGE_VERSION "1.0.0")
+    set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "PackingApp - Art Packing Calculator")
+    
     set(CPACK_GENERATOR "NSIS")
     set(CPACK_PACKAGE_FILE_NAME "PackingAppInstaller")
-    set(CPACK_NSIS_DISPLAY_NAME "PackingApp Installer")
+    set(CPACK_NSIS_DISPLAY_NAME "PackingApp")
     set(CPACK_NSIS_PACKAGE_NAME "PackingApp")
-    set(CPACK_NSIS_MUI_ICON "${CMAKE_SOURCE_DIR}/resources/app_icon.ico")
-    set(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\packingapp.exe")
+    set(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\\\packingapp.exe")
     set(CPACK_NSIS_EXECUTABLES_DIRECTORY "bin")
+    
+    # Create Start Menu shortcuts
+    set(CPACK_NSIS_CREATE_ICONS_EXTRA
+        "CreateShortCut '$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\PackingApp.lnk' '$INSTDIR\\\\bin\\\\packingapp.exe'"
+    )
+    set(CPACK_NSIS_DELETE_ICONS_EXTRA
+        "Delete '$SMPROGRAMS\\\\$START_MENU\\\\PackingApp.lnk'"
+    )
+    
+    # Modify PATH to include bin directory
+    set(CPACK_NSIS_MODIFY_PATH ON)
 endif()
 
 # Include CPack
