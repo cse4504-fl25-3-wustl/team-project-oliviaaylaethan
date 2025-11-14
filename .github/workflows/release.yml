@@ -76,6 +76,7 @@ jobs:
         run: |
           git clone --depth 1 --branch v3.2.4 https://github.com/wxWidgets/wxWidgets.git C:\wxWidgets
           cd C:\wxWidgets
+          git submodule update --init --recursive --depth 1
           mkdir build-release
           cd build-release
           cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DwxBUILD_SHARED=OFF
