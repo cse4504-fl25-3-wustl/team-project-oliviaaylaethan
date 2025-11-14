@@ -99,7 +99,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: windows-executable
-          path: build/Release/main.exe
+          path: build/Release/packingapp.exe
           retention-days: 1
 
   create-release:
