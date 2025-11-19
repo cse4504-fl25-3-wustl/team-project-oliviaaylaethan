@@ -3,6 +3,13 @@
 #include "estimator.cpp"
 #include <nlohmann/json.hpp>
 #include <filesystem>
+
+// for the radio buttons of whether the client accepts crates
+enum YesNoChoice
+{
+    YES = 0, // Yes button is displayed BEFORE the No button, so it's 0
+    NO  = 1
+};
  
 class PackingApp : public wxApp
 {
@@ -25,7 +32,7 @@ private:
     void OnRunEstimator(wxCommandEvent& event);
 
     wxFilePickerCtrl* filePickerData_;
-    wxFilePickerCtrl* filePickerReq_;
+    wxChoice* choiceAcceptsCrates_;
     wxDirPickerCtrl* folderPickerOut_;
     wxTextCtrl* logBox_;
 };
@@ -76,14 +83,21 @@ PackingFrame::PackingFrame()
            0, wxLEFT | wxTOP, 10);
     sizer->Add(filePickerData_, 0, wxEXPAND | wxALL, 10);
 
-    // File picker for requirements
-    filePickerReq_ = new wxFilePickerCtrl(
-        panel, wxID_ANY, "", "Select requirements file", "*.*",
-        wxDefaultPosition, wxDefaultSize, wxFLP_OPEN | wxFLP_FILE_MUST_EXIST | wxFLP_USE_TEXTCTRL
-    );
-    sizer->Add(new wxStaticText(panel, wxID_ANY, "Select requirements file:"), 
+    // Dropdown menu for whether crates are accepted (radio buttons or checkbox selects an option by default)
+    wxArrayString options;
+    options.Add("Yes");
+    options.Add("No");
+
+    choiceAcceptsCrates_ = new wxChoice(
+        panel, wxID_ANY,
+        wxDefaultPosition, wxDefaultSize, options);
+
+    choiceAcceptsCrates_->SetSelection(wxNOT_FOUND); // Ensure no default
+
+    sizer->Add(new wxStaticText(panel, wxID_ANY, "Does the client accept crates?"), 
            0, wxLEFT | wxTOP, 10);
-    sizer->Add(filePickerReq_, 0, wxEXPAND | wxALL, 10);
+    sizer->Add(choiceAcceptsCrates_, 0, wxEXPAND | wxALL, 10);
+
 
     // Folder picker for output location
     folderPickerOut_ = new wxDirPickerCtrl(
@@ -133,11 +147,11 @@ void PackingFrame::OnHello(wxCommandEvent& event)
 void PackingFrame::OnRunEstimator(wxCommandEvent& event)
 {
     wxString dataPath = filePickerData_->GetPath();
-    wxString reqPath  = filePickerReq_->GetPath();
+    int crateSelection = choiceAcceptsCrates_->GetSelection();
     wxString outputPath = folderPickerOut_->GetPath();
 
-    if (dataPath.IsEmpty() || reqPath.IsEmpty() || outputPath.IsEmpty()) {
-        wxMessageBox("Please select both input files and output path.",
+    if (dataPath.IsEmpty() || (crateSelection == wxNOT_FOUND) || outputPath.IsEmpty()) {
+        wxMessageBox("Please select a data file and output path, and choose if crates are accepted.",
                     "Missing input",
                     wxOK | wxICON_WARNING);
         return;
@@ -145,18 +159,18 @@ void PackingFrame::OnRunEstimator(wxCommandEvent& event)
 
     logBox_->AppendText("Running estimator...\n");
     logBox_->AppendText("Art Data: " + dataPath + "\n");
-    logBox_->AppendText("Requirements: " + reqPath + "\n");
+    logBox_->AppendText("Creates allowed: " + wxString(crateSelection == YES ? "Yes" : "No") + "\n");
     logBox_->AppendText("Output Path: " + outputPath + "\n");
 
-    // Convert wxString → std::string
+    // Convert wxString → std::string and crate selection to bool
     std::string dataInputFile = dataPath.ToStdString();
-    std::string requirementsInputFile = reqPath.ToStdString();
+    bool cratesAllowed = crateSelection == YES;
     std::string outputFilePath = outputPath.ToStdString() + "/output.json";
 
     // Build stable argument array
     std::string arg0 = "estimator";
     std::string arg1 = dataInputFile;
-    std::string arg2 = requirementsInputFile;
+    std::string arg2 = cratesAllowed ? "y" : "n";
     std::string arg3 = outputFilePath;
 
     char* argv[] = {
