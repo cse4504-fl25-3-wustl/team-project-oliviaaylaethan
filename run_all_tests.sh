@@ -40,7 +40,7 @@ get_executable() {
 # solution: using a temporary array
 process_csv_files() {
     local input_dir="$1"
-    local client_config="$2"
+    local accept_crates="$2"
     
     # 1. Use mapfile (or readarray) to get all file paths into an array in the main shell
     local csv_files=()
@@ -107,15 +107,13 @@ process_csv_files() {
     done
 }
 
-INPUT_DIR=$(realpath_compat ./testing/testdata/inputsFeature2)
-FEATURE_1_CONFIG=$(realpath_compat ./testing/testdata/siteRequirements/feature_1_site.csv)
-FEATURE_2_CONFIG=$(realpath_compat ./testing/testdata/siteRequirements/feature_2_site.csv)
+INPUT_DIR=$(realpath_compat ./../test_cases)
 
 # pass client configuration that does not allow crates
-process_csv_files "$INPUT_DIR/box_packing" $FEATURE_1_CONFIG
-process_csv_files "$INPUT_DIR/pallet_packing" $FEATURE_1_CONFIG
+process_csv_files "$INPUT_DIR/box_packing" "N"
+process_csv_files "$INPUT_DIR/pallet_packing" "N"
 # pass client configuration that allows crates
-process_csv_files "$INPUT_DIR/crate_packing" $FEATURE_2_CONFIG
+process_csv_files "$INPUT_DIR/crate_packing" "Y"
 
 # Print summary after all calls
 if [ $passed_tests -gt 0 ]; then
