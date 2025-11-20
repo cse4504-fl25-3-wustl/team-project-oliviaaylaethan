@@ -56,6 +56,17 @@ process_csv_files() {
     fi
     local executable
     executable=$(get_executable)
+
+    # Show the user where bash is looking for the executable
+    echo -e "PATH TO EXECUTABLE: $executable"
+
+    # Check if the executable exists at the given path
+    if [ ! -f "$executable" ]; then
+        echo -e "${RED}ERROR: Executable not found at $executable${NC}"
+        echo -e "${RED}SUGGESTED FIX: if main.exe is located inside build/Debug (or another subfolder), move it directly under /build"
+        exit 1  # Exit the script with a non-zero status to indicate failure
+    fi
+
     local output_dir="$(dirname "$0")/build"
     local output_path="$output_dir/bashOutput.json"
     
