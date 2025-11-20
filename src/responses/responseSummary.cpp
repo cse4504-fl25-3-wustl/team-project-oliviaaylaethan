@@ -15,7 +15,9 @@ ResponseSummary::ResponseSummary(Response& response) {
         OversizedPiece piece;
         piece.side1 = art.getOuterHeight();
         piece.side2 = art.getOuterWidth();
-        piece.quantity = artInfo.getQuantity(art.getLineNumber());
+        // piece.quantity = artInfo.getQuantity(art.getLineNumber());
+        // We are using unique id, not line number. See ArtInfo for more details
+        piece.quantity = artInfo.getQuantity(art.getUniqueID());
         this->oversized_pieces.push_back(piece);
     }
     this->standard_box_count = boxInfo.getStandardBoxCount();

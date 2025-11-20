@@ -100,7 +100,7 @@ std::vector<std::string> ArtInfo::getOversizedSummary() {
 
 std::vector<Art> ArtInfo::getOversizedItems() {
     std::vector<Art> oversized;
-    for (auto& art: pieces_) {
+    for (auto& [lineNo, art] : artTypes_) {
         if (art.isOversizedInstallation()) {
             oversized.push_back(art);
         }

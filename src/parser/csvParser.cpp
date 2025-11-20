@@ -160,16 +160,16 @@ std::vector<Art> CsvParser::parseArtCsv(const std::string& filename) {
     std::ifstream file(filename);
     std::string line;
 
+    // in case input is badly-formatted (multiple DIFFERENT types of art correspond to 1 line number),
+    // use this unique id to mimic properly-formatted line number
+    // ex: test case input.csv for 1Large1Standard1Custom puts every type of art as line number 1
+    int uniqueArtId = 0;
+
     // Skip header
     std::getline(file, line);
     while (std::getline(file, line)) {
         std::replace(line.begin(), line.end(), '\t', ',');
         std::vector<std::string> tokens = commaSplitter(line);
-
-        // in case input is badly-formatted (multiple DIFFERENT types of art correspond to 1 line number),
-        // use this unique id to mimic properly-formatted line number
-        // ex: test case input.csv for 1Large1Standard1Custom puts every type of art as line number 1
-        int uniqueArtId = 0;
 
         while (tokens.size() < 9) tokens.push_back("");
 
