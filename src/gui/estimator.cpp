@@ -7,19 +7,14 @@ enum RequirementsFileSubstitute {
 
 
 std::optional<Response> Estimator::RunEstimator(int argc, char* argv[]) {
-    if (argc < 3 || argc > 4) { // Check minimum 3 and maximum 4 arguments
-        std::cerr << "Usage 1: " << argv[0] << " <art_data_file.csv> <requirements_file.csv> optional:<output_file_path>" << std::endl;
-        std::cerr << "Usage 2: " << argv[0] << " <art_data_file.csv> <Y or N> optional:<output_file_path>" << std::endl;
+
+    if (argc < 3) {
+        std::cerr << "Error: Missing art data file and/or requirements argument." << std::endl;
         return std::nullopt;
     }
+
     std::string dataInputFile = argv[1];
-    std::string requirementsArg = argv[2]; // This holds the path OR 'Y'/'N'
-    
-    // Configure output file path
-    std::string outputFilePath = std::filesystem::current_path().string() + "/output.json"; // default path
-    if (argc == 4) {
-        outputFilePath = argv[3];
-    }
+    std::string requirementsArg= argv[2];
 
     CsvParser parser;
 
@@ -41,13 +36,6 @@ std::optional<Response> Estimator::RunEstimator(int argc, char* argv[]) {
     
     PackingInteractor packingInteractor;
     Response response = packingInteractor.packAllArt(request);
-
-    // Generate JSON output
-    ResponseSummary responseSummary(response);
-    nlohmann::json j = responseSummary;
-    std::ofstream file(outputFilePath);
-    file << j.dump(4);
-    file.close();
 
     return response;
 }

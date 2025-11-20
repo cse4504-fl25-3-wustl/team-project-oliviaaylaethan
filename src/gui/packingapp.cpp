@@ -26,21 +26,26 @@ public:
     PackingFrame();
  
 private:
-    void OnHello(wxCommandEvent& event);
     void OnExit(wxCommandEvent& event);
     void OnAbout(wxCommandEvent& event);
     void OnRunEstimator(wxCommandEvent& event);
+    void OnDownloadJson(wxCommandEvent& event);
+    void OnDownloadText(wxCommandEvent& event);
 
     wxFilePickerCtrl* filePickerData_;
     wxChoice* choiceAcceptsCrates_;
-    wxDirPickerCtrl* folderPickerOut_;
     wxTextCtrl* logBox_;
+    wxButton* downloadJsonBtn_;
+    wxButton* downloadTextBtn_;
+
+    Response* response_;
 };
  
 enum
 {
-    ID_Hello = 1,
-    ID_RunEstimator = 2
+    ID_RunEstimator = 1,
+    ID_DownloadJson = 2,
+    ID_DownloadText = 3
 };
 
 bool PackingApp::OnInit()
@@ -51,11 +56,10 @@ bool PackingApp::OnInit()
 }
 
 PackingFrame::PackingFrame()
-    : wxFrame(nullptr, wxID_ANY, "Packing Estimator", wxDefaultPosition, wxSize(600, 400))
+    : wxFrame(nullptr, wxID_ANY, "Packing Estimator", wxDefaultPosition, wxSize(1024, 768))
 {
     // === Menus ===
     wxMenu* menuFile = new wxMenu;
-    menuFile->Append(ID_Hello, "&Hello...\tCtrl+H", "Help string shown in status bar");
     menuFile->AppendSeparator();
     menuFile->Append(wxID_EXIT);
 
@@ -99,17 +103,6 @@ PackingFrame::PackingFrame()
     sizer->Add(choiceAcceptsCrates_, 0, wxEXPAND | wxALL, 10);
 
 
-    // Folder picker for output location
-    folderPickerOut_ = new wxDirPickerCtrl(
-        panel, wxID_ANY, "", "Select folder to save output.json",
-        wxDefaultPosition, wxDefaultSize,
-        wxDIRP_USE_TEXTCTRL | wxDIRP_DIR_MUST_EXIST
-    );
-    sizer->Add(new wxStaticText(panel, wxID_ANY, "Select output folder:"), 
-            0, wxLEFT | wxTOP, 10);
-    sizer->Add(folderPickerOut_, 0, wxEXPAND | wxALL, 10);
-
-
     // Run Estimator button
     wxButton* runButton = new wxButton(panel, ID_RunEstimator, "Run Estimator");
     sizer->Add(runButton, 0, wxALIGN_LEFT | wxALL, 10);
@@ -119,13 +112,28 @@ PackingFrame::PackingFrame()
                              wxTE_MULTILINE | wxTE_READONLY);
     sizer->Add(logBox_, 1, wxEXPAND | wxALL, 10);
 
+    // Download json button
+    downloadJsonBtn_ = new wxButton(panel, ID_DownloadJson, "Download JSON");
+    sizer->Add(downloadJsonBtn_, 0, wxALIGN_LEFT | wxALL, 10);
+    if (response_ == nullptr) {
+        downloadJsonBtn_->Disable();
+    }
+
+    // Download text file button
+    downloadTextBtn_ = new wxButton(panel, ID_DownloadText, "Download Text File");
+    sizer->Add(downloadTextBtn_, 0, wxALIGN_LEFT | wxALL, 10);
+    if (response_ == nullptr) {
+        downloadTextBtn_->Disable();
+    }
+
     panel->SetSizer(sizer);
 
     // === Event bindings ===
-    Bind(wxEVT_MENU, &PackingFrame::OnHello, this, ID_Hello);
     Bind(wxEVT_MENU, &PackingFrame::OnAbout, this, wxID_ABOUT);
     Bind(wxEVT_MENU, &PackingFrame::OnExit, this, wxID_EXIT);
     Bind(wxEVT_BUTTON, &PackingFrame::OnRunEstimator, this, ID_RunEstimator);
+    Bind(wxEVT_BUTTON, &PackingFrame::OnDownloadJson, this, ID_DownloadJson);
+    Bind(wxEVT_BUTTON, &PackingFrame::OnDownloadText, this, ID_DownloadText);
 }
 
 void PackingFrame::OnExit(wxCommandEvent& event)
@@ -139,19 +147,13 @@ void PackingFrame::OnAbout(wxCommandEvent& event)
                  "About Packing Estimator", wxOK | wxICON_INFORMATION);
 }
 
-void PackingFrame::OnHello(wxCommandEvent& event)
-{
-    wxLogMessage("Hello from wxWidgets!");
-}
-
 void PackingFrame::OnRunEstimator(wxCommandEvent& event)
 {
     wxString dataPath = filePickerData_->GetPath();
     int crateSelection = choiceAcceptsCrates_->GetSelection();
-    wxString outputPath = folderPickerOut_->GetPath();
 
-    if (dataPath.IsEmpty() || (crateSelection == wxNOT_FOUND) || outputPath.IsEmpty()) {
-        wxMessageBox("Please select a data file and output path, and choose if crates are accepted.",
+    if (dataPath.IsEmpty() || (crateSelection == wxNOT_FOUND)) {
+        wxMessageBox("Please select a data file and choose if crates are accepted.",
                     "Missing input",
                     wxOK | wxICON_WARNING);
         return;
@@ -160,50 +162,119 @@ void PackingFrame::OnRunEstimator(wxCommandEvent& event)
     logBox_->AppendText("Running estimator...\n");
     logBox_->AppendText("Art Data: " + dataPath + "\n");
     logBox_->AppendText("Creates allowed: " + wxString(crateSelection == YES ? "Yes" : "No") + "\n");
-    logBox_->AppendText("Output Path: " + outputPath + "\n");
 
     // Convert wxString → std::string and crate selection to bool
     std::string dataInputFile = dataPath.ToStdString();
     bool cratesAllowed = crateSelection == YES;
-    std::string outputFilePath = outputPath.ToStdString() + "/output.json";
 
     // Build stable argument array
     std::string arg0 = "estimator";
     std::string arg1 = dataInputFile;
     std::string arg2 = cratesAllowed ? "y" : "n";
-    std::string arg3 = outputFilePath;
 
     char* argv[] = {
         arg0.data(),
         arg1.data(),
-        arg2.data(),
-        arg3.data()
+        arg2.data()
     };
 
     // Call estimator
-    std::optional<Response> responseOpt = Estimator::RunEstimator(4, argv);
+    std::optional<Response> responseOpt = Estimator::RunEstimator(3, argv);
     if (!responseOpt.has_value()) {
+         wxMessageBox("Error running estimator. Please check the log for details.",
+                    "Error",
+                    wxOK | wxICON_ERROR);
         logBox_->AppendText("Error running estimator.\n");
         return;
     }
 
-    Response response = responseOpt.value();
-
-    // ---- Read JSON from file ----
-    std::ifstream inFile(outputFilePath);
-    if (!inFile.is_open()) {
-        logBox_->AppendText("Error: Could not open output file.\n");
-        return;
-    }
+    response_ = new Response(responseOpt.value());
+    std::vector<std::vector<std::string>> summary = response_->getPackingSummary();
+    summary.push_back(response_->getWeightSummary());
+    summary.push_back(response_->getBusinessIntelSummary());
+    summary.push_back(response_->getEmailFormatSummary());
 
     // Finish up
     logBox_->AppendText("Estimation complete!\n");
-    logBox_->AppendText("Output saved to: " +
-                        wxString(outputFilePath) + "\n");
-
-    for (const auto& line : response.getWeightSummary()) {
-        logBox_->AppendText(line + "\n");
+    for (const auto& line : summary) {
+        for (const auto& subline : line) {
+            logBox_->AppendText(subline + "\n");
+        }
     }
 
+    downloadJsonBtn_->Enable();
+    downloadTextBtn_->Enable();
 }
 
+void PackingFrame::OnDownloadJson(wxCommandEvent& event)
+{
+    // Ask the user where to save the JSON file
+    wxFileDialog saveDialog(
+        this,
+        "Save JSON File",
+        "",                  // default directory
+        "output.json",      // default filename
+        "JSON files (*.json)|*.json",
+        wxFD_SAVE | wxFD_OVERWRITE_PROMPT
+    );
+
+    if (saveDialog.ShowModal() != wxID_OK)
+        return; // user canceled
+
+    wxString path = saveDialog.GetPath();
+
+    // Convert your ResponseSummary to json
+    ResponseSummary responseSummary(*response_);
+    nlohmann::json j = responseSummary;
+
+    // Save to file
+    std::ofstream file(path.ToStdString());
+    if (!file.good()) {
+        wxMessageBox("Could not save JSON file.", "Error", wxOK | wxICON_ERROR);
+        return;
+    }
+
+    file << j.dump(4);
+    file.close();
+
+    wxMessageBox("JSON file saved successfully.", "Success", wxOK | wxICON_INFORMATION);
+}
+
+void PackingFrame::OnDownloadText(wxCommandEvent& event)
+{
+    // Ask the user where to save the JSON file
+    wxFileDialog saveDialog(
+        this,
+        "Save Text File",
+        "",
+        "output.txt",
+        "Text files (*.txt)|*.txt",
+        wxFD_SAVE | wxFD_OVERWRITE_PROMPT
+    );
+
+    if (saveDialog.ShowModal() != wxID_OK)
+        return;
+
+    wxString path = saveDialog.GetPath();
+
+    // Save to file
+    std::ofstream file(path.ToStdString());
+    if (!file.good()) {
+        wxMessageBox("Could not save text file.", "Error", wxOK | wxICON_ERROR);
+        return;
+    }
+
+    std::vector<std::vector<std::string>> summary = response_->getPackingSummary();
+    summary.push_back(response_->getWeightSummary());
+    summary.push_back(response_->getBusinessIntelSummary());
+    summary.push_back(response_->getEmailFormatSummary());
+
+    for (const auto& line : summary) {
+        for (const auto& subline : line) {
+            file << subline << "\n";
+        }
+    }
+    file.close();
+
+    wxMessageBox("Text file saved successfully.", "Success", wxOK | wxICON_INFORMATION);
+}
