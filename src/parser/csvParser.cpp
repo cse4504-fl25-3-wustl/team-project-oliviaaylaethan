@@ -6,9 +6,6 @@
 #include <string>
 #include <algorithm>
 
-const std::string CsvParser::ACCEPTS_CRATES_YES = "Y";
-const std::string CsvParser::ACCEPTS_CRATES_NO = "N";
-
 CsvParser::CsvParser() {}
 
 bool CsvParser::isValidFile(const std::string & filePath) {
@@ -132,6 +129,7 @@ GlazingType CsvParser::mapToGlazing(const std::string& glaze) {
     std::transform(g.begin(), g.end(), g.begin(), ::tolower); // Convert to lowercase
 
     if (g == "regular glass") return GLAZING_GLASS;
+    if (g == "glass") return GLAZING_GLASS;
     if (g == "acrylic") return GLAZING_ACRYLIC;
     return GLAZING_NONE;
 }

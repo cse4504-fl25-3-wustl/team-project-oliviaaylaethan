@@ -1,4 +1,5 @@
 #pragma once
+#include "../constants/clientConstants.h"
 #include <string>
 #include "../requests/request.h"
 #include "../entities/art.h"
@@ -21,9 +22,4 @@ public:
     
     // New method overload to handle Y/N substitute (pass the substitute string as siteFilePath)
     Request parseFiles(std::string artFilePath, std::string siteFilePath, bool isSubstitute);
-    
-    // New constants to represent the requirements field values
-    static const std::string ACCEPTS_CRATES_YES;
-    static const std::string ACCEPTS_CRATES_NO;
-
 };
