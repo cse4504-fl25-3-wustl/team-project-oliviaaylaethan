@@ -148,8 +148,23 @@ FetchContent_MakeAvailable(wxWidgets)
 # On Windows, build a WIN32 subsystem app (no console, no main())
 # On macOS/Linux, build normally.
 if (WIN32)
+    # Create a resource file for Windows icon
+    set(ICON_RC "${CMAKE_BINARY_DIR}/app_icon.rc")
+    file(WRITE ${ICON_RC} "IDI_ICON1 ICON \"${CMAKE_SOURCE_DIR}/_deps/app_icon.ico\"\n")
+    
     add_executable(packingapp WIN32
         src/gui/packingapp.cpp
+        ${ICON_RC}
+    )
+elseif(APPLE)
+    # For macOS, add icon as a resource
+    set(MACOSX_ICON_FILE "${CMAKE_SOURCE_DIR}/_deps/app_icon.icns")
+    add_executable(packingapp MACOSX_BUNDLE
+        src/gui/packingapp.cpp
+        ${MACOSX_ICON_FILE}
+    )
+    set_source_files_properties(${MACOSX_ICON_FILE} PROPERTIES
+        MACOSX_PACKAGE_LOCATION Resources
     )
 else()
     add_executable(packingapp
@@ -178,10 +193,8 @@ endif()
 # CPack configuration for DragNDrop
 if(APPLE)
     set(MACOSX_BUNDLE_ICON_FILE app_icon.icns)
-    set_source_files_properties(${CMAKE_SOURCE_DIR}/_deps/app_icon.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
-
+    
     set_target_properties(packingapp PROPERTIES
-        MACOSX_BUNDLE TRUE
         MACOSX_BUNDLE_INFO_PLIST ${CMAKE_SOURCE_DIR}/_deps/Info.plist
     )
 
