@@ -2,16 +2,20 @@ import json
 import sys
 from typing import Any, Dict, List, Tuple
 
+# --- GLOBAL FLAG TO CONTROL OUTPUT ---
+# Check sys.argv for the '-f' or '--only-failed' flag
+ONLY_FAILED = '-f' in sys.argv or '--only-failed' in sys.argv
+
 def load_json(filepath: str) -> Dict:
     """Load JSON data from a file."""
     try:
         with open(filepath, 'r') as f:
             return json.load(f)
     except FileNotFoundError:
-        print(f"Error: File '{filepath}' not found.")
+        print(f"Error: File '{filepath}' not found.", file=sys.stderr)
         sys.exit(1)
     except json.JSONDecodeError as e:
-        print(f"Error: Invalid JSON in '{filepath}': {e}")
+        print(f"Error: Invalid JSON in '{filepath}': {e}", file=sys.stderr)
         sys.exit(1)
 
 def compare_values(path: str, actual_val: Any, expected_val: Any, errors: List[str]) -> bool:
@@ -29,7 +33,7 @@ def compare_values(path: str, actual_val: Any, expected_val: Any, errors: List[s
         try:
             actual_num = float(str(actual_val))
             expected_num = float(str(expected_val))
-            if actual_num != expected_num:
+            if abs(actual_num - expected_num) > 1e-9: # Using small tolerance for float comparison
                 errors.append(f"{path}: Value mismatch - got '{actual_val}', expected '{expected_val}'")
                 return False
         except (ValueError, TypeError):
@@ -86,25 +90,38 @@ def compare_json_files(actual_file: str, expected_file: str) -> Tuple[bool, List
     return match, errors
 
 def main():
-    if len(sys.argv) != 3:
-        print("Usage: python compare_json.py <actual_file.json> <expected_file.json>")
+    # Filter out flags to get only the file paths for a cleaner check
+    file_args = [arg for arg in sys.argv[1:] if arg not in ('-f', '--only-failed')]
+    
+    # Check for correct number of file arguments
+    if len(file_args) != 2:
+        print("Usage: python compare_json.py <actual_file.json> <expected_file.json> [-f|--only-failed]", file=sys.stderr)
         sys.exit(1)
     
-    actual_file = sys.argv[1]
-    expected_file = sys.argv[2]
+    actual_file = file_args[0]
+    expected_file = file_args[1]
     
-    print(f"Comparing:\n  Actual:  {actual_file}\n  Expected: {expected_file}\n")
+    # Only print the comparison files if NOT in only-failed mode
+    if not ONLY_FAILED:
+        # Print to stdout, which is visible by default (and not redirected by the bash script)
+        print(f"Comparing:\n  Actual:  {actual_file}\n  Expected: {expected_file}\n")
     
     match, errors = compare_json_files(actual_file, expected_file)
     
     if match:
-        print("PASS: Actual output matches expected output!")
+        # Only print PASS message if NOT in only-failed mode
+        if not ONLY_FAILED:
+            # Print to stdout
+            print("PASS: Actual output matches expected output!")
+        # Always exit successfully on match
+        sys.exit(0)
     else:
-        print(f"FAIL: Found {len(errors)} difference(s):\n")
+        # Always print FAIL message and errors to stderr, which is captured by the bash script
+        print(f"FAIL: Found {len(errors)} difference(s):\n", file=sys.stderr)
         for error in errors:
-            print(f"  • {error}")
-    
-    sys.exit(0 if match else 1)
+            print(f"  • {error}", file=sys.stderr)
+        # Always exit with failure code
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()
