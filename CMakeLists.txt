@@ -213,24 +213,24 @@ endif()
 if(WIN32)
     install(TARGETS packingapp DESTINATION "bin")
     
-    set(CPACK_PACKAGE_NAME "PackingApp")
+    set(CPACK_PACKAGE_NAME "Packing Estimator")
     set(CPACK_PACKAGE_VENDOR "Team Olivia Ayla Ethan")
     set(CPACK_PACKAGE_VERSION "1.0.0")
-    set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "PackingApp - Art Packing Calculator")
+    set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Packing Estimator - Art Packing Calculator")
     
     set(CPACK_GENERATOR "NSIS")
-    set(CPACK_PACKAGE_FILE_NAME "PackingAppInstaller")
-    set(CPACK_NSIS_DISPLAY_NAME "PackingApp")
-    set(CPACK_NSIS_PACKAGE_NAME "PackingApp")
+    set(CPACK_PACKAGE_FILE_NAME "PackingEstimatorInstaller")
+    set(CPACK_NSIS_DISPLAY_NAME "Packing Estimator")
+    set(CPACK_NSIS_PACKAGE_NAME "Packing Estimator")
     set(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\\\packingapp.exe")
     set(CPACK_NSIS_EXECUTABLES_DIRECTORY "bin")
     
     # Create Start Menu shortcuts
     set(CPACK_NSIS_CREATE_ICONS_EXTRA
-        "CreateShortCut '$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\PackingApp.lnk' '$INSTDIR\\\\bin\\\\packingapp.exe'"
+        "CreateShortCut '$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\Packing Estimator.lnk' '$INSTDIR\\\\bin\\\\packingapp.exe'"
     )
     set(CPACK_NSIS_DELETE_ICONS_EXTRA
-        "Delete '$SMPROGRAMS\\\\$START_MENU\\\\PackingApp.lnk'"
+        "Delete '$SMPROGRAMS\\\\$START_MENU\\\\Packing Estimator.lnk'"
     )
     
     # Modify PATH to include bin directory
