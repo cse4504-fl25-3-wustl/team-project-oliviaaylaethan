@@ -132,6 +132,7 @@ GlazingType CsvParser::mapToGlazing(const std::string& glaze) {
     std::transform(g.begin(), g.end(), g.begin(), ::tolower); // Convert to lowercase
 
     if (g == "regular glass") return GLAZING_GLASS;
+    if (g == "glass") return GLAZING_GLASS;
     if (g == "acrylic") return GLAZING_ACRYLIC;
     return GLAZING_NONE;
 }
