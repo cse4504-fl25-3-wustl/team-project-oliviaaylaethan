@@ -27,7 +27,7 @@ const int GLASS_ACRYLIC_FRAMED_PER_BOX = 6;
 const int GLASS_ACRYLIC_SUNRISE_PER_BOX = 8;
 const int CANVAS_PER_BOX = 4; // TODO: piazza says we can say 6 for now, but test cases used 4
 const int ACOUSTIC_PANEL_PER_BOX = 4; // TODO: Piazza says 4
-const int MIRROR_PER_BOX = 6;
+const int MIRROR_PER_BOX = 8;
 
 // art needs custom packing if dimensions exceed 43.5 x 88 (43.5 x 88 STILL FITS and does NOT need custom packing)
 const float LARGE_BOX_LIMIT = 43.5f;

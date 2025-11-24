@@ -61,7 +61,9 @@ bool Box::fitsArt(Art artwork) {
 
 bool Box::addArt(Art art) {
     float fraction = 1.0f / art.getPerBoxCount();
-    if(!fitsArt(art) || (contents_.size() >= capacity_) || (filledFrac_ + fraction) - 1.0f > EPS) { // Allow for floating point precision issues
+    // Use the maximum of the box capacity or the art's per-box count to allow higher capacity when needed
+    int effectiveCapacity = std::max(capacity_, art.getPerBoxCount());
+    if(!fitsArt(art) || (contents_.size() >= effectiveCapacity) || (filledFrac_ + fraction) - 1.0f > EPS) { // Allow for floating point precision issues
         return false;
     }
     contents_.push_back(art);
