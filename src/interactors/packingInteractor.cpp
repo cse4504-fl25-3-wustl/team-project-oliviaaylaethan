@@ -1,5 +1,6 @@
 #include "packingInteractor.h"
 #include <limits>
+#include <algorithm> // std::sort
 
 using namespace std;
 
