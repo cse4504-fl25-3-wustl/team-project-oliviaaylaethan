@@ -60,10 +60,19 @@ bool Box::fitsArt(Art artwork) {
 }
 
 bool Box::addArt(Art art) {
+    // this count is based off of 11 inches
     float fraction = 1.0f / art.getPerBoxCount();
+
+    if (boxType_ == LARGE_BOX) {
+        // this count is based off of 13 inches
+        // multiply by standard box to get true inches
+        // then divide by large box width to get frac based off of wider box
+        fraction = fraction * STANDARD_BOX_DIMENSIONS.w / LARGE_BOX_DIMENSIONS.w;
+    }
+    
     // Use the maximum of the box capacity or the art's per-box count to allow higher capacity when needed
-    int effectiveCapacity = std::max(capacity_, art.getPerBoxCount());
-    if(!fitsArt(art) || (contents_.size() >= effectiveCapacity) || (filledFrac_ + fraction) - 1.0f > EPS) { // Allow for floating point precision issues
+    // int effectiveCapacity = std::max(capacity_, art.getPerBoxCount());
+    if(!fitsArt(art) || (filledFrac_ + fraction) - 1.0f > EPS) { // Allow for floating point precision issues
         return false;
     }
     contents_.push_back(art);
@@ -80,7 +89,7 @@ bool Box::addArt(Art art) {
     }
     if (needsTelescoping) {
         float artTelescopedHeight;
-        if ( art.getOuterHeight() > art.getOuterWidth() ) {
+        if (art.getOuterHeight() > art.getOuterWidth() ) {
             artTelescopedHeight = art.getOuterHeight();
         }
         else {
