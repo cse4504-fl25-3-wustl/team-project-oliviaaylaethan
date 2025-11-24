@@ -1,5 +1,6 @@
 #include <wx/wx.h>
 #include <wx/filepicker.h>
+#include <wx/stream.h>
 #include "estimator.cpp"
 #include <nlohmann/json.hpp>
 #include <filesystem>
@@ -9,6 +10,28 @@ enum YesNoChoice
 {
     YES = 0, // Yes button is displayed BEFORE the No button, so it's 0
     NO  = 1
+};
+
+class WxStreamBuf : public std::streambuf {
+public:
+    WxStreamBuf(wxTextCtrl* ctrl) : ctrl_(ctrl) {}
+
+protected:
+    int overflow(int c) override {
+        if (c != EOF) {
+            wxString s(static_cast<char>(c));
+            wxTheApp->CallAfter([=](){
+                wxTextAttr style;
+                style.SetTextColour(*wxRED);
+                ctrl_->SetDefaultStyle(style);
+                ctrl_->AppendText(s);
+            });
+        }
+        return c;
+    }
+
+private:
+    wxTextCtrl* ctrl_;
 };
  
 class PackingApp : public wxApp
@@ -110,7 +133,7 @@ PackingFrame::PackingFrame()
 
     // Log box
     logBox_ = new wxTextCtrl(panel, wxID_ANY, "", wxDefaultPosition, wxDefaultSize,
-                             wxTE_MULTILINE | wxTE_READONLY);
+                             wxTE_MULTILINE | wxTE_READONLY | wxTE_RICH2);
     sizer->Add(logBox_, 1, wxEXPAND | wxALL, 10);
 
     // Download json button
@@ -164,6 +187,10 @@ void PackingFrame::OnRunEstimator(wxCommandEvent& event)
     logBox_->AppendText("Art Data: " + dataPath + "\n");
     logBox_->AppendText("Crates allowed: " + wxString(crateSelection == YES ? "Yes" : "No") + "\n");
 
+    // Attach cerr to logBox
+    WxStreamBuf* buf = new WxStreamBuf(logBox_);
+    std::cerr.rdbuf(buf);
+
     // Convert wxString → std::string and crate selection to bool
     std::string dataInputFile = dataPath.ToStdString();
     bool cratesAllowed = crateSelection == YES;
@@ -202,6 +229,7 @@ void PackingFrame::OnRunEstimator(wxCommandEvent& event)
             logBox_->AppendText(subline + "\n");
         }
     }
+    logBox_->AppendText("\n");
 
     downloadJsonBtn_->Enable();
     downloadTextBtn_->Enable();

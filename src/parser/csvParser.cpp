@@ -11,6 +11,10 @@ CsvParser::CsvParser() {}
 bool CsvParser::isValidFile(const std::string & filePath) {
     std::ifstream file(filePath);
 
+    if (filePath == "Y" || filePath == "y" || filePath == "N" || filePath == "n") {
+        return false; // no need to print out error for this
+    }
+
     // error checking for opening file
     if (!file.is_open()) {
         std::cerr << "Error: Could NOT open file: " << filePath << std::endl;
@@ -121,6 +125,8 @@ MaterialType CsvParser::mapToMaterial(const std::string& medium) { // FIXME thes
     if (m == "metal print") return PATIENT_BOARD;
     if (m == "print - framed with title plate") return CANVAS_FRAMED;
     if (m == "wall décor") return ACOUSTIC_PANEL;
+    
+    std::cerr << "Warning: Unrecognized medium '" << medium << "'. Defaulting to ACOUSTIC_PANEL." << std::endl;
     return ACOUSTIC_PANEL; // default/fallback
 }
 
@@ -132,6 +138,8 @@ GlazingType CsvParser::mapToGlazing(const std::string& glaze) {
     if (g == "regular glass") return GLAZING_GLASS;
     if (g == "glass") return GLAZING_GLASS;
     if (g == "acrylic") return GLAZING_ACRYLIC;
+
+    std::cerr << "Warning: Unrecognized medium '" << glaze << "'. Defaulting to GLAZING_NONE." << std::endl;
     return GLAZING_NONE;
 }
 
@@ -139,6 +147,8 @@ GlazingType CsvParser::mapToGlazing(const std::string& glaze) {
 HardwareSpec CsvParser::mapToHardware(const std::string& hw) {
     std::string h = trim(hw);
     if (h.find("4 pt") != std::string::npos) return PT_SEC_4;
+
+    std::cerr << "Warning: Unrecognized hardware '" << hw << "'. Defaulting to PT_SEC_3." << std::endl;
     return PT_SEC_3;
 }
 
@@ -187,12 +197,16 @@ std::vector<Art> CsvParser::parseArtCsv(const std::string& filename) {
             HardwareSpec hw = mapToHardware(tokens[8]);
             ++uniqueArtId;
 
+            if (lineNo < 0 || qty < 1 || width <= 0 || height <= 0) {
+                throw std::invalid_argument("Negative or zero values present.");
+            }
+
             for (int i = 0; i < qty; i++) {
                 Art art(lineNo, tag, material, width, height, glaze, frame, hw, uniqueArtId);
                 artList.push_back(art);
             }
         } catch (const std::exception& e) {
-            std::cerr << "Error parsing line: '" << line << "' -> " << e.what() << std::endl;
+            std::cerr << "Error parsing line. Skipped: '" << line << "' -> " << e.what() << std::endl;
             continue;  // skip malformed line
         }
     }
