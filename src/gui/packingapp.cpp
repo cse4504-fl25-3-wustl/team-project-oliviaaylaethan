@@ -13,6 +13,7 @@ enum YesNoChoice
  
 class PackingApp : public wxApp
 {
+    
 public:
     bool OnInit() override;
 };
@@ -161,7 +162,7 @@ void PackingFrame::OnRunEstimator(wxCommandEvent& event)
 
     logBox_->AppendText("Running estimator...\n");
     logBox_->AppendText("Art Data: " + dataPath + "\n");
-    logBox_->AppendText("Creates allowed: " + wxString(crateSelection == YES ? "Yes" : "No") + "\n");
+    logBox_->AppendText("Crates allowed: " + wxString(crateSelection == YES ? "Yes" : "No") + "\n");
 
     // Convert wxString → std::string and crate selection to bool
     std::string dataInputFile = dataPath.ToStdString();
