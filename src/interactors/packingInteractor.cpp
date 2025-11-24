@@ -48,8 +48,6 @@ Response PackingInteractor::packAllArt(Request request) {
         for (Art piece : request.getArtPieces()) {
             if ((piece.getMaterial() == MIRROR || (piece.needsCratePacking() && !piece.needsLargeCrateCapacity())) && allowCrates) {
                 needsStandardBox.push_back(piece);
-            } else if (piece.needsCratePacking() && piece.needsLargeCrateCapacity() && allowCrates) {
-                needsLargeCrate.push_back(piece);
             } else if (standardBox.fitsArt(piece)) {
                 needsStandardBox.push_back(piece);
             } else if (largeBox.fitsArt(piece)) {
