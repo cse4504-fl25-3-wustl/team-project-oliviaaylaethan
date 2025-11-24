@@ -73,7 +73,7 @@ Response PackingInteractor::packAllArt(Request request) {
             }
 
             // add some pieces that COULD fit in a standard box to a large box with extra capacity (to save space)
-            while (!needsStandardBox.empty() && largeBox.getFilledFrac() < 1.0f) {
+            while (!needsStandardBox.empty() && largeBox.canFitMore()) {
                 if (!largeBox.addArt(needsStandardBox.back())) break;
                 needsStandardBox.pop_back();
             }

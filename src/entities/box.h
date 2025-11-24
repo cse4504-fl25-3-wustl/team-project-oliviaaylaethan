@@ -9,7 +9,7 @@ private:
     BoxType boxType_;
     int totalWeight_;
     std::vector<Art> contents_;
-    float filledFrac_ = 0.0f;
+    float filledDepth_;
     int capacity_;
 
 public:
@@ -25,8 +25,8 @@ public:
     BoxType getBoxType() const;
     int getTotalWeight() const;
     std::vector<Art> getContents() const;
-    float getFilledFrac() const;
 
     bool fitsArt(Art artwork);
     bool addArt(Art artwork);
+    bool canFitMore(float extraDepth = 0.0f);
 };

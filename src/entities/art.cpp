@@ -119,6 +119,14 @@ MaterialType Art::getMaterial() {
     return material_;
 }
 
+float Art::getDepth() {
+    if (getPerBoxCount() > 0) {
+        return 1.0f / getPerBoxCount() * STANDARD_BOX_DIMENSIONS.w;
+    } else {
+        return 0.0f;
+    }
+}
+
 float Art::getOuterWidth() {
     return outerWidth_;
 }

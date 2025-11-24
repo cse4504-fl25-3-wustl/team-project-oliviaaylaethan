@@ -40,6 +40,7 @@ public:
 	int getLineNumber();
     std::string getTagNumber();
     MaterialType getMaterial();
+    float getDepth();
     float getOuterWidth();
     float getOuterHeight();
     GlazingType getGlazeType();
