@@ -122,7 +122,7 @@ process_csv_files() {
 
         rm -f "$output_path"
 
-        "$executable" "$current_csv_file" "$current_config" "$win_output_path" > /dev/null 2>&1
+        "$executable" "$current_csv_file" "$accept_crates" "$win_output_path" > /dev/null 2>&1
 
         if [ -f "$output_path" ]; then
             expected_output_path="$(dirname "$csv_file")/expected_output.json"

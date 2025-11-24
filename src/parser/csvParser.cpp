@@ -113,6 +113,7 @@ MaterialType CsvParser::mapToMaterial(const std::string& medium) { // FIXME thes
     if (m == "paper print - framed") return PAPER_PRINT_FRAMED;
     if (m == "canvas - float frame") return CANVAS_FRAMED;
     if (m == "canvas - gallery") return CANVAS_GALLERY;
+    if (m == "canvas") return CANVAS_GALLERY;
     if (m == "acoustic panel") return ACOUSTIC_PANEL;
     if (m == "acoustic panel - framed") return ACOUSTIC_PANEL_FRAMED;
     if (m == "mirror") return MIRROR;

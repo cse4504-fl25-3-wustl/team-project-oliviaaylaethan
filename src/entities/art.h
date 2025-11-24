@@ -16,9 +16,11 @@ private:
     std::string frame1Moulding_; // TODO if this impacts calculations, change from string
     HardwareSpec hardware_;
     int perBoxCount_;
+    int perCrateCount_;
 
-    int uniqueArtId_; // mimics lineNumber_ for separating unique types of art if csv has multiple lines listed with same line number
-    
+    int uniqueArtId_; // mimics lineNumber_ for separating unique types of art if csv has multiple lines listed with same line number    
+
+    void setMaterialDensityAndCounts();
 
 public:
     Art();
@@ -46,8 +48,9 @@ public:
     int getWeight();
     bool needsCustomPackaging(float custom_packing_needed_threshold_smaller_dim = LARGE_BOX_LIMIT); // TODO get rid of this default (need to fix test cases function calls for that)
     bool needsCratePacking();
-    bool needsLargeCratePacking();
     bool needsCanvasPacking();
     bool isOversizedInstallation();
+    bool needsLargeCrateCapacity();
     int getPerBoxCount();
+    int getPerCrateCount();
 };

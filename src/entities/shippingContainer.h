@@ -14,6 +14,7 @@ private:
 
     int standardBoxCapacity_;
     int oversizedBoxCapacity_; 
+    float filledFrac_;
     
 public:
     ShippingContainer();
@@ -33,4 +34,5 @@ public:
     int getOversizedBoxCapacity() const;
     bool addBox(Box box);
     bool addArt(Art art);
+    float getFilledFrac() const;
 };

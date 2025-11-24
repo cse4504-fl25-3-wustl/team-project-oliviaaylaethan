@@ -39,3 +39,6 @@ const int MAX_BOX_HEIGHT = CUSTOM_PACKING_NEEDED_THRESHOLD_LARGER_DIM;
 const float STANDARD_BOX_TELESCOPED_THRESHOLD = 36.5f; // Anything that exceeds 36" in ONLY one direction can be telescoped in a standard box.
 
 const bool TODO_PLACEHOLDER_BOOL = false; // for things we don't know the value of yet and need to ask client about for clarification
+
+// Epsilon tolerance for floating point comparisons
+constexpr float EPS = 1e-6;

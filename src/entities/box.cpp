@@ -61,7 +61,7 @@ bool Box::fitsArt(Art artwork) {
 
 bool Box::addArt(Art art) {
     float fraction = 1.0f / art.getPerBoxCount();
-    if(!fitsArt(art) || (contents_.size() >= capacity_) || (filledFrac_ + fraction > 1.0f)) {
+    if(!fitsArt(art) || (contents_.size() >= capacity_) || (filledFrac_ + fraction) - 1.0f > EPS) { // Allow for floating point precision issues
         return false;
     }
     contents_.push_back(art);
