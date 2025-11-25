@@ -10,6 +10,7 @@ include(FetchContent)
 FetchContent_Declare(
   googletest
   URL https://github.com/google/googletest/archive/279f8479469d22fa772adb454068f854472e1eb9.zip
+  DOWNLOAD_EXTRACT_TIMESTAMP TRUE # to fix "policy CMP0135 is not set" warning
 )
 # For Windows: Prevent overriding the parent project's compiler/linker settings
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
