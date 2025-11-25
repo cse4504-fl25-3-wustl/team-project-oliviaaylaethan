@@ -18,34 +18,6 @@ Response::Response(const std::vector<Box>& boxes,
         hardwareInfo_ = HardwareInfo(allArt_);
     }
 
-// Copy constructor - fixes up the ArtInfo pointer to point to THIS object's requirements_
-Response::Response(const Response& other)
-    : boxInfo_(other.boxInfo_),
-      crateInfo_(other.crateInfo_),
-      palletInfo_(other.palletInfo_),
-      hardwareInfo_(other.hardwareInfo_),
-      requirements_(other.requirements_),
-      allArt_(other.allArt_)
-{
-    // Re-initialize artInfo_ with pointer to OUR requirements_, not the other's
-    artInfo_ = ArtInfo(allArt_, &requirements_);
-}
-
-// Copy assignment operator
-Response& Response::operator=(const Response& other) {
-    if (this != &other) {
-        boxInfo_ = other.boxInfo_;
-        crateInfo_ = other.crateInfo_;
-        palletInfo_ = other.palletInfo_;
-        hardwareInfo_ = other.hardwareInfo_;
-        requirements_ = other.requirements_;
-        allArt_ = other.allArt_;
-        // Re-initialize artInfo_ with pointer to OUR requirements_
-        artInfo_ = ArtInfo(allArt_, &requirements_);
-    }
-    return *this;
-}
-
 std::vector<std::string> Response::getWeightSummary() {
     std::vector<std::string> summary = {"\n\n--------- WEIGHT SUMMARY ---------"};
     for (size_t i = 0; i < artInfo_.getTotalWeightSummary().size(); i++) {

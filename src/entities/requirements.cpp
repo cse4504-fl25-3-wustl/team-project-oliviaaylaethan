@@ -1,4 +1,5 @@
 #include "requirements.h"
+#include <algorithm>
 
 Requirements::Requirements() : jobSiteLocation_(""), clientName_(""), acceptsPallets_(std::nullopt), acceptsCrates_(std::nullopt), hasLoadingDock_(std::nullopt), needsLiftgate_(std::nullopt), needsInsideDelivery_(std::nullopt), serviceType_("") {}
 
