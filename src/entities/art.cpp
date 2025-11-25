@@ -162,12 +162,14 @@ bool Art::needsCustomPackaging(const float custom_packing_needed_threshold_small
         // --> if both dimensions exceed 43.5, needs custom
         // --> if only ONE dimension exceeds 43.5, do NOT need custom
     // for CRATE packaging:
-        // same rules as above but replace 43.5 with 46
-    if ((outerWidth_ > CUSTOM_PACKING_NEEDED_THRESHOLD_LARGER_DIM || outerHeight_ > CUSTOM_PACKING_NEEDED_THRESHOLD_LARGER_DIM)
-        || (outerWidth_ > custom_packing_needed_threshold_smaller_dim && outerHeight_ > custom_packing_needed_threshold_smaller_dim)) {
+        // same rules as above but replace 43.5 with 44
+    if (outerWidth_ > CUSTOM_PACKING_NEEDED_THRESHOLD_LARGER_DIM || outerHeight_ > CUSTOM_PACKING_NEEDED_THRESHOLD_LARGER_DIM) {
         return true;
+    } else if (outerWidth_ > custom_packing_needed_threshold_smaller_dim && outerHeight_ > custom_packing_needed_threshold_smaller_dim) {
+        return true;
+    } else {
+        return false;
     }
-    return false;
 }
 
 // Crate Threshold: >46"

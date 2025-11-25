@@ -54,8 +54,7 @@ int ArtInfo::getCustomCount() {
             if (art.needsCustomPackaging(CRATE_LIMIT)) {
                 count++;
             }
-        }
-        else {
+        } else {
             if (art.needsCustomPackaging(LARGE_BOX_LIMIT)) {
                 count++;
             }
