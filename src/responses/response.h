@@ -172,6 +172,10 @@ class Response {
                  std::shared_ptr<Requirements> requirements,
                  const std::vector<Art>& csvArt);
 
+        // Copy constructor and assignment - needed because ArtInfo holds a pointer to requirements_
+        Response(const Response& other);
+        Response& operator=(const Response& other);
+
         std::vector<std::string> getWeightSummary();
         std::vector<std::vector<std::string>> getPackingSummary();
         std::vector<std::string> getBusinessIntelSummary();

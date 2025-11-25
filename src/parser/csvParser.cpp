@@ -11,8 +11,8 @@ CsvParser::CsvParser() {}
 bool CsvParser::isValidFile(const std::string & filePath) {
     std::ifstream file(filePath);
 
-    if (filePath == "Y" || filePath == "y" || filePath == "N" || filePath == "n") {
-        return false; // no need to print out error for this
+    if (Requirements::convertStringToOptional(filePath).has_value()) {
+        return false;
     }
 
     // error checking for opening file
@@ -24,7 +24,7 @@ bool CsvParser::isValidFile(const std::string & filePath) {
 }
 
 // --- New Default Requirements Generator ---
-Requirements CsvParser::generateDefaultRequirements(const std::string& acceptsCratesValue) {
+Requirements CsvParser::generateDefaultRequirements(const std::string acceptsCratesValue) {
     Requirements siteRequirements = Requirements();
     
     // Based on your default file: Location,Client,Accepts pallets,Accepts crates,LD Access,LG required,Inside Delivery,Service type
@@ -36,7 +36,7 @@ Requirements CsvParser::generateDefaultRequirements(const std::string& acceptsCr
         "N/A",  // JOB_SITE_LOCATION
         "N/A",  // CLIENT_NAME
         "Y",    // ACCEPTS_PALLETS (Fixed to Y)
-        acceptsCratesValue, // ACCEPTS_CRATES (This is the only dynamic value)
+        acceptsCratesValue, // ACCEPTS_CRATES
         "N/A",  // HAS_LOADING_DOCK
         "N",    // NEEDS_LIFTGATE
         "N/A",  // NEEDS_INSIDE_DELIVERY
@@ -46,14 +46,14 @@ Requirements CsvParser::generateDefaultRequirements(const std::string& acceptsCr
     try {
         // Assume you have defined the indices in Requirements.h, e.g.,
         // static const int JOB_SITE_LOCATION = 0;
-        siteRequirements.setJobSiteLocation(defaultRequirementsList[0]);
-        siteRequirements.setClientName(defaultRequirementsList[1]);
-        siteRequirements.setAcceptsPallets(defaultRequirementsList[2]);
-        siteRequirements.setAcceptsCrates(defaultRequirementsList[3]);
-        siteRequirements.setHasLoadingDock(defaultRequirementsList[4]);
-        siteRequirements.setNeedsLiftgate(defaultRequirementsList[5]);
-        siteRequirements.setNeedsInsideDelivery(defaultRequirementsList[6]);
-        siteRequirements.setServiceType(defaultRequirementsList[7]);
+        siteRequirements.setJobSiteLocation(defaultRequirementsList[Requirements::JOB_SITE_LOCATION]);
+        siteRequirements.setClientName(defaultRequirementsList[Requirements::CLIENT_NAME]);
+        siteRequirements.setAcceptsPallets(defaultRequirementsList[Requirements::ACCEPTS_PALLETS]);
+        siteRequirements.setAcceptsCrates(defaultRequirementsList[Requirements::ACCEPTS_CRATES]);
+        siteRequirements.setHasLoadingDock(defaultRequirementsList[Requirements::HAS_LOADING_DOCK]);
+        siteRequirements.setNeedsLiftgate(defaultRequirementsList[Requirements::NEEDS_LIFTGATE]);
+        siteRequirements.setNeedsInsideDelivery(defaultRequirementsList[Requirements::NEEDS_INSIDE_DELIVERY]);
+        siteRequirements.setServiceType(defaultRequirementsList[Requirements::SERVICE_TYPE]);
     } catch (const std::exception& e) {
         std::cerr << "Error generating default requirements: " << e.what() << std::endl;
     }
@@ -76,11 +76,7 @@ Request CsvParser::parseFiles(std::string artFilePath, std::string siteFilePath,
     if (isSubstitute) {
         // If it's a substitute ('Y' or 'N' flag)
         std::cout << "Generating requirements from substitute flag: " << siteFilePath << std::endl;
-        if (siteFilePath == ACCEPTS_CRATES_YES || siteFilePath == "y") {
-            siteRequirements = generateDefaultRequirements(ACCEPTS_CRATES_YES);
-        } else { // 'N' or 'n'
-            siteRequirements = generateDefaultRequirements(ACCEPTS_CRATES_NO);
-        }
+        siteRequirements = generateDefaultRequirements(siteFilePath);
     } else {
         // If it's a file path
         bool siteFileValid = isValidFile(siteFilePath);

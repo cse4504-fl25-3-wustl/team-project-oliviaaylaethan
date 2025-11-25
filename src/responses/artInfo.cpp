@@ -47,15 +47,16 @@ int ArtInfo::getCustomCount() {
     Art art;
     for (int i = 0; i < totalCount; i++) {
         art = pieces_[i];
-        if(requirements_->getAcceptsCrates()) {
-            if (art.needsCustomPackaging(CRATE_LIMIT)) {
-                count++;
-            }
+        float limit = 0.0f;
+
+        if(requirements_->getAcceptsCrates().value_or(false)) {
+            limit = CRATE_LIMIT;
+        } else {
+            limit = LARGE_BOX_LIMIT;
         }
-        else {
-            if (art.needsCustomPackaging(LARGE_BOX_LIMIT)) {
-                count++;
-            }
+        
+        if (art.needsCustomPackaging(limit)) {
+            count++;
         }
     }
     return count;
