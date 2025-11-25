@@ -22,11 +22,17 @@ protected:
     int overflow(int c) override {
         if (c != EOF) {
             wxString s(static_cast<char>(c));
-            wxTheApp->CallAfter([this, s](){
-                wxTextAttr style;
-                style.SetTextColour(*wxRED);
-                ctrl_->SetDefaultStyle(style);
+            wxTheApp->CallAfter([this, s]() {
+                // Set red style for cerr output
+                wxTextAttr redStyle;
+                redStyle.SetTextColour(*wxRED);
+                ctrl_->SetDefaultStyle(redStyle);
                 ctrl_->AppendText(s);
+
+                // Reset to default style (black)
+                wxTextAttr defaultStyle;
+                defaultStyle.SetTextColour(*wxBLACK);
+                ctrl_->SetDefaultStyle(defaultStyle);
             });
         }
         return c;
