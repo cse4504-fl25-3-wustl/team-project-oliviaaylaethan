@@ -35,9 +35,10 @@ std::string Requirements::getServiceType() const {
 }
 
 std::optional<bool> Requirements::convertStringToOptional(std::string answer) {
-    if (answer == "Y") {
+    std::transform(answer.begin(), answer.end(), answer.begin(), ::tolower);
+    if (answer == "y") {
         return true;
-    } else if (answer == "N") {
+    } else if (answer == "n") {
         return false;
     } else {
         return std::nullopt;

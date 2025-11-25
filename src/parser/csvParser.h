@@ -14,7 +14,7 @@ private:
     std::vector<Art> parseArtCsv(const std::string& filePath);
     Requirements parseRequirementsCsv(const std::string& filePath);
     std::vector<std::string> commaSplitter(std::string line);
-    Requirements generateDefaultRequirements(const std::string& acceptsCratesValue);
+    Requirements generateDefaultRequirements(const std::string acceptsCratesValue);
     
 public:
     CsvParser();
