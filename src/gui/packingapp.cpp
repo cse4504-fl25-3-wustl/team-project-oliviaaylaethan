@@ -1,6 +1,8 @@
 #include <wx/wx.h>
+#include <wx/busyinfo.h>
 #include <wx/filepicker.h>
 #include <wx/stream.h>
+#include <thread> // so loading icon can be shown while waiting for it to finish
 #include "estimator.cpp"
 #include <nlohmann/json.hpp>
 #include <filesystem>
@@ -20,7 +22,7 @@ protected:
     int overflow(int c) override {
         if (c != EOF) {
             wxString s(static_cast<char>(c));
-            wxTheApp->CallAfter([=](){
+            wxTheApp->CallAfter([this, s](){
                 wxTextAttr style;
                 style.SetTextColour(*wxRED);
                 ctrl_->SetDefaultStyle(style);
@@ -191,48 +193,61 @@ void PackingFrame::OnRunEstimator(wxCommandEvent& event)
     WxStreamBuf* buf = new WxStreamBuf(logBox_);
     std::cerr.rdbuf(buf);
 
-    // Convert wxString → std::string and crate selection to bool
-    std::string dataInputFile = dataPath.ToStdString();
-    bool cratesAllowed = crateSelection == YES;
+    // Show loading icon
+    wxBusyInfo* busyInfo = new wxBusyInfo(wxT("Running estimator, please wait..."), this);
 
-    // Build stable argument array
-    std::string arg0 = "estimator";
-    std::string arg1 = dataInputFile;
-    std::string arg2 = cratesAllowed ? "y" : "n";
+    // Run computation in a separate thread
+    std::thread([this, busyInfo, dataPath, crateSelection]() {
 
-    char* argv[] = {
-        arg0.data(),
-        arg1.data(),
-        arg2.data()
-    };
+        // Convert wxString → std::string and crate selection to bool
+        std::string dataInputFile = dataPath.ToStdString();
+        bool cratesAllowed = crateSelection == YES;
 
-    // Call estimator
-    std::optional<Response> responseOpt = Estimator::RunEstimator(3, argv);
-    if (!responseOpt.has_value()) {
-         wxMessageBox("Error running estimator. Please check the log for details.",
-                    "Error",
-                    wxOK | wxICON_ERROR);
-        logBox_->AppendText("Error running estimator.\n");
-        return;
-    }
+        // Build stable argument array
+        std::string arg0 = "estimator";
+        std::string arg1 = dataInputFile;
+        std::string arg2 = cratesAllowed ? "y" : "n";
 
-    response_ = new Response(responseOpt.value());
-    std::vector<std::vector<std::string>> summary = response_->getPackingSummary();
-    summary.push_back(response_->getWeightSummary());
-    summary.push_back(response_->getBusinessIntelSummary());
-    summary.push_back(response_->getEmailFormatSummary());
+        char* argv[] = {
+            arg0.data(),
+            arg1.data(),
+            arg2.data()
+        };
 
-    // Finish up
-    logBox_->AppendText("Estimation complete!\n");
-    for (const auto& line : summary) {
-        for (const auto& subline : line) {
-            logBox_->AppendText(subline + "\n");
-        }
-    }
-    logBox_->AppendText("\n");
+        // Call estimator
+        std::optional<Response> responseOpt = Estimator::RunEstimator(3, argv);
 
-    downloadJsonBtn_->Enable();
-    downloadTextBtn_->Enable();
+        // Update GUI after computation
+        wxTheApp->CallAfter([this, busyInfo, responseOpt]() {
+            delete busyInfo; // Remove loading icon
+
+            if (!responseOpt.has_value()) {
+                wxMessageBox("Error running estimator. Please check the log for details.",
+                             "Error",
+                             wxOK | wxICON_ERROR);
+                logBox_->AppendText("Error running estimator.\n");
+                return;
+            }
+
+            response_ = new Response(responseOpt.value());
+            std::vector<std::vector<std::string>> summary = response_->getPackingSummary();
+            summary.push_back(response_->getWeightSummary());
+            summary.push_back(response_->getBusinessIntelSummary());
+            summary.push_back(response_->getEmailFormatSummary());
+
+            // Finish up
+            logBox_->AppendText("Estimation complete!\n");
+            for (const auto& line : summary) {
+                for (const auto& subline : line) {
+                    logBox_->AppendText(subline + "\n");
+                }
+            }
+            logBox_->AppendText("\n");
+
+            downloadJsonBtn_->Enable();
+            downloadTextBtn_->Enable();
+        });
+    }).detach();
 }
 
 void PackingFrame::OnDownloadJson(wxCommandEvent& event)
