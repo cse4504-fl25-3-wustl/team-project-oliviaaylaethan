@@ -228,8 +228,19 @@ void PackingFrame::OnExit(wxCommandEvent& event)
 
 void PackingFrame::OnAbout(wxCommandEvent& event)
 {
-    wxMessageBox("This application estimates packing efficiency from a file.",
-                 "About Packing Estimator", wxOK | wxICON_INFORMATION);
+    wxMessageDialog dialog(
+        this,
+        "This application estimates packing efficiency from a file.\n\n"
+        "Example valid input file:\n\n"
+        "Line #,Quantity,Tag #,Final Medium,Outer Width,Outer Height,Glazing,Moulding,Hardware\n"
+        "1,30,1,Paper Print - Framed,43,43,Regular Glass,N/A,N/A\n"
+        "2,6,2,Paper Print - Framed,36,43,Regular Glass,N/A,N/A",
+        "About Packing Estimator",
+        wxOK | wxICON_INFORMATION
+    );
+
+    dialog.SetSize(800, 400); // Set a larger size for the dialog box to prevent overflow
+    dialog.ShowModal();
 }
 
 void PackingFrame::OnRunEstimator(wxCommandEvent& event)
