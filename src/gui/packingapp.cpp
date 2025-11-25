@@ -25,15 +25,28 @@ protected:
         if (c != EOF) {
             wxString s(static_cast<char>(c));
             wxTheApp->CallAfter([this, s]() {
+                // Detect background color
+                wxColour bgColor = ctrl_->GetBackgroundColour();
+                wxColour textColor;
+
+                // Set text color based on background color
+                if (bgColor.IsOk() && bgColor.GetLuminance() < 0.5) {
+                    // Dark background → use light text
+                    textColor = *wxWHITE;
+                } else {
+                    // Light background → use dark text
+                    textColor = *wxBLACK;
+                }
+
                 // Set red style for cerr output
                 wxTextAttr redStyle;
                 redStyle.SetTextColour(*wxRED);
                 ctrl_->SetDefaultStyle(redStyle);
                 ctrl_->AppendText(s);
 
-                // Reset to default style (black)
+                // Reset to default style (dynamic text color)
                 wxTextAttr defaultStyle;
-                defaultStyle.SetTextColour(*wxBLACK);
+                defaultStyle.SetTextColour(textColor);
                 ctrl_->SetDefaultStyle(defaultStyle);
             });
         }
