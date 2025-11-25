@@ -181,6 +181,11 @@ target_link_libraries(packingapp
 ) 
 target_include_directories(packingapp PRIVATE src/gui)
 
+# Include the resource file for wxWidgets manifest (windows GUI gives warning otherwise)
+if(WIN32)
+    target_sources(packingapp PRIVATE src/gui/resources.rc)
+endif()
+
 # Static linking for packingapp on Windows
 if(WIN32 AND MINGW)
     target_link_options(packingapp PRIVATE
