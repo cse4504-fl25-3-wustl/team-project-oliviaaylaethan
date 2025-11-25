@@ -2,6 +2,8 @@
 #include <wx/busyinfo.h>
 #include <wx/filepicker.h>
 #include <wx/stream.h>
+#include <wx/notebook.h>
+#include <wx/textctrl.h>
 #include <thread> // so loading icon can be shown while waiting for it to finish
 #include "estimator.cpp"
 #include <nlohmann/json.hpp>
@@ -69,6 +71,7 @@ private:
     wxTextCtrl* logBox_;
     wxButton* downloadJsonBtn_;
     wxButton* downloadTextBtn_;
+    wxNotebook* notebook_;
 
     Response* response_;
 };
@@ -138,20 +141,46 @@ PackingFrame::PackingFrame()
     // Run Estimator button
     wxButton* runButton = new wxButton(panel, ID_RunEstimator, "Run Estimator");
     sizer->Add(runButton, 0, wxALIGN_LEFT | wxALL, 10);
+    // Create a notebook for tabs
+    notebook_ = new wxNotebook(panel, wxID_ANY);
 
-    // Log box
-    logBox_ = new wxTextCtrl(panel, wxID_ANY, "", wxDefaultPosition, wxDefaultSize,
+    // Terminal Output Tab
+    wxPanel* terminalPanel = new wxPanel(notebook_);
+    wxBoxSizer* terminalSizer = new wxBoxSizer(wxVERTICAL);
+    logBox_ = new wxTextCtrl(terminalPanel, wxID_ANY, "", wxDefaultPosition, wxDefaultSize,
                              wxTE_MULTILINE | wxTE_READONLY | wxTE_RICH2);
-    sizer->Add(logBox_, 1, wxEXPAND | wxALL, 10);
+    terminalSizer->Add(logBox_, 1, wxEXPAND | wxALL, 10);
+    terminalPanel->SetSizer(terminalSizer);
+    notebook_->AddPage(terminalPanel, "Terminal Output");
 
-    // Download json button
+    // JSON Tab
+    wxPanel* jsonPanel = new wxPanel(notebook_);
+    wxBoxSizer* jsonSizer = new wxBoxSizer(wxVERTICAL);
+    wxTextCtrl* jsonBox = new wxTextCtrl(jsonPanel, wxID_ANY, "", wxDefaultPosition, wxDefaultSize,
+                                         wxTE_MULTILINE | wxTE_READONLY);
+    jsonSizer->Add(jsonBox, 1, wxEXPAND | wxALL, 10);
+    jsonPanel->SetSizer(jsonSizer);
+    notebook_->AddPage(jsonPanel, "JSON");
+
+    // Text Tab
+    wxPanel* textPanel = new wxPanel(notebook_);
+    wxBoxSizer* textSizer = new wxBoxSizer(wxVERTICAL);
+    wxTextCtrl* textBox = new wxTextCtrl(textPanel, wxID_ANY, "", wxDefaultPosition, wxDefaultSize,
+                                         wxTE_MULTILINE | wxTE_READONLY);
+    textSizer->Add(textBox, 1, wxEXPAND | wxALL, 10);
+    textPanel->SetSizer(textSizer);
+    notebook_->AddPage(textPanel, "Text");
+
+    // Add notebook to the main sizer
+    sizer->Add(notebook_, 1, wxEXPAND | wxALL, 10);
+
+    // Add download buttons below the notebook
     downloadJsonBtn_ = new wxButton(panel, ID_DownloadJson, "Download JSON");
     sizer->Add(downloadJsonBtn_, 0, wxALIGN_LEFT | wxALL, 10);
     if (response_ == nullptr) {
         downloadJsonBtn_->Disable();
     }
 
-    // Download text file button
     downloadTextBtn_ = new wxButton(panel, ID_DownloadText, "Download Text File");
     sizer->Add(downloadTextBtn_, 0, wxALIGN_LEFT | wxALL, 10);
     if (response_ == nullptr) {
@@ -170,6 +199,7 @@ PackingFrame::PackingFrame()
 
 void PackingFrame::OnExit(wxCommandEvent& event)
 {
+    // Ensure the app only closes when explicitly requested
     Close(true);
 }
 
@@ -181,6 +211,7 @@ void PackingFrame::OnAbout(wxCommandEvent& event)
 
 void PackingFrame::OnRunEstimator(wxCommandEvent& event)
 {
+    logBox_->Clear(); // clear output between runs
     wxString dataPath = filePickerData_->GetPath();
     int crateSelection = choiceAcceptsCrates_->GetSelection();
 
@@ -252,12 +283,47 @@ void PackingFrame::OnRunEstimator(wxCommandEvent& event)
 
             downloadJsonBtn_->Enable();
             downloadTextBtn_->Enable();
+            // Update JSON tab
+            wxTextCtrl* jsonBox = dynamic_cast<wxTextCtrl*>(notebook_->GetPage(1)->GetChildren()[0]);
+            if (jsonBox) {
+                jsonBox->Clear();
+                ResponseSummary responseSummary(*response_);
+                nlohmann::json j = responseSummary;
+                jsonBox->AppendText(j.dump(4));
+            }
+
+            // Update Text tab
+            wxTextCtrl* textBox = dynamic_cast<wxTextCtrl*>(notebook_->GetPage(2)->GetChildren()[0]);
+            if (textBox) {
+                textBox->Clear();
+                for (const auto& line : summary) {
+                    for (const auto& subline : line) {
+                        textBox->AppendText(subline + "\n");
+                    }
+                }
+            }
         });
     }).detach();
 }
 
 void PackingFrame::OnDownloadJson(wxCommandEvent& event)
 {
+    // Log the start of the OnDownloadJson event
+    wxLogMessage("OnDownloadJson event triggered.");
+
+    // Log the response_ pointer state
+    if (response_ == nullptr) {
+        wxLogMessage("response_ is null. Cannot proceed with JSON download.");
+    } else {
+        wxLogMessage("response_ is valid. Proceeding with JSON download.");
+    }
+
+    // Check for null pointers before using response_
+    if (response_ == nullptr) {
+        wxMessageBox("Response object is null. Please ensure the estimator ran successfully.", "Error", wxOK | wxICON_ERROR);
+        return;
+    }
+
     // Ask the user where to save the JSON file
     wxFileDialog saveDialog(
         this,
@@ -292,6 +358,22 @@ void PackingFrame::OnDownloadJson(wxCommandEvent& event)
 
 void PackingFrame::OnDownloadText(wxCommandEvent& event)
 {
+    // Log the start of the OnDownloadText event
+    wxLogMessage("OnDownloadText event triggered.");
+
+    // Log the response_ pointer state
+    if (response_ == nullptr) {
+        wxLogMessage("response_ is null. Cannot proceed with text file download.");
+    } else {
+        wxLogMessage("response_ is valid. Proceeding with text file download.");
+    }
+
+    // Check for null pointers before using response_
+    if (response_ == nullptr) {
+        wxMessageBox("Response object is null. Please ensure the estimator ran successfully.", "Error", wxOK | wxICON_ERROR);
+        return;
+    }
+
     // Ask the user where to save the JSON file
     wxFileDialog saveDialog(
         this,

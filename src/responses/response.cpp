@@ -5,16 +5,16 @@
 Response::Response(const std::vector<Box>& boxes,
                 const std::vector<ShippingContainer>& pallets,
                 const std::vector<ShippingContainer>& crates,
-                const Requirements requirements,
+                std::shared_ptr<Requirements> requirements,
                 const std::vector<Art>& csvArt) :
 
     boxInfo_(boxes),
     crateInfo_(crates),
     palletInfo_(pallets),
-    requirements_(requirements),
+    requirements_(std::move(requirements)),
     allArt_(csvArt)
     {
-        artInfo_ = ArtInfo(allArt_, &requirements_);
+        artInfo_ = ArtInfo(allArt_, requirements_);
         hardwareInfo_ = HardwareInfo(allArt_);
     }
 
@@ -68,7 +68,7 @@ std::vector<std::string> Response::getBusinessIntelSummary() {
 
 std::vector<std::string> Response::getEmailFormatSummary() {
     std::vector<std::string> summary = {"\n\n--------- EMAIL FORMAT ---------"};
-    summary.push_back(std::format("Subject: Quote Request - {}", requirements_.getClientName()));
+    summary.push_back(std::format("Subject: Quote Request - {}", requirements_->getClientName()));
 
     summary.push_back("\nShipment Details:");
     summary.push_back(std::format("- Total Weight: {} lbs", artInfo_.getTotalWeight() + palletInfo_.getTotalTareWeight() + crateInfo_.getTotalTareWeight()));
@@ -94,16 +94,16 @@ std::vector<std::string> Response::getEmailFormatSummary() {
     summary.push_back(dimensions);
 
     summary.push_back("- Pickup: ARCH Design, St. Louis, MO");
-    summary.push_back(std::format("- Delivery: {}", requirements_.getJobSiteLocation()));
+    summary.push_back(std::format("- Delivery: {}", requirements_->getJobSiteLocation()));
 
     std::string specialReq = "- Special Requirements: ";
-    if (requirements_.getHasLoadingDock()) {
+    if (requirements_->getHasLoadingDock()) {
         specialReq.append("Has loading dock, ");
     }
-    if (requirements_.getNeedsLiftgate()) {
+    if (requirements_->getNeedsLiftgate()) {
         specialReq.append("Needs liftgate, ");
     }
-    if (requirements_.getNeedsInsideDelivery()) {
+    if (requirements_->getNeedsInsideDelivery()) {
         specialReq.append("Needs inside delivery");
     }
     summary.push_back(specialReq);
@@ -163,5 +163,5 @@ HardwareInfo Response::getHardwareInfo() {
 }
 
 Requirements Response::getRequirements() {
-    return requirements_;
+    return *requirements_;
 }

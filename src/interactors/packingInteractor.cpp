@@ -142,7 +142,7 @@ Response PackingInteractor::packAllArt(Request request) {
     // }
 
 
-    return Response(boxes_, pallets_, crates_, request.getRequirements(), request.getArtPieces());
+    return Response(boxes_, pallets_, crates_, std::make_shared<Requirements>(request.getRequirements()), request.getArtPieces());
 }
 
 void PackingInteractor::packIntoPallets() {
