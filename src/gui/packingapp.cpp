@@ -176,14 +176,41 @@ PackingFrame::PackingFrame()
     jsonPanel->SetSizer(jsonSizer);
     notebook_->AddPage(jsonPanel, "JSON");
 
-    // Text Tab
-    wxPanel* textPanel = new wxPanel(notebook_);
-    wxBoxSizer* textSizer = new wxBoxSizer(wxVERTICAL);
-    wxTextCtrl* textBox = new wxTextCtrl(textPanel, wxID_ANY, "", wxDefaultPosition, wxDefaultSize,
-                                         wxTE_MULTILINE | wxTE_READONLY);
-    textSizer->Add(textBox, 1, wxEXPAND | wxALL, 10);
-    textPanel->SetSizer(textSizer);
-    notebook_->AddPage(textPanel, "Text");
+    // Packing Summary Tab
+    wxPanel* packingSummaryPanel = new wxPanel(notebook_);
+    wxBoxSizer* packingSummarySizer = new wxBoxSizer(wxVERTICAL);
+    wxTextCtrl* packingSummaryBox = new wxTextCtrl(packingSummaryPanel, wxID_ANY, "", wxDefaultPosition, wxDefaultSize,
+                                                   wxTE_MULTILINE | wxTE_READONLY);
+    packingSummarySizer->Add(packingSummaryBox, 1, wxEXPAND | wxALL, 10);
+    packingSummaryPanel->SetSizer(packingSummarySizer);
+    notebook_->AddPage(packingSummaryPanel, "Packing Summary");
+
+    // Weight Summary Tab
+    wxPanel* weightSummaryPanel = new wxPanel(notebook_);
+    wxBoxSizer* weightSummarySizer = new wxBoxSizer(wxVERTICAL);
+    wxTextCtrl* weightSummaryBox = new wxTextCtrl(weightSummaryPanel, wxID_ANY, "", wxDefaultPosition, wxDefaultSize,
+                                                  wxTE_MULTILINE | wxTE_READONLY);
+    weightSummarySizer->Add(weightSummaryBox, 1, wxEXPAND | wxALL, 10);
+    weightSummaryPanel->SetSizer(weightSummarySizer);
+    notebook_->AddPage(weightSummaryPanel, "Weight Summary");
+
+    // Business Intel Summary Tab
+    wxPanel* businessIntelPanel = new wxPanel(notebook_);
+    wxBoxSizer* businessIntelSizer = new wxBoxSizer(wxVERTICAL);
+    wxTextCtrl* businessIntelBox = new wxTextCtrl(businessIntelPanel, wxID_ANY, "", wxDefaultPosition, wxDefaultSize,
+                                                  wxTE_MULTILINE | wxTE_READONLY);
+    businessIntelSizer->Add(businessIntelBox, 1, wxEXPAND | wxALL, 10);
+    businessIntelPanel->SetSizer(businessIntelSizer);
+    notebook_->AddPage(businessIntelPanel, "Business Intel Summary");
+
+    // Email Format Tab
+    wxPanel* emailFormatPanel = new wxPanel(notebook_);
+    wxBoxSizer* emailFormatSizer = new wxBoxSizer(wxVERTICAL);
+    wxTextCtrl* emailFormatBox = new wxTextCtrl(emailFormatPanel, wxID_ANY, "", wxDefaultPosition, wxDefaultSize,
+                                                wxTE_MULTILINE | wxTE_READONLY);
+    emailFormatSizer->Add(emailFormatBox, 1, wxEXPAND | wxALL, 10);
+    emailFormatPanel->SetSizer(emailFormatSizer);
+    notebook_->AddPage(emailFormatPanel, "Email Format");
 
     // Add notebook to the main sizer
     sizer->Add(notebook_, 1, wxEXPAND | wxALL, 10);
@@ -307,12 +334,7 @@ void PackingFrame::OnRunEstimator(wxCommandEvent& event)
             summary.push_back(response_->getEmailFormatSummary());
 
             // Finish up
-            logBox_->AppendText("Estimation complete!\n");
-            for (const auto& line : summary) {
-                for (const auto& subline : line) {
-                    logBox_->AppendText(subline + "\n");
-                }
-            }
+            logBox_->AppendText("Estimation complete!\nTo see the results, click the download buttons or view in the other tabs.");
             logBox_->AppendText("\n");
 
             downloadJsonBtn_->Enable();
@@ -326,14 +348,41 @@ void PackingFrame::OnRunEstimator(wxCommandEvent& event)
                 jsonBox->AppendText(j.dump(4));
             }
 
-            // Update Text tab
-            wxTextCtrl* textBox = dynamic_cast<wxTextCtrl*>(notebook_->GetPage(2)->GetChildren()[0]);
-            if (textBox) {
-                textBox->Clear();
-                for (const auto& line : summary) {
+            // Update Packing Summary tab
+            wxTextCtrl* packingSummaryBox = dynamic_cast<wxTextCtrl*>(notebook_->GetPage(2)->GetChildren()[0]);
+            if (packingSummaryBox) {
+                packingSummaryBox->Clear();
+                for (const auto& line : response_->getPackingSummary()) {
                     for (const auto& subline : line) {
-                        textBox->AppendText(subline + "\n");
+                        packingSummaryBox->AppendText(subline + "\n");
                     }
+                }
+            }
+
+            // Update Weight Summary tab
+            wxTextCtrl* weightSummaryBox = dynamic_cast<wxTextCtrl*>(notebook_->GetPage(3)->GetChildren()[0]);
+            if (weightSummaryBox) {
+                weightSummaryBox->Clear();
+                for (const auto& line : response_->getWeightSummary()) {
+                    weightSummaryBox->AppendText(line + "\n");
+                }
+            }
+
+            // Update Business Intel Summary tab
+            wxTextCtrl* businessIntelBox = dynamic_cast<wxTextCtrl*>(notebook_->GetPage(4)->GetChildren()[0]);
+            if (businessIntelBox) {
+                businessIntelBox->Clear();
+                for (const auto& line : response_->getBusinessIntelSummary()) {
+                    businessIntelBox->AppendText(line + "\n");
+                }
+            }
+
+            // Update Email Format tab
+            wxTextCtrl* emailFormatBox = dynamic_cast<wxTextCtrl*>(notebook_->GetPage(5)->GetChildren()[0]);
+            if (emailFormatBox) {
+                emailFormatBox->Clear();
+                for (const auto& line : response_->getEmailFormatSummary()) {
+                    emailFormatBox->AppendText(line + "\n");
                 }
             }
         });
