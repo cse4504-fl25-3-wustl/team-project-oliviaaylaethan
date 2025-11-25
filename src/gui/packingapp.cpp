@@ -65,6 +65,7 @@ private:
     void OnRunEstimator(wxCommandEvent& event);
     void OnDownloadJson(wxCommandEvent& event);
     void OnDownloadText(wxCommandEvent& event);
+    void OnInputChanged(wxCommandEvent& event); // New event handler
 
     wxFilePickerCtrl* filePickerData_;
     wxChoice* choiceAcceptsCrates_;
@@ -195,6 +196,15 @@ PackingFrame::PackingFrame()
     Bind(wxEVT_BUTTON, &PackingFrame::OnRunEstimator, this, ID_RunEstimator);
     Bind(wxEVT_BUTTON, &PackingFrame::OnDownloadJson, this, ID_DownloadJson);
     Bind(wxEVT_BUTTON, &PackingFrame::OnDownloadText, this, ID_DownloadText);
+
+    // Bind events for file picker and dropdown menu
+    filePickerData_->Bind(wxEVT_FILEPICKER_CHANGED, &PackingFrame::OnInputChanged, this);
+    choiceAcceptsCrates_->Bind(wxEVT_CHOICE, &PackingFrame::OnInputChanged, this);
+
+    // Ensure buttons are initially disabled
+    FindWindow(ID_RunEstimator)->Disable();
+    downloadJsonBtn_->Disable();
+    downloadTextBtn_->Disable();
 }
 
 void PackingFrame::OnExit(wxCommandEvent& event)
@@ -409,4 +419,17 @@ void PackingFrame::OnDownloadText(wxCommandEvent& event)
     file.close();
 
     wxMessageBox("Text file saved successfully.", "Success", wxOK | wxICON_INFORMATION);
+}
+
+void PackingFrame::OnInputChanged(wxCommandEvent& event)
+{
+    // Check if both inputs are valid
+    bool isDataFileSelected = !filePickerData_->GetPath().IsEmpty();
+    bool isCrateSelectionValid = choiceAcceptsCrates_->GetSelection() != wxNOT_FOUND;
+
+    // Enable or disable buttons based on input validity
+    bool enableButtons = isDataFileSelected && isCrateSelectionValid;
+    FindWindow(ID_RunEstimator)->Enable(enableButtons);
+    downloadJsonBtn_->Enable(enableButtons && response_ != nullptr);
+    downloadTextBtn_->Enable(enableButtons && response_ != nullptr);
 }
