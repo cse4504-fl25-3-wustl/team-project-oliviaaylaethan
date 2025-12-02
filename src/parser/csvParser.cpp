@@ -109,15 +109,49 @@ std::string CsvParser::trim(const std::string& str) {
 MaterialType CsvParser::mapToMaterial(const std::string& medium) { // FIXME these mappings might be wrong
     std::string m = trim(medium);
     std::transform(m.begin(), m.end(), m.begin(), ::tolower); // Convert to lowercase
+    // from the materials_and_density.xlsx file given to us at the end of November 2025
 
-    if (m == "paper print - framed") return PAPER_PRINT_FRAMED;
+    // acoustic panel options
+    if (m == "acoustic panel - gallery wrapped") return ACOUSTIC_PANEL;
+    if (m == "2 inch acoustic panel - float frame") return ACOUSTIC_PANEL_FRAMED;
+    if (m == "1 inch acoustic panel - float frame") return ACOUSTIC_PANEL_FRAMED;
+
+    // canvas options
     if (m == "canvas - float frame") return CANVAS_FRAMED;
-    if (m == "canvas - gallery") return CANVAS_GALLERY;
-    if (m == "canvas") return CANVAS_GALLERY;
+    if (m == "canvas - framed")      return CANVAS_FRAMED;
+    if (m == "canvas - gallery wrapped") return CANVAS_GALLERY;
+
+    if (m == "hand embellished canvas - float frame") return CANVAS_FRAMED;
+    if (m == "hand embellished canvas - framed")      return CANVAS_FRAMED;
+    if (m == "hand embellished canvas - gallery wrapped") return CANVAS_GALLERY;
+
+    if (m == "uv canvas - float frame") return CANVAS_FRAMED;
+    if (m == "uv canvas - framed")      return CANVAS_FRAMED;
+    if (m == "uv canvas - gallery wrapped") return CANVAS_GALLERY;
+    if (m == "ve canvas - float frame") return CANVAS_FRAMED;
+
+    // print options
+    if (m == "paper print - framed") return PAPER_PRINT_FRAMED;
+    if (m == "print - float mount")  return PAPER_PRINT_FRAMED;
+    if (m == "print - float mount and deckled edge") return PAPER_PRINT_FRAMED;
+    if (m == "print - float mount with title plate") return PAPER_PRINT_FRAMED;
+    if (m == "print - framed with title plate") return PAPER_PRINT_FRAMED;
+
+    if (m == "print - raised float mount") return PAPER_PRINT_FRAMED;
+    if (m == "print - raised float mount and deckled edge") return PAPER_PRINT_FRAMED;
+    if (m == "print - raised float mount and raised mat")   return PAPER_PRINT_FRAMED;
+    if (m == "print - raised float mount with title plate") return PAPER_PRINT_FRAMED;
+    if (m == "print - raised mat") return PAPER_PRINT_FRAMED;
+        
+
+    // NOT from that file - extra options we support
     if (m == "acoustic panel") return ACOUSTIC_PANEL;
     if (m == "acoustic panel - framed") return ACOUSTIC_PANEL_FRAMED;
+    if (m == "canvas") return CANVAS_GALLERY;
+    if (m == "canvas - gallery") return CANVAS_GALLERY;
     if (m == "mirror") return MIRROR;
-    // TODO these don't have their own set material
+
+    // TODO these don't have their own set material (incorrect mappings - need to remove them from test cases if present)
     if (m == "metal print") return PATIENT_BOARD;
     if (m == "print - framed with title plate") return CANVAS_FRAMED;
     if (m == "wall décor") return ACOUSTIC_PANEL;
@@ -135,7 +169,7 @@ GlazingType CsvParser::mapToGlazing(const std::string& glaze) {
     if (g == "glass") return GLAZING_GLASS;
     if (g == "acrylic") return GLAZING_ACRYLIC;
 
-    std::cerr << "Warning: Unrecognized medium '" << glaze << "'. Defaulting to GLAZING_NONE." << std::endl;
+    std::cerr << "Warning: Unrecognized glazing '" << glaze << "'. Defaulting to GLAZING_NONE." << std::endl;
     return GLAZING_NONE;
 }
 
