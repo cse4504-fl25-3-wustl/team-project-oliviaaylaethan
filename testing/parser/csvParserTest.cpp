@@ -121,7 +121,7 @@ TEST_F(CsvParserTest, ParseFiles_VerifyArtworkDetails) {
     EXPECT_EQ(artPieces[0].getLineNumber(), 1);
     EXPECT_FLOAT_EQ(artPieces[0].getOuterWidth(), 24.0f);
     EXPECT_FLOAT_EQ(artPieces[0].getOuterHeight(), 30.0f);
-    EXPECT_EQ(artPieces[0].getMaterial(), PAPER_PRINT_FRAMED); // Paper Print maps to PAPER_PRINT_FRAMED
+    EXPECT_EQ(artPieces[0].getMaterial(), PAPER_PRINT_FRAMED);
     EXPECT_EQ(artPieces[0].getGlazeType(), GLAZING_GLASS);
     
     // Second artwork - Canvas Float Frame
@@ -129,14 +129,15 @@ TEST_F(CsvParserTest, ParseFiles_VerifyArtworkDetails) {
     EXPECT_FLOAT_EQ(artPieces[2].getOuterWidth(), 36.0f);
     EXPECT_FLOAT_EQ(artPieces[2].getOuterHeight(), 48.0f);
     EXPECT_EQ(artPieces[2].getMaterial(), CANVAS_FRAMED);
+    EXPECT_EQ(artPieces[2].getGlazeType(), GLAZING_NONE);
     
-    // Third artwork - Metal Print
+    // Third artwork - Acoustic Panel Gallery Wrapped
     EXPECT_EQ(artPieces[3].getLineNumber(), 3);
     EXPECT_FLOAT_EQ(artPieces[3].getOuterWidth(), 20.0f);
     EXPECT_FLOAT_EQ(artPieces[3].getOuterHeight(), 20.0f);
 
-    EXPECT_EQ(artPieces[3].getMaterial(), PATIENT_BOARD);
-    EXPECT_EQ(artPieces[3].getGlazeType(), GLAZING_GLASS);
+    EXPECT_EQ(artPieces[3].getMaterial(), ACOUSTIC_PANEL);
+    EXPECT_EQ(artPieces[3].getGlazeType(), GLAZING_NONE);
 }
 
 TEST_F(CsvParserTest, ParseFiles_VerifyRequirementsDetails) {

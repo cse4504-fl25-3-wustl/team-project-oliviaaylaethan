@@ -96,8 +96,6 @@ Request CsvParser::parseFiles(std::string artFilePath, std::string siteFilePath,
     return Request(artworks, siteRequirements);
 }
 
-
-
 // Trim utility
 std::string CsvParser::trim(const std::string& str) {
     auto start = str.find_first_not_of(" \t\r\n");
@@ -105,11 +103,10 @@ std::string CsvParser::trim(const std::string& str) {
     return (start == std::string::npos) ? "" : str.substr(start, end - start + 1);
 }
 
-// Map Final Medium to MaterialType
-MaterialType CsvParser::mapToMaterial(const std::string& medium) { // FIXME these mappings might be wrong
+// Map Final Medium to MaterialType (final mediums taken from materials_and_density.xlsx)
+MaterialType CsvParser::mapToMaterial(const std::string& medium) {
     std::string m = trim(medium);
     std::transform(m.begin(), m.end(), m.begin(), ::tolower); // Convert to lowercase
-    // from the materials_and_density.xlsx file given to us at the end of November 2025
 
     // acoustic panel options
     if (m == "acoustic panel - gallery wrapped") return ACOUSTIC_PANEL;
@@ -142,7 +139,6 @@ MaterialType CsvParser::mapToMaterial(const std::string& medium) { // FIXME thes
     if (m == "print - raised float mount and raised mat")   return PAPER_PRINT_FRAMED;
     if (m == "print - raised float mount with title plate") return PAPER_PRINT_FRAMED;
     if (m == "print - raised mat") return PAPER_PRINT_FRAMED;
-        
 
     // NOT from that file - extra options we support
     if (m == "acoustic panel") return ACOUSTIC_PANEL;
@@ -150,11 +146,6 @@ MaterialType CsvParser::mapToMaterial(const std::string& medium) { // FIXME thes
     if (m == "canvas") return CANVAS_GALLERY;
     if (m == "canvas - gallery") return CANVAS_GALLERY;
     if (m == "mirror") return MIRROR;
-
-    // TODO these don't have their own set material (incorrect mappings - need to remove them from test cases if present)
-    if (m == "metal print") return PATIENT_BOARD;
-    if (m == "print - framed with title plate") return CANVAS_FRAMED;
-    if (m == "wall décor") return ACOUSTIC_PANEL;
     
     std::cerr << "Warning: Unrecognized medium '" << medium << "'. Defaulting to ACOUSTIC_PANEL." << std::endl;
     return ACOUSTIC_PANEL; // default/fallback
@@ -168,6 +159,7 @@ GlazingType CsvParser::mapToGlazing(const std::string& glaze) {
     if (g == "regular glass") return GLAZING_GLASS;
     if (g == "glass") return GLAZING_GLASS;
     if (g == "acrylic") return GLAZING_ACRYLIC;
+    if (g == "n/a" || g == "none" || g == "") return GLAZING_NONE;
 
     std::cerr << "Warning: Unrecognized glazing '" << glaze << "'. Defaulting to GLAZING_NONE." << std::endl;
     return GLAZING_NONE;
