@@ -143,12 +143,50 @@ Using GitHub releases? Download the appropriate file, then skip to step 5!
       - Canvas/acoustic = 11" / 4 pieces = **2.75"** deep each
       - NOTE: THE INSTRUCTOR-WRITTEN TEST CASES SEEM TO ASSUME A CANVAS DEPTH OF **2.5"**
    <br>
+- About custom pieces:
+   - Is custom if:
+      - BOTH dimensions > 43.5" and/or
+      - EITHER dimension > 88"
+   - Clarifying examples of what is NOT custom:
+      - 75 x 40 is not custom
+      - if only ONE dimension exceeds 43.5, do NOT need custom
+      - 43.5 x 88 STILL FITS and does NOT need custom packing
+   - REASON: 
+      - Boxes can be telescoped to a max height of 88"
+      - As long as at least ONE dimension of an art piece is 36.5" or less, it will fit in a standard size box
+         - Standard box starting dimensions: 37 x 11 x 31
+         - Standard box telescoped max dimensions: 37 x 11 x **88**
+      - As long as at least ONE dimension of an art piece is 43.5" or less, it will fit in a large size box
+         - Large box dimensions: 44 x 13 x 48
+         - Large box telescoped max dimensions: 44 x 13 x **88**
+   <br>
 - Mixed mediums **CAN** go in the same box
 
-# Test cases that don't apply to us:
+# Test cases that don't apply to us (or are incorrect):
+## Student-written stress tests:
 - test_cases/stress_tests/pack_by_depth/test1/input.csv
    - test assumes **6** framed prints per large box
    - we have **7** framed prints per large box
 - test_cases/stress_tests/no_mixed_medium_in_same_box directory
    - tests assumes that each medium gets its own box
    - we allow packing different mediums into the same box
+## Stress_tests_redo:
+- test_cases/stress_tests/all/test2/expected_output.json
+   - EXPECTS: "custom_piece_count": 200
+   - CORRECT: "custom_piece_count": 0
+   - Reason (see "About custom pieces" for more information):
+      - As long as at least ONE dimension of an art piece is 36.5" or less, it will fit in a standard size box (assuming the other dimension is <= 88")
+      - The only piece sizes given for this input are 33x43 and 32x56
+      - 33 <= 36.5"
+      - 32 <= 36.5"
+      - 43 <= 88"
+      - 56 <= 88"
+   - OTHER TYPOS:
+      - README calls for "67 standard boxes" and "11 large pallets"
+      - EXPECTED OUTPUT: 
+         - "large_box_count": 11
+         - "oversized_pallet_count": 0
+      - SHOULD BE:
+         - "large_box_count": 0
+         - "oversized_pallet_count": 11
+
