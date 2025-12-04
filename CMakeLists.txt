@@ -104,17 +104,6 @@ target_link_libraries(
   GTest::gtest_main
 )
 
-add_executable(
-    feature2_main_tests
-    testing/responses/feature2MainTest.cpp
-)
-target_link_libraries(
-    feature2_main_tests
-    core_lib
-    GTest::gtest
-    GTest::gtest_main
-)
-
 include(GoogleTest)
 gtest_discover_tests(all_tests)
 
