@@ -34,5 +34,6 @@ public:
     int getOversizedBoxCapacity() const;
     bool addBox(Box box);
     bool addArt(Art art);
+    bool addArtWithCapacity(const Art& art, int perCrateCountOverride);
     float getFilledFrac() const;
 };

@@ -196,28 +196,99 @@ void PackingInteractor::packIntoPallets() {
 void PackingInteractor::packIntoCrates(vector<Art> artPieces) {
     if (artPieces.empty()) return;
 
-    std::sort(artPieces.begin(), artPieces.end(),
-          [](Art& a, Art& b) {
-              if (a.getPerCrateCount() != b.getPerCrateCount())
-                  return a.getPerCrateCount() > b.getPerCrateCount();
-              return (a.getOuterWidth() * a.getOuterHeight()) >
-                     (b.getOuterWidth() * b.getOuterHeight());
-          });
-
-    ShippingContainer crate = ShippingContainer::makeStandardCrate();
-
-    while (!artPieces.empty()) {
-        if (crate.addArt(artPieces.back())) {
-            artPieces.pop_back();
+    // Determine material-specific capacities
+    auto getCaps = [](MaterialType m) {
+        struct Caps { int longCap; int shortCap; } caps;
+        if (m == MaterialType::CANVAS_FRAMED || m == MaterialType::CANVAS_GALLERY || m == MaterialType::ACOUSTIC_PANEL || m == MaterialType::ACOUSTIC_PANEL_FRAMED) {
+            caps.longCap = CANVAS_SMALL_CRATE_CAPACITY; // 18
+            caps.shortCap = CANVAS_LARGE_CRATE_CAPACITY; // 14
+        } else if (m == MaterialType::PAPER_PRINT_FRAMED) { // glass/acrylic framed
+            caps.longCap = GLASS_ACRYLIC_SMALL_CRATE_CAPACITY; // 25
+            caps.shortCap = GLASS_ACRYLIC_LARGE_CRATE_CAPACITY; // 19
         } else {
-            crates_.push_back(std::move(crate));
-            crate = ShippingContainer::makeStandardCrate();
+            // default to canvas-like behavior if unspecified
+            caps.longCap = CANVAS_SMALL_CRATE_CAPACITY;
+            caps.shortCap = CANVAS_LARGE_CRATE_CAPACITY;
+        }
+        return caps;
+    };
+
+    // Split by capability: long-only, short-only, and flexible (fits both)
+    std::vector<Art> longOnly;
+    std::vector<Art> shortOnly;
+    std::vector<Art> flex;
+
+    longOnly.reserve(artPieces.size());
+    shortOnly.reserve(artPieces.size());
+    flex.reserve(artPieces.size());
+
+    for (auto &a : artPieces) {
+        float w = a.getOuterWidth();
+        float h = a.getOuterHeight();
+        float shorter = std::min(w, h);
+        float longer  = std::max(w, h);
+        bool canLong = (shorter < LARGE_CRATE_CAPACITY_WIDTH_THRESHOLD);
+        bool canShort = (shorter <= LARGE_CRATE_CAPACITY_HEIGHT_THRESHOLD && longer <= LARGE_CRATE_CAPACITY_WIDTH_THRESHOLD) || (shorter >= LARGE_CRATE_CAPACITY_WIDTH_THRESHOLD);
+
+        if (canLong && canShort && shorter <= LARGE_CRATE_CAPACITY_HEIGHT_THRESHOLD && longer <= LARGE_CRATE_CAPACITY_WIDTH_THRESHOLD) {
+            flex.push_back(a); // clearly fits both within footprint window
+        } else if (canLong && !canShort) {
+            longOnly.push_back(a);
+        } else if (!canLong && canShort) {
+            shortOnly.push_back(a);
+        } else {
+            // default to long if ambiguous for any reason
+            longOnly.push_back(a);
         }
     }
 
-    // Only push the final crate if it contains something
-    if (!crate.getArtContents().empty()) {
-        crates_.push_back(std::move(crate));
+    // Determine capacities based on the (assumed uniform) material of the batch
+    MaterialType mat = artPieces.front().getMaterial();
+    auto caps = getCaps(mat);
+
+    auto fill_crates = [&](std::vector<Art> &primary, std::vector<Art> &flexible, int cap) {
+        while (!primary.empty()) {
+            ShippingContainer crate = ShippingContainer::makeStandardCrate();
+            int added = 0;
+            // Fill from primary first
+            size_t i = 0;
+            while (i < primary.size()) {
+                if (!crate.addArtWithCapacity(primary[i], cap)) break;
+                ++added;
+                primary[i] = std::move(primary.back());
+                primary.pop_back();
+            }
+            // Top-up from flexible if space remains
+            i = 0;
+            while (i < flexible.size() && crate.getFilledFrac() + (1.0f / cap) - 1.0f <= EPS) {
+                if (!crate.addArtWithCapacity(flexible[i], cap)) break;
+                ++added;
+                flexible[i] = std::move(flexible.back());
+                flexible.pop_back();
+            }
+            if (added > 0) crates_.push_back(std::move(crate));
+            else break;
+        }
+    };
+
+    // Prefer filling long-capacity crates first to minimize total crates, then short
+    fill_crates(longOnly, flex, caps.longCap);
+    fill_crates(shortOnly, flex, caps.shortCap);
+
+    // Any remaining flexible pieces: pack them using long capacity to minimize crate count
+    while (!flex.empty()) {
+        ShippingContainer crate = ShippingContainer::makeStandardCrate();
+        int cap = caps.longCap;
+        int added = 0;
+        size_t i = 0;
+        while (i < flex.size()) {
+            if (!crate.addArtWithCapacity(flex[i], cap)) break;
+            ++added;
+            flex[i] = std::move(flex.back());
+            flex.pop_back();
+        }
+        if (added > 0) crates_.push_back(std::move(crate));
+        else break;
     }
 }
 

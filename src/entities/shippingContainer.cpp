@@ -118,10 +118,34 @@ bool ShippingContainer::addArt(Art art) {
     }
     
     float fraction = 1.0f / art.getPerCrateCount();
-    if ((filledFrac_ + fraction) - 1.0f > EPS) { // Allow for floating point precision issues
+    if ((filledFrac_ + fraction) > 1.0f + EPS) { // Allow for floating point precision issues
         return false;
     }
     artContents_.push_back(art);
     filledFrac_ += fraction;
+    if (1.0f - filledFrac_ < EPS) {
+        filledFrac_ = 1.0f;
+    }
+    return true;
+}
+
+bool ShippingContainer::addArtWithCapacity(const Art& art, int perCrateCountOverride) {
+    if (shippingContainerType_ != STANDARD_CRATE) {
+        return false; // only crates can have art directly added
+    }
+
+    if (perCrateCountOverride <= 0) {
+        return false;
+    }
+
+    float fraction = 1.0f / static_cast<float>(perCrateCountOverride);
+    if ((filledFrac_ + fraction) > 1.0f + EPS) {
+        return false;
+    }
+    artContents_.push_back(art);
+    filledFrac_ += fraction;
+    if (1.0f - filledFrac_ < EPS) {
+        filledFrac_ = 1.0f;
+    }
     return true;
 }
