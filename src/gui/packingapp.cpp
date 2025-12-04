@@ -4,6 +4,7 @@
 #include <wx/stream.h>
 #include <wx/notebook.h>
 #include <wx/textctrl.h>
+#include <wx/uri.h>
 #include <thread> // so loading icon can be shown while waiting for it to finish
 #include <wx/utils.h> // wxLaunchDefaultBrowser
 #include "estimator.cpp"
@@ -405,16 +406,6 @@ void PackingFrame::OnRunEstimator(wxCommandEvent& event)
 
 void PackingFrame::OnDownloadJson(wxCommandEvent& event)
 {
-    // Log the start of the OnDownloadJson event
-    wxLogMessage("OnDownloadJson event triggered.");
-
-    // Log the response_ pointer state
-    if (response_ == nullptr) {
-        wxLogMessage("response_ is null. Cannot proceed with JSON download.");
-    } else {
-        wxLogMessage("response_ is valid. Proceeding with JSON download.");
-    }
-
     // Check for null pointers before using response_
     if (response_ == nullptr) {
         wxMessageBox("Response object is null. Please ensure the estimator ran successfully.", "Error", wxOK | wxICON_ERROR);
@@ -455,16 +446,6 @@ void PackingFrame::OnDownloadJson(wxCommandEvent& event)
 
 void PackingFrame::OnDownloadText(wxCommandEvent& event)
 {
-    // Log the start of the OnDownloadText event
-    wxLogMessage("OnDownloadText event triggered.");
-
-    // Log the response_ pointer state
-    if (response_ == nullptr) {
-        wxLogMessage("response_ is null. Cannot proceed with text file download.");
-    } else {
-        wxLogMessage("response_ is valid. Proceeding with text file download.");
-    }
-
     // Check for null pointers before using response_
     if (response_ == nullptr) {
         wxMessageBox("Response object is null. Please ensure the estimator ran successfully.", "Error", wxOK | wxICON_ERROR);
@@ -541,12 +522,10 @@ void PackingFrame::OnOpenEmail(wxCommandEvent& event)
             }
         }
 
-        // URL-encode subject and body minimally (replace spaces and newlines)
-        subject.Replace(" ", "%20");
-        body.Replace("\n", "%0A");
-        body.Replace(" ", "%20");
-
         wxString mailto = "mailto:?subject=" + subject + "&body=" + body;
+
+        wxURI uri(mailto);
+        mailto = uri.BuildURI();
 
         if (!wxLaunchDefaultBrowser(mailto)) {
             wxMessageBox("Failed to open the default mail client.", "Error", wxOK | wxICON_ERROR);
