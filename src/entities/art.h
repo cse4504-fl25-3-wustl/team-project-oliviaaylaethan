@@ -8,6 +8,7 @@ class Art {
 private:
     int lineNumber_;
     std::string tagNumber_;
+    std::string raw_csv_input_material_; // to use for the printed packing summaries
     MaterialType material_;
     float materialDensity_;
     float outerWidth_;
@@ -39,6 +40,8 @@ public:
     int getUniqueID();
 	int getLineNumber();
     std::string getTagNumber();
+    void setRawCSVInputMaterial(std::string finalMedium);
+    std::string getRawCSVInputMaterial();
     MaterialType getMaterial();
     float getDepth();
     float getOuterWidth();

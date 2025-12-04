@@ -225,6 +225,7 @@ std::vector<Art> CsvParser::parseArtCsv(const std::string& filename) {
 
             for (int i = 0; i < qty; i++) {
                 Art art(lineNo, tag, material, width, height, glaze, frame, hw, uniqueArtId);
+                art.setRawCSVInputMaterial(tokens[3]); // store original medium string for final output
                 artList.push_back(art);
             }
         } catch (const std::exception& e) {

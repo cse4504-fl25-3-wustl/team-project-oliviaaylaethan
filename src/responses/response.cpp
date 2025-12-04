@@ -51,10 +51,10 @@ std::vector<std::vector<std::string>> Response::getPackingSummary() {
     summary.push_back(palletDimens);
     summary.push_back(crateInfo_.getCrateDimensionsSummary());
     summary.push_back(hardwareInfo_.getLineItemHWSummary());
-    // summary.push_back(std::vector<std::string>{"\n-----------------------------------"});
-    // summary.push_back(boxInfo_.getAllPackedArtSummary());
-    // summary.push_back(palletInfo_.getAllPackedBoxesSummary());
-    // summary.push_back(crateInfo_.getAllPackedBoxesSummary());
+    summary.push_back(std::vector<std::string>{"\n-----------------------------------"});
+    summary.push_back(boxInfo_.getAllPackedArtSummary());
+    summary.push_back(palletInfo_.getAllPackedBoxesSummary());
+    summary.push_back(crateInfo_.getAllPackedBoxesSummary());
     return summary;
 }
 

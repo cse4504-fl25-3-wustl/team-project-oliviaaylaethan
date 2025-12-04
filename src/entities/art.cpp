@@ -115,6 +115,14 @@ std::string Art::getTagNumber() {
     return tagNumber_;
 }
 
+void Art::setRawCSVInputMaterial(std::string finalMedium) {
+    raw_csv_input_material_ = finalMedium;
+}
+
+std::string Art::getRawCSVInputMaterial() {
+    return raw_csv_input_material_;
+}
+
 MaterialType Art::getMaterial() {
     return material_;
 }

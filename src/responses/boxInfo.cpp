@@ -58,14 +58,28 @@ std::vector<std::string> BoxInfo::getAllPackedArtSummary() {
     std::vector<std::string> summary;
     summary.push_back("\nArt Packing Summary:");
     Box box;
+    // for each box, print its contents
+    /* example:
+        - Box 1 - Large Box
+            - tagNo: 5 	 38 x 56 	 Acoustic panel - Framed
+            - tagNo: 5 	 38 x 56 	 Acoustic panel - Framed
+            - tagNo: 5 	 38 x 56 	 Acoustic panel - Framed
+            - tagNo: 5 	 38 x 56 	 Acoustic panel - Framed
+    */
     for (int i = 0; i < totalCount; i++) {
         box = boxes_[i];
         summary.push_back(std::format(
-            "- Box {} - {}", i, to_string(box.getBoxType())));
+            "\n- Box {} - {}", i, to_string(box.getBoxType())));
         std::vector<Art> contents = box.getContents();
+        // print out details of each art piece in the box
         for (size_t j = 0; j < contents.size(); j++) {
+            std::string tagNo = contents[j].getTagNumber();
+            std::string finalMedium = contents[j].getRawCSVInputMaterial();
+            std::string dimensions = std::format("{} x {}",
+                contents[j].getOuterWidth(),
+                contents[j].getOuterHeight());
             summary.push_back(std::format(
-                "  - lineNo: {}, tagNo: {}", contents[j].getLineNumber(), contents[j].getTagNumber()));
+                "  - tagNo: {} \t {} \t {}", tagNo, dimensions, finalMedium));
         }
     }
     return summary;
