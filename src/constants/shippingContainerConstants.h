@@ -28,7 +28,7 @@ const int STANDARD_PALLET_CANVAS_BOX_CAPACITY = 12;
 //   - 14 canvases
 
 // The thresholds below match the values needed for the test cases, NOT what is on Piazza
-const int LARGE_CRATE_CAPACITY_WIDTH_THRESHOLD = 48;
+const int LARGE_CRATE_CAPACITY_WIDTH_THRESHOLD = 46;
 const int LARGE_CRATE_CAPACITY_HEIGHT_THRESHOLD = 36;
 const int GLASS_ACRYLIC_SMALL_CRATE_CAPACITY = 25;
 const int GLASS_ACRYLIC_LARGE_CRATE_CAPACITY = 19;

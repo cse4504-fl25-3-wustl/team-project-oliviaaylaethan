@@ -189,9 +189,19 @@ bool Art::isOversizedInstallation() {
 }
 
 bool Art::needsLargeCrateCapacity() {
-    return !((outerWidth_ <= LARGE_CRATE_CAPACITY_WIDTH_THRESHOLD && outerHeight_ <= LARGE_CRATE_CAPACITY_HEIGHT_THRESHOLD) ||
-         (outerWidth_ <= LARGE_CRATE_CAPACITY_HEIGHT_THRESHOLD && outerHeight_ <= LARGE_CRATE_CAPACITY_WIDTH_THRESHOLD));
+    int shorter = std::min(outerWidth_, outerHeight_);
+    int longer  = std::max(outerWidth_, outerHeight_);
 
+    // First: does this item even fit in the crate height?
+    if (longer > CUSTOM_PACKING_NEEDED_THRESHOLD_LARGER_DIM) return true;  // TODO: oversized → force large crate or error
+
+    // If the shorter side is < 46", we can use the 18-capacity orientation.
+    if (shorter < LARGE_CRATE_CAPACITY_WIDTH_THRESHOLD) {
+        return false;   // small crate → 18
+    }
+
+    // If shorter >= 46 but still ≤ 88, we use 14-capacity orientation.
+    return true;        // large crate → 14
 }
 
 int Art::getPerCrateCount() {
