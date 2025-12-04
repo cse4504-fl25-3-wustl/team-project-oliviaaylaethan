@@ -168,3 +168,25 @@ std::vector<std::string> ArtInfo::getTotalWeightSummary() {
     return summary;
 }
 
+std::string ArtInfo::getPackedArtSummary(std::vector<Art> containerContents) {
+    // print out details of each art piece in the box
+    // example: - tagNo: 5 	 38 x 56 	 Acoustic panel - Framed
+    std::vector<std::string> summary;
+    for (size_t j = 0; j < containerContents.size(); j++) {
+        std::string tagNo = containerContents[j].getTagNumber();
+        std::string finalMedium = containerContents[j].getRawCSVInputMaterial();
+        std::string dimensions = std::format("{} x {}",
+            containerContents[j].getOuterWidth(),
+            containerContents[j].getOuterHeight());
+        summary.push_back(std::format(
+            "  - tagNo: {} \t {} \t {}", tagNo, dimensions, finalMedium));
+    }
+
+    // Convert the vector of strings into a single string
+    std::string result;
+    for (const auto& line : summary) {
+        result += line + "\n"; // Add each line followed by a newline
+    }
+
+    return result;
+}

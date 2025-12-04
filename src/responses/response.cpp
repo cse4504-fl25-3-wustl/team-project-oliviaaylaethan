@@ -46,7 +46,8 @@ std::vector<std::vector<std::string>> Response::getPackingSummary() {
     std::vector<std::string> palletDimens = {};
     for (size_t i = 0; i < palletInfo_.getTotalPalletCount(); i++) {
         palletDimens.push_back(std::format("- Pallet {}: {}",
-            i, palletInfo_.getPalletDimensionsSummary()[i]));
+            // index from 1 in print-out
+            i+1, palletInfo_.getPalletDimensionsSummary()[i]));
     }
     summary.push_back(palletDimens);
     summary.push_back(crateInfo_.getCrateDimensionsSummary());
@@ -87,6 +88,7 @@ std::vector<std::string> Response::getEmailFormatSummary() {
     std::string dimensions = "- Dimensions: ";
     for (size_t i = 0; i < palletInfo_.getTotalPalletCount(); i++) {
         dimensions.append(palletInfo_.getPalletDimensionsSummary()[i]);
+        
         if (i+1 < palletInfo_.getTotalPalletCount()) {
             dimensions.append(", ");
         }

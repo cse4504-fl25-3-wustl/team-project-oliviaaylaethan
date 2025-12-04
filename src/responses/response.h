@@ -47,6 +47,8 @@ class ArtInfo {
         std::vector<Art> getOversizedItems();
         std::vector<std::string> getTotalWeightSummary();
         int getTotalWeight();
+        // to be called on an individual crate or box to show the art inside
+        static std::string getPackedArtSummary(std::vector<Art> containerContents);
 };
 
 

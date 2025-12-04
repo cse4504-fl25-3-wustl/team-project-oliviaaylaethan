@@ -53,34 +53,19 @@ int BoxInfo::getTotalWeight() {
     return weight;
 }
 
+// for each box, be able to print its contents
 std::vector<std::string> BoxInfo::getAllPackedArtSummary() {
     int totalCount = getTotalBoxCount();
     std::vector<std::string> summary;
     summary.push_back("\nArt Packing Summary:");
     Box box;
-    // for each box, print its contents
-    /* example:
-        - Box 1 - Large Box
-            - tagNo: 5 	 38 x 56 	 Acoustic panel - Framed
-            - tagNo: 5 	 38 x 56 	 Acoustic panel - Framed
-            - tagNo: 5 	 38 x 56 	 Acoustic panel - Framed
-            - tagNo: 5 	 38 x 56 	 Acoustic panel - Framed
-    */
     for (int i = 0; i < totalCount; i++) {
         box = boxes_[i];
+        //ex:  "- Box 1 - Large Box"
         summary.push_back(std::format(
-            "\n- Box {} - {}", i, to_string(box.getBoxType())));
-        std::vector<Art> contents = box.getContents();
-        // print out details of each art piece in the box
-        for (size_t j = 0; j < contents.size(); j++) {
-            std::string tagNo = contents[j].getTagNumber();
-            std::string finalMedium = contents[j].getRawCSVInputMaterial();
-            std::string dimensions = std::format("{} x {}",
-                contents[j].getOuterWidth(),
-                contents[j].getOuterHeight());
-            summary.push_back(std::format(
-                "  - tagNo: {} \t {} \t {}", tagNo, dimensions, finalMedium));
-        }
+            "\n- Box {} - {}", i+1, to_string(box.getBoxType())));
+        // ex:  "   - tagNo: 5 	 38 x 56 	 Acoustic panel - Framed"
+        summary.push_back(ArtInfo::getPackedArtSummary(box.getContents()));
     }
     return summary;
 }
