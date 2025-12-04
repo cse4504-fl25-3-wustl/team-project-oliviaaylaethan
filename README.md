@@ -123,59 +123,32 @@ Using GitHub releases? Download the appropriate file, then skip to step 5!
    ],
    ```
 
-# Feature 1 Work Assignment
-* **Olivia** - Response
-* **Ayla** - Request
-* **Ethan** - Interactor
+# Our Packing Strategies:
+- Pack by depth
+   - Each standard box can hold:
+      - 6 framed prints
+      OR
+      - 4 canvas/acoustic panels
+      OR
+      - a mix based on depth (see below)
+   - Each large box can hold:
+      - 7 framed prints
+      OR
+      - 4 canvas/acoustic panels
+      OR
+      - a mix based on depth (see below)
+   - Assumed depths:
+      - Based on stated capacity of a standard box (depth of 11")
+      - Framed prints = 11" / 6 pieces = 1.833" deep each
+      - Canvas/acoustic = 11" / 4 pieces = **2.75"** deep each
+      - NOTE: THE INSTRUCTOR-WRITTEN TEST CASES SEEM TO ASSUME A CANVAS DEPTH OF **2.5"**
+   <br>
+- Mixed mediums **CAN** go in the same box
 
-# Testing Assignment
-* **Olivia**
-   * Packing Interactor
-      * packAllArt
-* **Ayla**
-   * Art
-      * getWeight
-      * needsCustomShipping
-   * Box
-      * fitsArt
-      * addArt
-      * getTotalWeight
-* **Ethan**
-   * Shipping Container
-      * calculateContainerHeight
-      * addBox
-   * CSV Parser
-      * parseFiles
-    
-# Feature 2 Work Plan
-
-Workflow: all of us will commit directly to the feature2 branch
-
-Responsibilities:
- 
-* **Olivia**
-   * change input to accept command line args
-   * change output to json
-* **Ethan**
-   * add test cases from our class github repo
-* **Ayla**
-   * update code to pass new test cases
-
-
-# Feature 3 Work Plan
-
-This week:
-- **Olivia:** output stuff
-- **Ethan:** git bash testing repo in separate location
-- **Ayla:** GUI improvements
-
-General TODOs:
-- get more GitHub minutes
-- fix crate stuff
-- check abt mirrors
-- RUN TEST CASES and check that depth-based test cases pass
-- email
-- collapsible or tabs for different summaries
-- clear output from last run
-- fix bugs
-- make sure errors print out to user
+# Test cases that don't apply to us:
+- test_cases/stress_tests/pack_by_depth/test1/input.csv
+   - test assumes **6** framed prints per large box
+   - we have **7** framed prints per large box
+- test_cases/stress_tests/no_mixed_medium_in_same_box directory
+   - tests assumes that each medium gets its own box
+   - we allow packing different mediums into the same box
