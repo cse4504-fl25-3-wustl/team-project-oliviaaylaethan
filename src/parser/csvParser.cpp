@@ -15,6 +15,12 @@ bool CsvParser::isValidFile(const std::string & filePath) {
         return false;
     }
 
+    // Check if csv
+    if (filePath.substr(filePath.find_last_of(".") + 1) != "csv") {
+        std::cerr << "Error: File is not a .csv file: " << filePath << std::endl;
+        return false;
+    }
+
     // error checking for opening file
     if (!file.is_open()) {
         std::cerr << "Error: Could NOT open file: " << filePath << std::endl;

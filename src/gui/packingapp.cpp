@@ -80,7 +80,7 @@ private:
     void OnDownloadJson(wxCommandEvent& event);
     void OnDownloadText(wxCommandEvent& event);
     void OnOpenEmail(wxCommandEvent& event);
-    void OnInputChanged(wxCommandEvent& event); // New event handler
+    void OnInputChanged(wxCommandEvent& event);
 
     wxFilePickerCtrl* filePickerData_;
     wxChoice* choiceAcceptsCrates_;
@@ -516,35 +516,44 @@ void PackingFrame::OnOpenEmail(wxCommandEvent& event)
     }
 
     // Build mailto subject and body from the Email Format summary
-    auto lines = response_->getEmailFormatSummary();
-    lines.erase(lines.begin());
-    wxString subject;
-    wxString body;
-    for (const auto& sline : lines) {
-        wxString line = wxString::FromUTF8(sline.c_str());
-        if (line.StartsWith("Subject:")) {
-            // Extract everything after "Subject: " (including potential space)
-            wxString rest = line.Mid(8); // position after 'Subject:'
-            rest.Trim(true).Trim(false);
-            // If it starts with a space, remove it
-            if (rest.StartsWith(" ")) {
-                rest = rest.Mid(1);
-            }
-            subject = rest;
-        } else {
-            body += line + "\n";
+    try {
+         auto lines = response_->getEmailFormatSummary();
+        if (lines.empty()) {
+            wxMessageBox("Email format summary is empty.", "Error", wxOK | wxICON_ERROR);
+            return;
         }
-    }
+        lines.erase(lines.begin());
+        wxString subject;
+        wxString body;
+        for (const auto& sline : lines) {
+            wxString line = wxString::FromUTF8(sline.c_str());
+            if (line.StartsWith("Subject:")) {
+                // Extract everything after "Subject: " (including potential space)
+                wxString rest = line.Mid(8); // position after 'Subject:'
+                rest.Trim(true).Trim(false);
+                // If it starts with a space, remove it
+                if (rest.StartsWith(" ")) {
+                    rest = rest.Mid(1);
+                }
+                subject = rest;
+            } else {
+                body += line + "\n";
+            }
+        }
 
-    // URL-encode subject and body minimally (replace spaces and newlines)
-    subject.Replace(" ", "%20");
-    body.Replace("\n", "%0A");
-    body.Replace(" ", "%20");
+        // URL-encode subject and body minimally (replace spaces and newlines)
+        subject.Replace(" ", "%20");
+        body.Replace("\n", "%0A");
+        body.Replace(" ", "%20");
 
-    wxString mailto = "mailto:?subject=" + subject + "&body=" + body;
+        wxString mailto = "mailto:?subject=" + subject + "&body=" + body;
 
-    if (!wxLaunchDefaultBrowser(mailto)) {
-        wxMessageBox("Failed to open the default mail client.", "Error", wxOK | wxICON_ERROR);
+        if (!wxLaunchDefaultBrowser(mailto)) {
+            wxMessageBox("Failed to open the default mail client.", "Error", wxOK | wxICON_ERROR);
+        }
+    } catch (const std::exception& e) {
+        wxMessageBox(wxString::Format("Error constructing email: %s", e.what()), "Error", wxOK | wxICON_ERROR);
+        return;
     }
 }
 
@@ -556,8 +565,5 @@ void PackingFrame::OnInputChanged(wxCommandEvent& event)
 
     // Enable or disable buttons based on input validity
     bool enableButtons = isDataFileSelected && isCrateSelectionValid;
-    FindWindow(ID_RunEstimator)->Enable(enableButtons);
-    downloadJsonBtn_->Enable(enableButtons && response_ != nullptr);
-    downloadTextBtn_->Enable(enableButtons && response_ != nullptr);
-    openEmailBtn_->Enable(enableButtons && response_ != nullptr);
+    if (auto* btn = FindWindow(ID_RunEstimator)) btn->Enable(enableButtons);
 }
