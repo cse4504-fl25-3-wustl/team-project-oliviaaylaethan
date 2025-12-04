@@ -69,7 +69,8 @@ std::vector<std::string> Response::getBusinessIntelSummary() {
 
 std::vector<std::string> Response::getEmailFormatSummary() {
     std::vector<std::string> summary = {"\n\n--------- EMAIL FORMAT ---------"};
-    summary.push_back(std::format("Subject: Quote Request - {}", requirements_->getClientName()));
+    // summary.push_back(std::format("Subject: Quote Request - {}", requirements_->getClientName()));
+    summary.push_back("Subject: Quote Request");
 
     summary.push_back("\nShipment Details:");
     summary.push_back(std::format("- Total Weight: {} lbs", artInfo_.getTotalWeight() + palletInfo_.getTotalTareWeight() + crateInfo_.getTotalTareWeight()));

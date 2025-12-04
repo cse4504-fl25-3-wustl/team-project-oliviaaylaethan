@@ -5,6 +5,7 @@
 #include <wx/notebook.h>
 #include <wx/textctrl.h>
 #include <thread> // so loading icon can be shown while waiting for it to finish
+#include <wx/utils.h> // wxLaunchDefaultBrowser
 #include "estimator.cpp"
 #include <nlohmann/json.hpp>
 #include <filesystem>
@@ -78,6 +79,7 @@ private:
     void OnRunEstimator(wxCommandEvent& event);
     void OnDownloadJson(wxCommandEvent& event);
     void OnDownloadText(wxCommandEvent& event);
+    void OnOpenEmail(wxCommandEvent& event);
     void OnInputChanged(wxCommandEvent& event); // New event handler
 
     wxFilePickerCtrl* filePickerData_;
@@ -85,6 +87,7 @@ private:
     wxTextCtrl* logBox_;
     wxButton* downloadJsonBtn_;
     wxButton* downloadTextBtn_;
+    wxButton* openEmailBtn_;
     wxNotebook* notebook_;
 
     Response* response_;
@@ -94,7 +97,8 @@ enum
 {
     ID_RunEstimator = 1,
     ID_DownloadJson = 2,
-    ID_DownloadText = 3
+    ID_DownloadText = 3,
+    ID_OpenEmail = 4
 };
 
 bool PackingApp::OnInit()
@@ -228,6 +232,13 @@ PackingFrame::PackingFrame()
         downloadTextBtn_->Disable();
     }
 
+    // Open Email Client button
+    openEmailBtn_ = new wxButton(panel, ID_OpenEmail, "Open Email Client");
+    sizer->Add(openEmailBtn_, 0, wxALIGN_LEFT | wxALL, 10);
+    if (response_ == nullptr) {
+        openEmailBtn_->Disable();
+    }
+
     panel->SetSizer(sizer);
 
     // === Event bindings ===
@@ -236,6 +247,7 @@ PackingFrame::PackingFrame()
     Bind(wxEVT_BUTTON, &PackingFrame::OnRunEstimator, this, ID_RunEstimator);
     Bind(wxEVT_BUTTON, &PackingFrame::OnDownloadJson, this, ID_DownloadJson);
     Bind(wxEVT_BUTTON, &PackingFrame::OnDownloadText, this, ID_DownloadText);
+    Bind(wxEVT_BUTTON, &PackingFrame::OnOpenEmail, this, ID_OpenEmail);
 
     // Bind events for file picker and dropdown menu
     filePickerData_->Bind(wxEVT_FILEPICKER_CHANGED, &PackingFrame::OnInputChanged, this);
@@ -245,6 +257,7 @@ PackingFrame::PackingFrame()
     FindWindow(ID_RunEstimator)->Disable();
     downloadJsonBtn_->Disable();
     downloadTextBtn_->Disable();
+    openEmailBtn_->Disable();
 }
 
 void PackingFrame::OnExit(wxCommandEvent& event)
@@ -339,6 +352,7 @@ void PackingFrame::OnRunEstimator(wxCommandEvent& event)
 
             downloadJsonBtn_->Enable();
             downloadTextBtn_->Enable();
+            openEmailBtn_->Enable();
             // Update JSON tab
             wxTextCtrl* jsonBox = dynamic_cast<wxTextCtrl*>(notebook_->GetPage(1)->GetChildren()[0]);
             if (jsonBox) {
@@ -494,6 +508,46 @@ void PackingFrame::OnDownloadText(wxCommandEvent& event)
     wxMessageBox("Text file saved successfully.", "Success", wxOK | wxICON_INFORMATION);
 }
 
+void PackingFrame::OnOpenEmail(wxCommandEvent& event)
+{
+    if (response_ == nullptr) {
+        wxMessageBox("No response available. Run the estimator first.", "Error", wxOK | wxICON_ERROR);
+        return;
+    }
+
+    // Build mailto subject and body from the Email Format summary
+    auto lines = response_->getEmailFormatSummary();
+    lines.erase(lines.begin());
+    wxString subject;
+    wxString body;
+    for (const auto& sline : lines) {
+        wxString line = wxString::FromUTF8(sline.c_str());
+        if (line.StartsWith("Subject:")) {
+            // Extract everything after "Subject: " (including potential space)
+            wxString rest = line.Mid(8); // position after 'Subject:'
+            rest.Trim(true).Trim(false);
+            // If it starts with a space, remove it
+            if (rest.StartsWith(" ")) {
+                rest = rest.Mid(1);
+            }
+            subject = rest;
+        } else {
+            body += line + "\n";
+        }
+    }
+
+    // URL-encode subject and body minimally (replace spaces and newlines)
+    subject.Replace(" ", "%20");
+    body.Replace("\n", "%0A");
+    body.Replace(" ", "%20");
+
+    wxString mailto = "mailto:?subject=" + subject + "&body=" + body;
+
+    if (!wxLaunchDefaultBrowser(mailto)) {
+        wxMessageBox("Failed to open the default mail client.", "Error", wxOK | wxICON_ERROR);
+    }
+}
+
 void PackingFrame::OnInputChanged(wxCommandEvent& event)
 {
     // Check if both inputs are valid
@@ -505,4 +559,5 @@ void PackingFrame::OnInputChanged(wxCommandEvent& event)
     FindWindow(ID_RunEstimator)->Enable(enableButtons);
     downloadJsonBtn_->Enable(enableButtons && response_ != nullptr);
     downloadTextBtn_->Enable(enableButtons && response_ != nullptr);
+    openEmailBtn_->Enable(enableButtons && response_ != nullptr);
 }
