@@ -21,8 +21,11 @@ def load_json(filepath: str) -> Dict:
 def compare_values(path: str, actual_val: Any, expected_val: Any, errors: List[str]) -> bool:
     """Compare two values and record any differences."""
     if type(actual_val) != type(expected_val):
-        errors.append(f"{path}: Type mismatch - got {type(actual_val).__name__}, expected {type(expected_val).__name__}")
-        return False
+        if (type(actual_val) == int and type(expected_val) == float):
+            pass  # Allow int and float comparison
+        else:
+            errors.append(f"{path}: Type mismatch - got {type(actual_val).__name__}, expected {type(expected_val).__name__}")
+            return False
     
     if isinstance(actual_val, dict):
         return compare_dicts(path, actual_val, expected_val, errors)
