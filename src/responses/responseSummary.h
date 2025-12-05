@@ -3,18 +3,19 @@
 #include <nlohmann/json.hpp>
 #include "response.h"
 
-struct OversizedPiece {
+struct DetailedPiece {
     float side1;
     float side2;
     int quantity;
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE(OversizedPiece, side1, side2, quantity);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(DetailedPiece, side1, side2, quantity);
 };
 
 class ResponseSummary {
     private:
         int total_pieces;
         int standard_size_pieces;
-        std::vector<OversizedPiece> oversized_pieces;
+        std::vector<DetailedPiece> oversized_pieces;
+        std::vector<DetailedPiece> custom_pieces;
         int standard_box_count;
         int large_box_count;
         int custom_piece_count;
@@ -32,6 +33,7 @@ class ResponseSummary {
             total_pieces,
             standard_size_pieces,
             oversized_pieces,
+            custom_pieces,
             standard_box_count,
             large_box_count,
             custom_piece_count,

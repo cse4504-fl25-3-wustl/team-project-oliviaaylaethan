@@ -111,6 +111,34 @@ std::vector<Art> ArtInfo::getOversizedItems() {
     return oversized;
 }
 
+std::vector<std::string> ArtInfo::getCustomSummary() {
+    std::vector<std::string> summary;
+    summary.push_back("\nCustom Packaging Items Flagged:");
+    for (auto& [lineNo, art] : artTypes_) {
+        // Check if oversized
+        if (art.needsCustomPackaging()) {
+            summary.push_back(std::format("- {}\"x{}\" (Qty: {}) - {} lbs each",
+                art.getOuterHeight(),
+                art.getOuterWidth(),
+                getQuantity(lineNo),
+                art.getWeight()
+            ));
+        }
+    }
+    return summary;
+}
+
+std::vector<Art> ArtInfo::getCustomItems() {
+    std::vector<Art> custom;
+    for (auto& art: pieces_) {
+        if (art.needsCustomPackaging()) {
+            custom.push_back(art);
+        }
+    }
+
+    return custom;
+}
+
 std::vector<std::string> ArtInfo::getTotalWeightSummary() {
     int totalCount = getTotalCount();
     std::map<MaterialType, int> weightByType;

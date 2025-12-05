@@ -64,6 +64,10 @@ std::vector<std::string> Response::getBusinessIntelSummary() {
     for (size_t i = 0; i < artInfo_.getOversizedSummary().size(); i++) {
         summary.push_back(artInfo_.getOversizedSummary()[i]);
     }
+    summary.push_back("\n");
+    for (size_t i = 0; i < artInfo_.getCustomSummary().size(); i++) {
+        summary.push_back(artInfo_.getCustomSummary()[i]);
+    }
     return summary;
 }
 
