@@ -169,8 +169,7 @@ Using GitHub releases? Download the appropriate file, then skip to step 5!
       - 30 x 44.1 IS oversize
 
 # Test cases that don't apply to us (or are incorrect):
-## Stress_tests_redo:
-- test_cases/stress_tests/pack_by_depth/test1/input.csv
+- ## test_cases/stress_tests/pack_by_depth/test1/input.csv
    - EXPECTED:
       - "large_box_count": 40
       - "oversized_pallet_count": 2
@@ -222,7 +221,7 @@ Using GitHub releases? Download the appropriate file, then skip to step 5!
 
 
 
-- test_cases/stress_tests/pack_by_depth/test4/input.csv
+- ## test_cases/stress_tests/pack_by_depth/test4/input.csv
    - EXPECTED:
       - "final_shipment_weight": 8000
       - "large_box_count": 84
@@ -271,7 +270,7 @@ Using GitHub releases? Download the appropriate file, then skip to step 5!
 
 
 
-- test_cases/stress_tests/pack_by_depth/test6/input.csv
+- ## test_cases/stress_tests/pack_by_depth/test6/input.csv
    - EXPECTED:
       - "standard_size_pieces": 100
       - "standard_pallet_count": 9
@@ -281,7 +280,7 @@ Using GitHub releases? Download the appropriate file, then skip to step 5!
       - "standard_size_pieces": 0
       - "standard_pallet_count": 11
       - "oversized_pallet_count": 3
-      
+
    - EXPLANATION:
       - standard_size_pieces
          - Pieces that are >= 44" (INclusive) in any dimension are marked as oversized
@@ -296,3 +295,13 @@ Using GitHub releases? Download the appropriate file, then skip to step 5!
          - This test shows the correct final weight but incorrect number of each type of pallet in the json
 
 
+
+- ## test_cases/stress_tests/pack_by_depth/test8/stress_test.csv
+   - This test assumed that canvases (or 4PerBox) are **2.5"** wide and paper prints (or 6PerBox) are 1.83" wide
+   - We calculated material depth like so:
+      - Framed prints = 11" / 6 pieces = 1.833" deep each
+      - Canvas/acoustic = 11" / 4 pieces = **2.75"** deep each
+   - Since we assumed a greater depth, we needed 9 more large boxes to pack the same artwork, which:
+      - increased our number of standard pallets by 3 (3 large boxes per standard pallet)
+      - increased our packaging weight by 180 lbs (3 x 60 lbs)
+      - increased our final shipment weight by that same 180 lbs
