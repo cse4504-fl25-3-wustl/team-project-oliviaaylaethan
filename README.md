@@ -196,3 +196,26 @@ Using GitHub releases? Download the appropriate file, then skip to step 5!
          - "large_box_count": 0
          - "oversized_pallet_count": 11
 
+- test_cases/stress_tests/pack_by_depth/test6/input.csv
+   - EXPECTED:
+      - "standard_size_pieces": 100
+      - "standard_pallet_count": 9
+      - "oversized_pallet_count": 5
+   - SHOULD BE:
+      - "standard_size_pieces": 0
+      - "standard_pallet_count": 11
+      - "oversized_pallet_count": 3
+   - EXPLANATION:
+      - standard_size_pieces
+         - Pieces that are >= 44" (INclusive) in any dimension are marked as oversized
+            - We specifically wrote "inclusive" in our notes, so this should be what the client wants
+         - Test assumes pieces that are > 44" (EXclusive) in any dimension are marked as oversized
+         - We mark 36.6 x 44 pieces as oversized, this test doesn't
+      - pallets
+         - oversize: 75 lbs
+         - standard: 60 lbs
+         - 5 oversize +  9 standard pallets = 5x75 +  9x60 = 915 lbs
+         - 3 oversize + 11 standard pallets = 3x75 + 11x60 = 885 lbs
+         - This test shows the correct final weight but incorrect number of each type of pallet in the json
+
+
