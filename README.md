@@ -169,13 +169,6 @@ Using GitHub releases? Download the appropriate file, then skip to step 5!
       - 30 x 44.1 IS oversize
 
 # Test cases that don't apply to us (or are incorrect):
-## Student-written stress tests:
-- test_cases/stress_tests/pack_by_depth/test1/input.csv
-   - test assumes **6** framed prints per large box
-   - we have **7** framed prints per large box
-- test_cases/stress_tests/no_mixed_medium_in_same_box directory
-   - tests assumes that each medium gets its own box
-   - we allow packing different mediums into the same box
 ## Stress_tests_redo:
 - test_cases/stress_tests/all/test2/expected_output.json
    - EXPECTS: "custom_piece_count": 200
