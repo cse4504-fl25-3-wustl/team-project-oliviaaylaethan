@@ -305,3 +305,49 @@ Using GitHub releases? Download the appropriate file, then skip to step 5!
       - increased our number of standard pallets by 3 (3 large boxes per standard pallet)
       - increased our packaging weight by 180 lbs (3 x 60 lbs)
       - increased our final shipment weight by that same 180 lbs
+
+
+
+- ## /stress_tests/pack_by_depth/test9/input.csv
+   - This test did NOT allow mixing mediums within the same box
+   - From their explanation:
+      - Packing for standard boxes:
+         - 60 paper prints: 6 pieces go in a box, so we have 60/6 = 10 boxes with no space left.
+         - 70 canvas: 4 pieces go in a box, so we have 70/4 = 17.5 --> 18 boxes. None of these pieces will fit in with the paper print boxes.
+      - Packing for large boxes:
+         - 50 paper prints: 7 pieces go in a box, so we have 50/7 = 7.14 --> 8 boxes.
+         - 70 canvas: 4 pieces go in a box, so we have 70/4 = 17.5 --> 18 boxes. None of these pieces fit in with the paper print boxes.
+      - They had 28 standard boxes and 26 large boxes
+
+   - How we would pack these (allowing mixed mediums, packing large boxes first):
+      - Packing for large boxes:
+         - 50 paper prints: 7 pieces per large box, so we have 50/7 = 7.14 --> 7 full boxes
+            - 1 box that's 1.833" / 13" full
+         - 70 canvas: 4 pieces per box
+            - 4 canvas can fit in that remaining box (1.833" + 4 x 2.75" = 12.833 < 13")
+            - 66 remaining canvases
+            - 66/4 = 16.5 boxes
+         - Large boxes: 8 + 16 = 24 full boxes, 1 at 5.5" / 13" capacity
+      - Packing for standard boxes:
+         - 60 paper prints: 6 pieces go in a box, so we have 60/6 = 10 full boxes
+         - 70 canvas: 4 pieces per box
+            - 2 of these can go in the half-full large box
+            - 68 remaining
+            - 68/4 = 17 standard boxes
+         - Standard boxes: 10 + 17 = 27
+      - We have 27 standard boxes and 25 large boxes
+      - These can fit on 9 standard pallets and 5 oversize pallets
+         - Gives a packaging weight of 915 and final shipment weight of 4175
+
+   - Other mismatch:
+      - EXPECTED:
+         - "standard_size_pieces": 130
+      - SHOULD BE:
+         - "standard_size_pieces": 250
+      - EXPLANATION:
+         - A piece must be >= 44" in at least one dimension to count as oversize
+         - Out of 470 pieces, only the final 2 lines had art with a dimension >=44"
+            - 48" x 50" (quantity 100)
+            - 48" x 50" (quantity 120)
+         - This means every other piece of art is qualifies as standard_size_pieces
+            - 470 - 100 - 120 = 250
