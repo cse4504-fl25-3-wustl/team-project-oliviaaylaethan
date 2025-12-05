@@ -180,12 +180,16 @@ INPUT_DIR=$(realpath_compat "$SCRIPT_DIR/../test_cases")
 # You should see: C:/Users/me/class/test_cases
 
 # pass client configuration that does not allow crates
-git checkout main
 
 process_csv_files "$INPUT_DIR/box_packing" "N"
 process_csv_files "$INPUT_DIR/pallet_packing" "N"
 # pass client configuration that allows crates
 process_csv_files "$INPUT_DIR/crate_packing" "Y"
+
+cd "$INPUT_DIR"
+git checkout main
+cd "$SCRIPT_DIR"
+
 process_csv_files "$INPUT_DIR/stress_tests" "N"
 
 cd "$INPUT_DIR"
@@ -194,7 +198,9 @@ cd "$SCRIPT_DIR"
 
 process_csv_files "$INPUT_DIR/stress_tests" "N"
 
+cd "$INPUT_DIR"
 git checkout main
+cd "$SCRIPT_DIR"
 
 # Print summary after all calls
 if [ "$ONLY_FAILED" -eq 0 ] && [ $passed_tests -gt 0 ]; then # only print information for successful tests when extra flag not passed
