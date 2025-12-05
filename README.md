@@ -177,12 +177,14 @@ Using GitHub releases? Download the appropriate file, then skip to step 5!
       - "standard_pallet_count": 22
       - "final_shipment_weight": 6113
       - "total_packaging_weight": 1470
+
    - SHOULD BE:
       - "large_box_count": 39
       - "oversized_pallet_count": 8
       - "standard_pallet_count": 14
       - "final_shipment_weight": 6083
       - "total_packaging_weight": 1440
+
    - EXPLANATION:
       - "large_box_count"
          - This test case measured depth by fractions instead of inches
@@ -218,15 +220,68 @@ Using GitHub releases? Download the appropriate file, then skip to step 5!
          - 8 oversize + 14 standard pallets = 8x75 + 14x60 = 1440 lbs
          - without the unnecessary final large box, you can do this arrangement that lowers the packaging weight (and final weight) by 30 lbs
 
+
+
+- test_cases/stress_tests/pack_by_depth/test4/input.csv
+   - EXPECTED:
+      - "final_shipment_weight": 8000
+      - "large_box_count": 84
+      - "oversized_pallet_count": 1
+      - "standard_box_count": 17
+      - "standard_pallet_count": 31
+      - "total_packaging_weight": 1935
+
+   - SHOULD BE:
+      - "final_shipment_weight": 7940
+      - "large_box_count": 82
+      - "oversized_pallet_count": 2
+      - "standard_box_count": 16
+      - "standard_pallet_count": 29
+      - "total_packaging_weight": 1890
+    
+   - EXPLANATION:
+      - This test case assumed only 6 paper prints fit in a large box, while we fit 7 per large box
+      - Large boxes:
+         - 107 framed paper prints:
+            - 7 per large box
+            - 107 / 7 = 15.286 -> 15 full boxes. 16th box has 2 framed prints
+         - 113 + 151 = 264 acoustic panels
+            - 4 per large box
+            - 264 / 4 = 66 full boxes
+         - Total large boxes: 16 + 66 = 82
+      - Standard boxes:
+         - 101 framed paper prints
+         - 6 per standard box
+         - 5 of these can go in the 16th large paper print box
+         - Leaves us with 101-5 = 96 prints
+         - 96 / 6 = 16 standard boxes
+      - Pallets:
+         - Need to pack 82 large boxes and 16 standard boxes
+         - Standard pallet can hold 4 standard or 3 large boxes
+         - Oversize pallet can hold 5 standard or 3 large boxes
+         - 82/3 = 27.33 standard pallets for large boxes
+            - Can fit 2 standard boxes onto this 1/3 full pallet
+            - Left with 14 standard boxes
+            - 2 oversize pallets (5 each) and 1 standard pallet (4 each) minimizes weight
+         - Standard pallets = 28 + 1 = 29
+         - Oversize pallets = 2
+      - Weight:
+         - Packaging weight = 29x60 + 2x75 = 1890
+         - Final shipment weight = 1890 + 6050 = 7940
+
+
+
 - test_cases/stress_tests/pack_by_depth/test6/input.csv
    - EXPECTED:
       - "standard_size_pieces": 100
       - "standard_pallet_count": 9
       - "oversized_pallet_count": 5
+
    - SHOULD BE:
       - "standard_size_pieces": 0
       - "standard_pallet_count": 11
       - "oversized_pallet_count": 3
+      
    - EXPLANATION:
       - standard_size_pieces
          - Pieces that are >= 44" (INclusive) in any dimension are marked as oversized
