@@ -124,6 +124,7 @@ Using GitHub releases? Download the appropriate file, then skip to step 5!
    ```
 
 # Our Packing Strategies:
+- Mixed mediums **CAN** go in the same box
 - Pack by depth
    - Each standard box can hold:
       - 6 framed prints
@@ -160,7 +161,12 @@ Using GitHub releases? Download the appropriate file, then skip to step 5!
          - Large box dimensions: 44 x 13 x 48
          - Large box telescoped max dimensions: 44 x 13 x **88**
    <br>
-- Mixed mediums **CAN** go in the same box
+- Flagging oversize pieces:
+   - Anything that exceeds (inclusive) 44" in EITHER direction is considered oversized for installation purposes (because it needs extra support hardware)
+   - Examples:
+      - 30 x 43.9 is NOT oversize
+      - 30 x 44 IS oversize
+      - 30 x 44.1 IS oversize
 
 # Test cases that don't apply to us (or are incorrect):
 ## Student-written stress tests:
