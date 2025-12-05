@@ -196,6 +196,54 @@ Using GitHub releases? Download the appropriate file, then skip to step 5!
          - "large_box_count": 0
          - "oversized_pallet_count": 11
 
+- test_cases/stress_tests/pack_by_depth/test1/input.csv
+   - EXPECTED:
+      - "large_box_count": 40
+      - "oversized_pallet_count": 2
+      - "standard_pallet_count": 22
+      - "final_shipment_weight": 6113
+      - "total_packaging_weight": 1470
+   - SHOULD BE:
+      - "large_box_count": 39
+      - "oversized_pallet_count": 8
+      - "standard_pallet_count": 14
+      - "final_shipment_weight": 6083
+      - "total_packaging_weight": 1440
+   - EXPLANATION:
+      - "large_box_count"
+         - This test case measured depth by fractions instead of inches
+         - Test Case's Assumption: these numbers are the same, regardless of whether box is standard or large
+            - 1/6 box each:
+               - Paper Print – Framed
+            - 1/4 box each:
+               - Canvas – Gallery
+               - Canvas – Float Frame
+               - Acoustic panel
+               - Acoustic panel – Framed
+         - Truth:
+            - A large box can really hold 7 framed prints, and the mixed medium combinations are a lot more flexible.
+            - Using inches instead of fractions, these combinations can fit in the same large box (but wouldn't work with the given fractions):
+               - depths (see above for derivation):
+                  - print = 1.833"
+                  - canvas/acoustic = 2.75"
+                  - large box = 13"
+               - new combinations
+                  - 7 prints
+                     - 12.831 < 13"
+                  - 1 canvas + 5 prints
+                     - 11.915 < 13"
+                  - 2 canvas + 4 prints
+                     - 12.832 < 13"
+                  - 4 canvas + 1 prints
+                     - 12.833 < 13"
+         - Since you can fit more art per large box, you don't need one of the proposed large boxes
+      - pallets/weight
+         - oversize: 75 lbs
+         - standard: 60 lbs
+         - 2 oversize + 22 standard pallets = 2x75 + 22x60 = 1470 lbs
+         - 8 oversize + 14 standard pallets = 8x75 + 14x60 = 1440 lbs
+         - without the unnecessary final large box, you can do this arrangement that lowers the packaging weight (and final weight) by 30 lbs
+
 - test_cases/stress_tests/pack_by_depth/test6/input.csv
    - EXPECTED:
       - "standard_size_pieces": 100
