@@ -74,7 +74,11 @@ int ArtInfo::getTotalWeight() {
     int totalCount = getTotalCount();
     int weight = 0;
     for (int i = 0; i < totalCount; i++) {
-        weight += pieces_[i].getWeight();
+        // only include the weight of art that is not custom packaged
+        // custom art is ignored by our software
+        if (!pieces_[i].needsCustomPackaging()) {
+            weight += pieces_[i].getWeight();
+        }
     }
     return weight;
 }
