@@ -165,9 +165,9 @@ GlazingType CsvParser::mapToGlazing(const std::string& glaze) {
     if (g == "regular glass") return GLAZING_GLASS;
     if (g == "glass") return GLAZING_GLASS;
     if (g == "acrylic") return GLAZING_ACRYLIC;
-    if (g == "n/a" || g == "none" || g == "") return GLAZING_NONE;
+    if (g == "n/a" || g == "none" || g == "" || g == "no glass") return GLAZING_NONE;
 
-    std::cerr << "Warning: Unrecognized glazing '" << glaze << "'. Defaulting to GLAZING_NONE." << std::endl;
+    std::cerr << "Warning: Unrecognized glazing '" << glaze << "'. Defaulting tso GLAZING_NONE." << std::endl;
     return GLAZING_NONE;
 }
 
@@ -175,6 +175,8 @@ GlazingType CsvParser::mapToGlazing(const std::string& glaze) {
 HardwareSpec CsvParser::mapToHardware(const std::string& hw) {
     std::string h = trim(hw);
     if (h.find("4 pt") != std::string::npos) return PT_SEC_4;
+
+    if (h.find("3 pt") != std::string::npos) return PT_SEC_3;
 
     std::cerr << "Warning: Unrecognized hardware '" << hw << "'. Defaulting to PT_SEC_3." << std::endl;
     return PT_SEC_3;
@@ -196,9 +198,26 @@ std::vector<std::string> CsvParser::commaSplitter(std::string line) {
 std::vector<Art> CsvParser::parseArtCsv(const std::string& filename) {
     std::cout << "Parsing Art CSV file: " << filename << std::endl;
 
-    std::vector<Art> artList;
     std::ifstream file(filename);
     std::string line;
+    std::vector<Art> artList;
+
+    if ((std::getline(file, line) && line.find("Location") == std::string::npos)) {
+        artList = CsvParser::parseArtCsvTests(file);
+    } else {
+        artList = CsvParser::parseArtCsvClient(file);
+    }
+
+    if (artList.empty()) {
+        std::cerr << "Warning: No valid art entries found in file: " << filename << std::endl;
+    }
+
+    return artList;
+}
+
+std::vector<Art> CsvParser::parseArtCsvTests(std::ifstream& file) {
+    std::string line;
+    std::vector<Art> artList;
 
     // in case input is badly-formatted (multiple DIFFERENT types of art correspond to 1 line number),
     // use this unique id to mimic properly-formatted line number
@@ -206,7 +225,7 @@ std::vector<Art> CsvParser::parseArtCsv(const std::string& filename) {
     int uniqueArtId = 0;
 
     // Skip header
-    std::getline(file, line);
+    // std::getline(file, line);
     while (std::getline(file, line)) {
         std::replace(line.begin(), line.end(), '\t', ',');
         std::vector<std::string> tokens = commaSplitter(line);
@@ -223,6 +242,60 @@ std::vector<Art> CsvParser::parseArtCsv(const std::string& filename) {
             GlazingType glaze = mapToGlazing(tokens[6]);
             std::string frame = tokens[7];
             HardwareSpec hw = mapToHardware(tokens[8]);
+            ++uniqueArtId;
+
+            if (lineNo < 0 || qty < 1 || width <= 0 || height <= 0) {
+                throw std::invalid_argument("Negative or zero values present.");
+            }
+
+            for (int i = 0; i < qty; i++) {
+                Art art(lineNo, tag, material, width, height, glaze, frame, hw, uniqueArtId);
+                art.setRawCSVInputMaterial(tokens[3]); // store original medium string for final output
+                artList.push_back(art);
+            }
+        } catch (const std::exception& e) {
+            std::cerr << "Error parsing line. Skipped: '" << line << "' -> " << e.what() << std::endl;
+            continue;  // skip malformed line
+        }
+    }
+    file.close();
+
+    return artList;
+}
+
+// Client input is in a different format than test cases
+std::vector<Art> CsvParser::parseArtCsvClient(std::ifstream& file) {
+    std::string line;
+    std::vector<Art> artList;
+
+    // in case input is badly-formatted (multiple DIFFERENT types of art correspond to 1 line number),
+    // use this unique id to mimic properly-formatted line number
+    // ex: test case input.csv for 1Large1Standard1Custom puts every type of art as line number 1
+    int uniqueArtId = 0;
+
+    // Skip header
+    // std::getline(file, line);
+    while (std::getline(file, line)) {
+        std::replace(line.begin(), line.end(), '\t', ',');
+        std::vector<std::string> tokens = commaSplitter(line);
+
+        while (tokens.size() < 9) tokens.push_back("");
+
+        try {
+            int lineNo = std::stoi(tokens[0]);
+            int qty = std::stoi(tokens[1]);
+            std::string location = tokens[2];
+            std::string floor = tokens[3];
+            std::string tag = tokens[4];
+            float width = std::stof(tokens[5]);
+            float height = std::stof(tokens[6]);
+            MaterialType material = mapToMaterial(tokens[7]);
+            std::string presentationConversion = tokens[8];
+            std::string itemNum = tokens[9];
+            std::string itemUrl = tokens[10];
+            GlazingType glaze = mapToGlazing(tokens[11]);
+            std::string frame = tokens[12];
+            HardwareSpec hw = mapToHardware(tokens[13]);
             ++uniqueArtId;
 
             if (lineNo < 0 || qty < 1 || width <= 0 || height <= 0) {
