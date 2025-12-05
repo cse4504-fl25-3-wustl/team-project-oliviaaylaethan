@@ -169,6 +169,26 @@ Using GitHub releases? Download the appropriate file, then skip to step 5!
       - 30 x 44.1 IS oversize
 
 # Test cases that don't apply to us (or are incorrect):
+- ## test_cases/stress_tests/strictest_constraint directory
+   - Our strategy is to pack by depth, which conflicts with the strictest constraint strategy
+   - Example: packing 2 canvas + 4 prints into large boxes:
+      - Strictest constraint:
+         - canvases can fit 4 per large box
+         - prints can fit 6 per large box
+         - 4 < 6, so assume only 4 items can fit in a mixed medium box
+         - needs 2 boxes
+      - Pack by depth:
+         - Framed prints = 11" / 6 pieces = 1.833" deep each
+         - Canvas/acoustic = 11" / 4 pieces = 2.75" deep each
+         - 2 x 2.75" + 4 x 1.833 = 12.832 < 13"
+         - only need 1 box
+
+- ## test_cases/stress_tests/no_mixed_medium_in_same_box directory
+   - Our strategy is to pack by depth, which conflicts with this strategy
+   - Our strategy allows putting different material types in the same box
+      - Example: you could put paper prints and canvases in the same box
+   - This strategy strictly requires that each material get its own box
+
 - ## test_cases/stress_tests/pack_by_depth/test1/input.csv
    - EXPECTED:
       - "large_box_count": 40
