@@ -5,7 +5,7 @@
 // Default constructor
 Art::Art() : lineNumber_(0), tagNumber_(""), material_(MaterialType::CANVAS_FRAMED),
              materialDensity_(0.0f), outerWidth_(0.0f), outerHeight_(0.0f), glazeType_(GlazingType::GLAZING_NONE),
-             frame1Moulding_(""), hardware_(HardwareSpec::NONE), uniqueArtId_(0) {}
+             frame1Moulding_(""), hardware_(HardwareSpec::NONE), perBoxCount_(0), perCrateCount_(0), uniqueArtId_(0) {}
 
 // Constructor to initialize the Art object (assuming properly formatted input csv)
 Art::Art(int lineNo, std::string tagNo, 
@@ -21,51 +21,7 @@ Art::Art(int lineNo, std::string tagNo,
       hardware_(hardware),
       uniqueArtId_(-1)
 {
-    // Set the materialDensity_ based on the material
-    switch (material_) {
-        case MaterialType::ACOUSTIC_PANEL:
-            materialDensity_ = ACOUSTIC_PANEL_DENSITY;
-            perBoxCount_ = ACOUSTIC_PANEL_PER_BOX;
-            break;
-        case MaterialType::ACOUSTIC_PANEL_FRAMED:
-            materialDensity_ = ACOUSTIC_PANEL_FRAMED_DENSITY;
-            perBoxCount_ = ACOUSTIC_PANEL_PER_BOX;
-            break;
-        case MaterialType::CANVAS_FRAMED:
-            materialDensity_ = CANVAS_FRAMED_DENSITY;
-            perBoxCount_ = CANVAS_PER_BOX;
-            break;
-        case MaterialType::CANVAS_GALLERY:
-            materialDensity_ = CANVAS_GALLERY_DENSITY;
-            perBoxCount_ = CANVAS_PER_BOX;
-            break;
-        case MaterialType::MIRROR:
-            materialDensity_ = MIRROR_DENSITY;
-            perBoxCount_ = MIRROR_PER_BOX;
-            break;
-        case MaterialType::PAPER_PRINT_FRAMED:
-            if(glazeType_ == GlazingType::GLAZING_ACRYLIC) {
-                materialDensity_ = PAPER_PRINT_GLAZING_ACRYLIC_DENSITY;
-                perBoxCount_ = GLASS_ACRYLIC_FRAMED_PER_BOX;
-            }
-            else if(glazeType_ == GlazingType::GLAZING_GLASS) {
-                materialDensity_ = PAPER_PRINT_GLAZING_GLASS_DENSITY;
-                perBoxCount_ = GLASS_ACRYLIC_FRAMED_PER_BOX;
-            }
-            else {
-                materialDensity_ = 0.0f;  // Default to 0 since we weren't given a density for glazeless paper prints
-                perBoxCount_ = GLASS_ACRYLIC_SUNRISE_PER_BOX;
-            }
-            break;
-        case MaterialType::PATIENT_BOARD:
-            materialDensity_ = PATIENT_BOARD_DENSITY;
-            perBoxCount_ = 0; // for now since unspecified
-            break;
-        default:
-            materialDensity_ = 0.0f;  // Default to 0 if the material is unknown
-            perBoxCount_ = 0;
-            break;
-    }
+    setMaterialDensityAndCounts();    
 }
 
 
@@ -85,49 +41,62 @@ Art::Art(int lineNo, std::string tagNo,
       hardware_(hardware),
       uniqueArtId_(uniqueID)
 {
-    // Set the materialDensity_ based on the material
+    setMaterialDensityAndCounts();
+}
+
+void Art::setMaterialDensityAndCounts() {
     switch (material_) {
         case MaterialType::ACOUSTIC_PANEL:
             materialDensity_ = ACOUSTIC_PANEL_DENSITY;
             perBoxCount_ = ACOUSTIC_PANEL_PER_BOX;
+            perCrateCount_ = needsLargeCrateCapacity() ? CANVAS_LARGE_CRATE_CAPACITY : CANVAS_SMALL_CRATE_CAPACITY;
             break;
         case MaterialType::ACOUSTIC_PANEL_FRAMED:
             materialDensity_ = ACOUSTIC_PANEL_FRAMED_DENSITY;
             perBoxCount_ = ACOUSTIC_PANEL_PER_BOX;
+            perCrateCount_ = needsLargeCrateCapacity() ? CANVAS_LARGE_CRATE_CAPACITY : CANVAS_SMALL_CRATE_CAPACITY;
             break;
         case MaterialType::CANVAS_FRAMED:
             materialDensity_ = CANVAS_FRAMED_DENSITY;
             perBoxCount_ = CANVAS_PER_BOX;
+            perCrateCount_ = needsLargeCrateCapacity() ? CANVAS_LARGE_CRATE_CAPACITY : CANVAS_SMALL_CRATE_CAPACITY;
             break;
         case MaterialType::CANVAS_GALLERY:
             materialDensity_ = CANVAS_GALLERY_DENSITY;
             perBoxCount_ = CANVAS_PER_BOX;
+            perCrateCount_ = needsLargeCrateCapacity() ? CANVAS_LARGE_CRATE_CAPACITY : CANVAS_SMALL_CRATE_CAPACITY;
             break;
         case MaterialType::MIRROR:
             materialDensity_ = MIRROR_DENSITY;
             perBoxCount_ = MIRROR_PER_BOX;
+            perCrateCount_ = MIRROR_CRATE_CAPACITY;
             break;
         case MaterialType::PAPER_PRINT_FRAMED:
             if(glazeType_ == GlazingType::GLAZING_ACRYLIC) {
                 materialDensity_ = PAPER_PRINT_GLAZING_ACRYLIC_DENSITY;
                 perBoxCount_ = GLASS_ACRYLIC_FRAMED_PER_BOX;
+                perCrateCount_ = needsLargeCrateCapacity() ? GLASS_ACRYLIC_LARGE_CRATE_CAPACITY : GLASS_ACRYLIC_SMALL_CRATE_CAPACITY;
             }
             else if(glazeType_ == GlazingType::GLAZING_GLASS) {
                 materialDensity_ = PAPER_PRINT_GLAZING_GLASS_DENSITY;
                 perBoxCount_ = GLASS_ACRYLIC_FRAMED_PER_BOX;
+                perCrateCount_ = needsLargeCrateCapacity() ? GLASS_ACRYLIC_LARGE_CRATE_CAPACITY : GLASS_ACRYLIC_SMALL_CRATE_CAPACITY;
             }
             else {
                 materialDensity_ = 0.0f;  // Default to 0 since we weren't given a density for glazeless paper prints
                 perBoxCount_ = GLASS_ACRYLIC_SUNRISE_PER_BOX;
+                perCrateCount_ = GLASS_ACRYLIC_SMALL_CRATE_CAPACITY; // for now since unspecified
             }
             break;
         case MaterialType::PATIENT_BOARD:
             materialDensity_ = PATIENT_BOARD_DENSITY;
             perBoxCount_ = 0; // for now since unspecified
+            perCrateCount_ = 0;
             break;
         default:
             materialDensity_ = 0.0f;  // Default to 0 if the material is unknown
             perBoxCount_ = 0;
+            perCrateCount_ = 0;
             break;
     }
 }
@@ -146,8 +115,24 @@ std::string Art::getTagNumber() {
     return tagNumber_;
 }
 
+void Art::setRawCSVInputMaterial(std::string finalMedium) {
+    raw_csv_input_material_ = finalMedium;
+}
+
+std::string Art::getRawCSVInputMaterial() {
+    return raw_csv_input_material_;
+}
+
 MaterialType Art::getMaterial() {
     return material_;
+}
+
+float Art::getDepth() {
+    if (getPerBoxCount() > 0) {
+        return 1.0f / getPerBoxCount() * STANDARD_BOX_DIMENSIONS.w;
+    } else {
+        return 0.0f;
+    }
 }
 
 float Art::getOuterWidth() {
@@ -185,21 +170,19 @@ bool Art::needsCustomPackaging(const float custom_packing_needed_threshold_small
         // --> if both dimensions exceed 43.5, needs custom
         // --> if only ONE dimension exceeds 43.5, do NOT need custom
     // for CRATE packaging:
-        // same rules as above but replace 43.5 with 46
-    if ((outerWidth_ > CUSTOM_PACKING_NEEDED_THRESHOLD_LARGER_DIM || outerHeight_ > CUSTOM_PACKING_NEEDED_THRESHOLD_LARGER_DIM)
-        || (outerWidth_ > custom_packing_needed_threshold_smaller_dim && outerHeight_ > custom_packing_needed_threshold_smaller_dim)) {
+        // same rules as above but replace 43.5 with 44
+    if (outerWidth_ > CUSTOM_PACKING_NEEDED_THRESHOLD_LARGER_DIM || outerHeight_ > CUSTOM_PACKING_NEEDED_THRESHOLD_LARGER_DIM) {
         return true;
+    } else if (outerWidth_ > custom_packing_needed_threshold_smaller_dim && outerHeight_ > custom_packing_needed_threshold_smaller_dim) {
+        return true;
+    } else {
+        return false;
     }
-    return false;
 }
 
 // Crate Threshold: >46"
 bool Art::needsCratePacking() {
     return (outerWidth_ > CRATE_LIMIT || outerHeight_ > CRATE_LIMIT) && !needsCustomPackaging(CRATE_LIMIT);
-}
-
-bool Art::needsLargeCratePacking() {
-    return (outerWidth_ > CRATE_LARGE_THRESHOLD || outerHeight_ > CRATE_LARGE_THRESHOLD);
 }
 
 bool Art::needsCanvasPacking() {
@@ -211,4 +194,24 @@ bool Art::isOversizedInstallation() {
         return true;
     }
     return false;
+}
+
+bool Art::needsLargeCrateCapacity() {
+    int shorter = static_cast<int>(std::min(outerWidth_, outerHeight_));
+    int longer  = static_cast<int>(std::max(outerWidth_, outerHeight_));
+
+    // Oversized longer side cannot fit vertically in crate
+    if (longer > CUSTOM_PACKING_NEEDED_THRESHOLD_LARGER_DIM) return true;
+
+    // If the shorter side is less than 46, we can pack along the long side (25/18 for glass/canvas)
+    if (shorter < LARGE_CRATE_CAPACITY_WIDTH_THRESHOLD) {
+        return false; // select 25/18 capacities
+    }
+
+    // If shorter >= 46 but still within max, fall back to short-side orientation (19/14)
+    return true;
+}
+
+int Art::getPerCrateCount() {
+    return perCrateCount_;
 }

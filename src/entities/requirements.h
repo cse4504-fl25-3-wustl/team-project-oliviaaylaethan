@@ -13,7 +13,6 @@ private:
     std::optional<bool> needsLiftgate_;
     std::optional<bool> needsInsideDelivery_;
     std::string serviceType_;
-    std::optional<bool> convertStringToOptional(std::string answer);
 
 public:
     Requirements();
@@ -32,6 +31,7 @@ public:
 
     // Utilities
     static std::string convertOptionalToString(std::optional<bool> answer);
+    static std::optional<bool> convertStringToOptional(std::string answer);
 
     // Getters
     std::string getJobSiteLocation() const;

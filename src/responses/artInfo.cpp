@@ -2,14 +2,11 @@
 #include "../entities/requirements.h"
 #include <format>
 #include <map>
-ArtInfo::ArtInfo(const std::vector<Art>& pieces, Requirements* requirements) 
-    : pieces_(pieces), requirements_(requirements) {
+ArtInfo::ArtInfo(const std::vector<Art>& pieces, std::shared_ptr<Requirements> requirements)
+    : pieces_(pieces), requirements_(std::move(requirements)) {
     for (auto& art : pieces_) {
-        int lineNo = art.getUniqueID(); // unique ID increments by 1 every time csv has a new line (new art specifications).
-                                        // *SHOULD* be able to use lineNo for this, but some of the test cases are formatted wrong
-                                        // like 1Large1Standard1Custom, so this is workaround since we can't correct the tests ourselves
+        int lineNo = art.getUniqueID();
         quantities_[lineNo]++;
-        //TODO: leads to conflicts when there are duplicate of same line # (fixed by getUniqueID instead of getLineNo)
         artTypes_[lineNo] = art;
     }
 }
@@ -50,15 +47,16 @@ int ArtInfo::getCustomCount() {
     Art art;
     for (int i = 0; i < totalCount; i++) {
         art = pieces_[i];
-        if(requirements_->getAcceptsCrates()) {
-            if (art.needsCustomPackaging(CRATE_LIMIT)) {
-                count++;
-            }
+        float limit = 0.0f;
+
+        if(requirements_->getAcceptsCrates().value_or(false)) {
+            limit = CRATE_LIMIT;
+        } else {
+            limit = LARGE_BOX_LIMIT;
         }
-        else {
-            if (art.needsCustomPackaging(LARGE_BOX_LIMIT)) {
-                count++;
-            }
+        
+        if (art.needsCustomPackaging(limit)) {
+            count++;
         }
     }
     return count;
@@ -76,7 +74,11 @@ int ArtInfo::getTotalWeight() {
     int totalCount = getTotalCount();
     int weight = 0;
     for (int i = 0; i < totalCount; i++) {
-        weight += pieces_[i].getWeight();
+        // only include the weight of art that is not custom packaged
+        // custom art is ignored by our software
+        if (!pieces_[i].needsCustomPackaging()) {
+            weight += pieces_[i].getWeight();
+        }
     }
     return weight;
 }
@@ -107,6 +109,34 @@ std::vector<Art> ArtInfo::getOversizedItems() {
     }
 
     return oversized;
+}
+
+std::vector<std::string> ArtInfo::getCustomSummary() {
+    std::vector<std::string> summary;
+    summary.push_back("\nCustom Packaging Items Flagged:");
+    for (auto& [lineNo, art] : artTypes_) {
+        // Check if oversized
+        if (art.needsCustomPackaging()) {
+            summary.push_back(std::format("- {}\"x{}\" (Qty: {}) - {} lbs each",
+                art.getOuterHeight(),
+                art.getOuterWidth(),
+                getQuantity(lineNo),
+                art.getWeight()
+            ));
+        }
+    }
+    return summary;
+}
+
+std::vector<Art> ArtInfo::getCustomItems() {
+    std::vector<Art> custom;
+    for (auto& art: pieces_) {
+        if (art.needsCustomPackaging()) {
+            custom.push_back(art);
+        }
+    }
+
+    return custom;
 }
 
 std::vector<std::string> ArtInfo::getTotalWeightSummary() {
@@ -170,3 +200,25 @@ std::vector<std::string> ArtInfo::getTotalWeightSummary() {
     return summary;
 }
 
+std::string ArtInfo::getPackedArtSummary(std::vector<Art> containerContents) {
+    // print out details of each art piece in the box
+    // example: - tagNo: 5 	 38 x 56 	 Acoustic panel - Framed
+    std::vector<std::string> summary;
+    for (size_t j = 0; j < containerContents.size(); j++) {
+        std::string tagNo = containerContents[j].getTagNumber();
+        std::string finalMedium = containerContents[j].getRawCSVInputMaterial();
+        std::string dimensions = std::format("{} x {}",
+            containerContents[j].getOuterWidth(),
+            containerContents[j].getOuterHeight());
+        summary.push_back(std::format(
+            "  - tagNo: {} \t {} \t {}", tagNo, dimensions, finalMedium));
+    }
+
+    // Convert the vector of strings into a single string
+    std::string result;
+    for (const auto& line : summary) {
+        result += line + "\n"; // Add each line followed by a newline
+    }
+
+    return result;
+}

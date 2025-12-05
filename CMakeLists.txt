@@ -10,6 +10,7 @@ include(FetchContent)
 FetchContent_Declare(
   googletest
   URL https://github.com/google/googletest/archive/279f8479469d22fa772adb454068f854472e1eb9.zip
+  DOWNLOAD_EXTRACT_TIMESTAMP TRUE # to fix "policy CMP0135 is not set" warning
 )
 # For Windows: Prevent overriding the parent project's compiler/linker settings
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
@@ -103,17 +104,6 @@ target_link_libraries(
   GTest::gtest_main
 )
 
-add_executable(
-    feature2_main_tests
-    testing/responses/feature2MainTest.cpp
-)
-target_link_libraries(
-    feature2_main_tests
-    core_lib
-    GTest::gtest
-    GTest::gtest_main
-)
-
 include(GoogleTest)
 gtest_discover_tests(all_tests)
 
@@ -148,8 +138,23 @@ FetchContent_MakeAvailable(wxWidgets)
 # On Windows, build a WIN32 subsystem app (no console, no main())
 # On macOS/Linux, build normally.
 if (WIN32)
+    # Create a resource file for Windows icon
+    set(ICON_RC "${CMAKE_BINARY_DIR}/app_icon.rc")
+    file(WRITE ${ICON_RC} "IDI_ICON1 ICON \"${CMAKE_SOURCE_DIR}/_deps/app_icon.ico\"\n")
+    
     add_executable(packingapp WIN32
         src/gui/packingapp.cpp
+        ${ICON_RC}
+    )
+elseif(APPLE)
+    # For macOS, add icon as a resource
+    set(MACOSX_ICON_FILE "${CMAKE_SOURCE_DIR}/_deps/app_icon.icns")
+    add_executable(packingapp MACOSX_BUNDLE
+        src/gui/packingapp.cpp
+        ${MACOSX_ICON_FILE}
+    )
+    set_source_files_properties(${MACOSX_ICON_FILE} PROPERTIES
+        MACOSX_PACKAGE_LOCATION Resources
     )
 else()
     add_executable(packingapp
@@ -165,6 +170,11 @@ target_link_libraries(packingapp
 ) 
 target_include_directories(packingapp PRIVATE src/gui)
 
+# Include the resource file for wxWidgets manifest (windows GUI gives warning otherwise)
+if(WIN32)
+    target_sources(packingapp PRIVATE src/gui/resources.rc)
+endif()
+
 # Static linking for packingapp on Windows
 if(WIN32 AND MINGW)
     target_link_options(packingapp PRIVATE
@@ -178,10 +188,8 @@ endif()
 # CPack configuration for DragNDrop
 if(APPLE)
     set(MACOSX_BUNDLE_ICON_FILE app_icon.icns)
-    set_source_files_properties(${CMAKE_SOURCE_DIR}/_deps/app_icon.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
-
+    
     set_target_properties(packingapp PROPERTIES
-        MACOSX_BUNDLE TRUE
         MACOSX_BUNDLE_INFO_PLIST ${CMAKE_SOURCE_DIR}/_deps/Info.plist
     )
 
@@ -200,24 +208,24 @@ endif()
 if(WIN32)
     install(TARGETS packingapp DESTINATION "bin")
     
-    set(CPACK_PACKAGE_NAME "PackingApp")
+    set(CPACK_PACKAGE_NAME "Packing Estimator")
     set(CPACK_PACKAGE_VENDOR "Team Olivia Ayla Ethan")
     set(CPACK_PACKAGE_VERSION "1.0.0")
-    set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "PackingApp - Art Packing Calculator")
+    set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Packing Estimator - Art Packing Calculator")
     
     set(CPACK_GENERATOR "NSIS")
-    set(CPACK_PACKAGE_FILE_NAME "PackingAppInstaller")
-    set(CPACK_NSIS_DISPLAY_NAME "PackingApp")
-    set(CPACK_NSIS_PACKAGE_NAME "PackingApp")
+    set(CPACK_PACKAGE_FILE_NAME "PackingEstimatorInstaller")
+    set(CPACK_NSIS_DISPLAY_NAME "Packing Estimator")
+    set(CPACK_NSIS_PACKAGE_NAME "Packing Estimator")
     set(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\\\packingapp.exe")
     set(CPACK_NSIS_EXECUTABLES_DIRECTORY "bin")
     
     # Create Start Menu shortcuts
     set(CPACK_NSIS_CREATE_ICONS_EXTRA
-        "CreateShortCut '$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\PackingApp.lnk' '$INSTDIR\\\\bin\\\\packingapp.exe'"
+        "CreateShortCut '$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\Packing Estimator.lnk' '$INSTDIR\\\\bin\\\\packingapp.exe'"
     )
     set(CPACK_NSIS_DELETE_ICONS_EXTRA
-        "Delete '$SMPROGRAMS\\\\$START_MENU\\\\PackingApp.lnk'"
+        "Delete '$SMPROGRAMS\\\\$START_MENU\\\\Packing Estimator.lnk'"
     )
     
     # Modify PATH to include bin directory

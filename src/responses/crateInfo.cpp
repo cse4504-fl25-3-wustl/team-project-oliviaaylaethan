@@ -36,7 +36,8 @@ std::vector<std::string> CrateInfo::getCrateDimensionsSummary() {
     for (int i = 0; i < count; i++) {
         summary.push_back(std::format(
             "- Crate {}: {}\"x{}\"x{}\"H @ {} lbs",
-            i,
+            // start with "Crate 1" instead of "Crate 0"
+            i+1,
             STANDARD_CRATE_DIMENSIONS.l,
             STANDARD_CRATE_DIMENSIONS.w,
             STANDARD_CRATE_DIMENSIONS.h,
@@ -46,6 +47,7 @@ std::vector<std::string> CrateInfo::getCrateDimensionsSummary() {
     return summary;
 }
 
+// for each crate, be able to print its contents
 std::vector<std::string> CrateInfo::getAllPackedBoxesSummary() {
     int count = getTotalCrateCount();
     if (count < 1) return {};
@@ -54,13 +56,10 @@ std::vector<std::string> CrateInfo::getAllPackedBoxesSummary() {
     ShippingContainer crate;
     for (int i = 0; i < count; i++) {
         crate = crates_[i];
-        summary.push_back(std::format("- Crate {}", i));
-        std::vector<Box> contents = crate.getContents();
-        for (size_t j = 0; j < contents.size(); j++) {
-            summary.push_back(std::format(
-                "  - {}", to_string(contents[j].getBoxType())
-            ));
-        }
+        // index from 1 in print-out
+        summary.push_back(std::format("- Crate {}", i+1));
+        // ex:  "   - tagNo: 5 	 38 x 56 	 Acoustic panel - Framed"
+        summary.push_back(ArtInfo::getPackedArtSummary(crate.getArtContents()));
     }
     return summary;
 }

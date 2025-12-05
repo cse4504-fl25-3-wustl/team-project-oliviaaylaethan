@@ -1,4 +1,5 @@
 #include "requirements.h"
+#include <algorithm>
 
 Requirements::Requirements() : jobSiteLocation_(""), clientName_(""), acceptsPallets_(std::nullopt), acceptsCrates_(std::nullopt), hasLoadingDock_(std::nullopt), needsLiftgate_(std::nullopt), needsInsideDelivery_(std::nullopt), serviceType_("") {}
 
@@ -35,9 +36,10 @@ std::string Requirements::getServiceType() const {
 }
 
 std::optional<bool> Requirements::convertStringToOptional(std::string answer) {
-    if (answer == "Y") {
+    std::transform(answer.begin(), answer.end(), answer.begin(), ::tolower);
+    if (answer == "y") {
         return true;
-    } else if (answer == "N") {
+    } else if (answer == "n") {
         return false;
     } else {
         return std::nullopt;

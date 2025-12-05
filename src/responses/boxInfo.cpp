@@ -53,6 +53,7 @@ int BoxInfo::getTotalWeight() {
     return weight;
 }
 
+// for each box, be able to print its contents
 std::vector<std::string> BoxInfo::getAllPackedArtSummary() {
     int totalCount = getTotalBoxCount();
     std::vector<std::string> summary;
@@ -60,13 +61,11 @@ std::vector<std::string> BoxInfo::getAllPackedArtSummary() {
     Box box;
     for (int i = 0; i < totalCount; i++) {
         box = boxes_[i];
+        //ex:  "- Box 1 - Large Box"
         summary.push_back(std::format(
-            "- Box {} - {}", i, to_string(box.getBoxType())));
-        std::vector<Art> contents = box.getContents();
-        for (size_t j = 0; j < contents.size(); j++) {
-            summary.push_back(std::format(
-                "  - lineNo: {}, tagNo: {}", contents[j].getLineNumber(), contents[j].getTagNumber()));
-        }
+            "\n- Box {} - {}", i+1, to_string(box.getBoxType())));
+        // ex:  "   - tagNo: 5 	 38 x 56 	 Acoustic panel - Framed"
+        summary.push_back(ArtInfo::getPackedArtSummary(box.getContents()));
     }
     return summary;
 }

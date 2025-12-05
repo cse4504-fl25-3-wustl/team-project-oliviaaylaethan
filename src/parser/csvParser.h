@@ -1,4 +1,5 @@
 #pragma once
+#include "../constants/clientConstants.h"
 #include <string>
 #include "../requests/request.h"
 #include "../entities/art.h"
@@ -13,8 +14,14 @@ private:
     std::vector<Art> parseArtCsv(const std::string& filePath);
     Requirements parseRequirementsCsv(const std::string& filePath);
     std::vector<std::string> commaSplitter(std::string line);
+    Requirements generateDefaultRequirements(const std::string acceptsCratesValue);
+    std::vector<Art> parseArtCsvTests(std::ifstream& file);
+    std::vector<Art> parseArtCsvClient(std::ifstream& file);
+    
 public:
     CsvParser();
     bool isValidFile(const std::string& filePath);
-    Request parseFiles(std::string artFilePath, std::string siteFilePath);
+    
+    // New method overload to handle Y/N substitute (pass the substitute string as siteFilePath)
+    Request parseFiles(std::string artFilePath, std::string siteFilePath, bool isSubstitute);
 };

@@ -29,7 +29,7 @@ TEST_F(CsvParserTest, ParseFiles_ValidFiles) {
     std::string reqFile = testDataPath + "test_requirements.csv";
     
     // Act
-    Request request = parser.parseFiles(artFile, reqFile);
+    Request request = parser.parseFiles(artFile, reqFile, false);
     
     EXPECT_TRUE(parser.isValidFile(artFile));
     EXPECT_TRUE(parser.isValidFile(reqFile));
@@ -55,7 +55,7 @@ TEST_F(CsvParserTest, ParseFiles_InvalidArtFile) {
     std::string validReqFile = testDataPath + "test_requirements.csv";
     
     // Act
-    Request request = parser.parseFiles(invalidArtFile, validReqFile);
+    Request request = parser.parseFiles(invalidArtFile, validReqFile, false);
     
     // Assert - Should return empty Request
     std::vector<Art> artPieces = request.getArtPieces();
@@ -68,7 +68,7 @@ TEST_F(CsvParserTest, ParseFiles_InvalidRequirementsFile) {
     std::string invalidReqFile = testDataPath + "nonexistent_requirements.csv";
     
     // Act
-    Request request = parser.parseFiles(validArtFile, invalidReqFile);
+    Request request = parser.parseFiles(validArtFile, invalidReqFile, false);
     
     // Assert - Should still parse art file
     std::vector<Art> artPieces = request.getArtPieces();
@@ -81,7 +81,7 @@ TEST_F(CsvParserTest, ParseFiles_EmptyArtFile) {
     std::string validReqFile = testDataPath + "test_requirements.csv";
     
     // Act
-    Request request = parser.parseFiles(emptyArtFile, validReqFile);
+    Request request = parser.parseFiles(emptyArtFile, validReqFile, false);
     
     // Assert - Should have no artworks
     std::vector<Art> artPieces = request.getArtPieces();
@@ -98,7 +98,7 @@ TEST_F(CsvParserTest, ParseFiles_BothInvalidFiles) {
     std::string invalidReqFile = testDataPath + "nonexistent_requirements.csv";
     
     // Act
-    Request request = parser.parseFiles(invalidArtFile, invalidReqFile);
+    Request request = parser.parseFiles(invalidArtFile, invalidReqFile, false);
     
     // Assert - Should return empty Request
     std::vector<Art> artPieces = request.getArtPieces();
@@ -111,7 +111,7 @@ TEST_F(CsvParserTest, ParseFiles_VerifyArtworkDetails) {
     std::string reqFile = testDataPath + "test_requirements.csv";
     
     // Act
-    Request request = parser.parseFiles(artFile, reqFile);
+    Request request = parser.parseFiles(artFile, reqFile, false);
     std::vector<Art> artPieces = request.getArtPieces();
     
     // Assert
@@ -121,7 +121,7 @@ TEST_F(CsvParserTest, ParseFiles_VerifyArtworkDetails) {
     EXPECT_EQ(artPieces[0].getLineNumber(), 1);
     EXPECT_FLOAT_EQ(artPieces[0].getOuterWidth(), 24.0f);
     EXPECT_FLOAT_EQ(artPieces[0].getOuterHeight(), 30.0f);
-    EXPECT_EQ(artPieces[0].getMaterial(), PAPER_PRINT_FRAMED); // Paper Print maps to PAPER_PRINT_FRAMED
+    EXPECT_EQ(artPieces[0].getMaterial(), PAPER_PRINT_FRAMED);
     EXPECT_EQ(artPieces[0].getGlazeType(), GLAZING_GLASS);
     
     // Second artwork - Canvas Float Frame
@@ -129,14 +129,15 @@ TEST_F(CsvParserTest, ParseFiles_VerifyArtworkDetails) {
     EXPECT_FLOAT_EQ(artPieces[2].getOuterWidth(), 36.0f);
     EXPECT_FLOAT_EQ(artPieces[2].getOuterHeight(), 48.0f);
     EXPECT_EQ(artPieces[2].getMaterial(), CANVAS_FRAMED);
+    EXPECT_EQ(artPieces[2].getGlazeType(), GLAZING_NONE);
     
-    // Third artwork - Metal Print
+    // Third artwork - Acoustic Panel Gallery Wrapped
     EXPECT_EQ(artPieces[3].getLineNumber(), 3);
     EXPECT_FLOAT_EQ(artPieces[3].getOuterWidth(), 20.0f);
     EXPECT_FLOAT_EQ(artPieces[3].getOuterHeight(), 20.0f);
 
-    EXPECT_EQ(artPieces[3].getMaterial(), PATIENT_BOARD);
-    EXPECT_EQ(artPieces[3].getGlazeType(), GLAZING_GLASS);
+    EXPECT_EQ(artPieces[3].getMaterial(), ACOUSTIC_PANEL);
+    EXPECT_EQ(artPieces[3].getGlazeType(), GLAZING_NONE);
 }
 
 TEST_F(CsvParserTest, ParseFiles_VerifyRequirementsDetails) {
@@ -145,7 +146,7 @@ TEST_F(CsvParserTest, ParseFiles_VerifyRequirementsDetails) {
     std::string reqFile = testDataPath + "test_requirements.csv";
     
     // Act
-    Request request = parser.parseFiles(artFile, reqFile);
+    Request request = parser.parseFiles(artFile, reqFile, false);
     Requirements requirements = request.getRequirements();
     
     // Assert - Verify all requirements fields

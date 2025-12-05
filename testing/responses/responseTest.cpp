@@ -19,7 +19,7 @@ void ResponseTest::checkOversizedMatch(std::vector<Art> oversized, std::multiset
 
 Response ResponseTest::generateResponse(std::string dataInput, std::string requirements) {
     CsvParser parser = CsvParser();
-    Request request = parser.parseFiles(dataInput, requirements);
+    Request request = parser.parseFiles(dataInput, requirements, false);
 
     // check that the file paths are correct (all the other tests will fail if they aren't)
     EXPECT_TRUE(parser.isValidFile(dataInput));

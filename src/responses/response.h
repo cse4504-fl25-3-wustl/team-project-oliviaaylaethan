@@ -5,6 +5,7 @@
 #include "../entities/art.h"
 #include "../entities/shippingContainer.h"
 #include "../entities/requirements.h"
+#include <memory>
 
 class BoxInfo {
     private:
@@ -32,10 +33,10 @@ class ArtInfo {
         // NEW: WILL REPRESENT EACH UNIQUE TYPE OF ART (with uniqueArtId_)
         std::map<int, Art> artTypes_;
 
-        Requirements* requirements_; // pointer, no ownership
+        std::shared_ptr<Requirements> requirements_; // Use shared_ptr for lifetime management
     public:
         ArtInfo() {}
-        ArtInfo(const std::vector<Art>& pieces, Requirements* req);
+        ArtInfo(const std::vector<Art>& pieces, std::shared_ptr<Requirements> req);
         int getTotalCount();
         int getStandardCount();
         int getOversizedCount();
@@ -44,8 +45,12 @@ class ArtInfo {
         Art getArtType(int lineNo);
         std::vector<std::string> getOversizedSummary();
         std::vector<Art> getOversizedItems();
+        std::vector<std::string> getCustomSummary();
+        std::vector<Art> getCustomItems();
         std::vector<std::string> getTotalWeightSummary();
         int getTotalWeight();
+        // to be called on an individual crate or box to show the art inside
+        static std::string getPackedArtSummary(std::vector<Art> containerContents);
 };
 
 
@@ -161,15 +166,15 @@ class Response {
         CrateInfo crateInfo_;
         PalletInfo palletInfo_;
         HardwareInfo hardwareInfo_;
-        Requirements requirements_;
+        std::shared_ptr<Requirements> requirements_;
         std::vector<Art> allArt_;
 
     public:
         Response(const std::vector<Box>& boxes,
-                const std::vector<ShippingContainer>& pallets,
-                const std::vector<ShippingContainer>& crates,
-                const Requirements requirements,
-                const std::vector<Art>& allArt);
+                 const std::vector<ShippingContainer>& pallets,
+                 const std::vector<ShippingContainer>& crates,
+                 std::shared_ptr<Requirements> requirements,
+                 const std::vector<Art>& csvArt);
 
         std::vector<std::string> getWeightSummary();
         std::vector<std::vector<std::string>> getPackingSummary();

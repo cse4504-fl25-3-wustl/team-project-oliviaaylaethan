@@ -5,6 +5,7 @@ ShippingContainer::ShippingContainer()
       tareWeight_(0.0f),
       standardBoxCapacity_(0),
       oversizedBoxCapacity_(0),
+      filledFrac_(0.0f),
       shippingContainerType_(OTHER)
 {}
 
@@ -13,6 +14,7 @@ ShippingContainer::ShippingContainer(Dimensions dimensions, float tareWeight, in
       tareWeight_(tareWeight),
       standardBoxCapacity_(standardBoxCapacity),
       oversizedBoxCapacity_(oversizedBoxCapacity),
+      filledFrac_(0.0f),
       shippingContainerType_(shippingContainerType)
 {}
 
@@ -106,13 +108,44 @@ bool ShippingContainer::addBox(Box box) {
     return true;
 }
 
+float ShippingContainer::getFilledFrac() const {
+    return filledFrac_;
+}
+
 bool ShippingContainer::addArt(Art art) {
     if (shippingContainerType_ != STANDARD_CRATE) {
         return false; // only crates can have art directly added
     }
-    if (artContents_.size() >= GLASS_ACRYLIC_SMALL_CRATE_CAPACITY) {
+    
+    float fraction = 1.0f / art.getPerCrateCount();
+    if ((filledFrac_ + fraction) > 1.0f + EPS) { // Allow for floating point precision issues
         return false;
     }
     artContents_.push_back(art);
+    filledFrac_ += fraction;
+    if (1.0f - filledFrac_ < EPS) {
+        filledFrac_ = 1.0f;
+    }
+    return true;
+}
+
+bool ShippingContainer::addArtWithCapacity(const Art& art, int perCrateCountOverride) {
+    if (shippingContainerType_ != STANDARD_CRATE) {
+        return false; // only crates can have art directly added
+    }
+
+    if (perCrateCountOverride <= 0) {
+        return false;
+    }
+
+    float fraction = 1.0f / static_cast<float>(perCrateCountOverride);
+    if ((filledFrac_ + fraction) > 1.0f + EPS) {
+        return false;
+    }
+    artContents_.push_back(art);
+    filledFrac_ += fraction;
+    if (1.0f - filledFrac_ < EPS) {
+        filledFrac_ = 1.0f;
+    }
     return true;
 }

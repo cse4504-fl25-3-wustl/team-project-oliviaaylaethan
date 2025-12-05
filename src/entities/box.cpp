@@ -1,11 +1,11 @@
 #include "box.h"
 
-Box::Box() : dimensions_{0, 0, 0}, boxType_(STANDARD_BOX), totalWeight_(0) {
+Box::Box() : dimensions_{0, 0, 0}, boxType_(STANDARD_BOX), totalWeight_(0), filledDepth_(0.0f) {
     contents_ = std::vector<Art>();
     capacity_ = STANDARD_BOX_CAPACITY;
 }
 
-Box::Box(Dimensions dimensions, BoxType boxType) : dimensions_(dimensions), boxType_(boxType), totalWeight_(0) {
+Box::Box(Dimensions dimensions, BoxType boxType) : dimensions_(dimensions), boxType_(boxType), totalWeight_(0), filledDepth_(0.0f) {
     contents_ = std::vector<Art>();
     if (boxType_ == STANDARD_BOX) {
         capacity_ = STANDARD_BOX_CAPACITY;
@@ -60,13 +60,17 @@ bool Box::fitsArt(Art artwork) {
 }
 
 bool Box::addArt(Art art) {
-    float fraction = 1.0f / art.getPerBoxCount();
-    if(!fitsArt(art) || (contents_.size() >= capacity_) || (filledFrac_ + fraction > 1.0f)) {
+    // this count is based off of 11 inches
+    float depth = art.getDepth();
+
+    // Use the maximum of the box capacity or the art's per-box count to allow higher capacity when needed
+    // int effectiveCapacity = std::max(capacity_, art.getPerBoxCount());
+    if(!fitsArt(art) || !canFitMore(depth)) { // Allow for floating point precision issues
         return false;
     }
     contents_.push_back(art);
     totalWeight_ += art.getWeight();
-    filledFrac_ += fraction;
+    filledDepth_ += depth;
 
     // update height of box to reflect tallest artwork inside of it TODO ask about rules for nonstandard boxes
     bool needsTelescoping = false;
@@ -78,7 +82,7 @@ bool Box::addArt(Art art) {
     }
     if (needsTelescoping) {
         float artTelescopedHeight;
-        if ( art.getOuterHeight() > art.getOuterWidth() ) {
+        if (art.getOuterHeight() > art.getOuterWidth() ) {
             artTelescopedHeight = art.getOuterHeight();
         }
         else {
@@ -109,6 +113,6 @@ std::vector<Art> Box::getContents() const {
     return contents_;
 }
 
-float Box::getFilledFrac() const {
-    return filledFrac_;
+bool Box::canFitMore(float extraDepth) {
+    return (filledDepth_ + extraDepth) - dimensions_.w < EPS;
 }
