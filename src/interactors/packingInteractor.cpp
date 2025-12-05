@@ -146,17 +146,39 @@ Response PackingInteractor::packAllArt(Request request) {
 }
 
 void PackingInteractor::packIntoPallets() {
-    vector<Box> ordered = vector<Box>();
+    vector<Box> standardBoxes = vector<Box>();
+    vector<Box> largeBoxes = vector<Box>();
 
     for (int i = 0; i < boxes_.size(); i++) {
         if (boxes_[i].getBoxType() == BoxType::LARGE_BOX) {
-            ordered.insert(ordered.begin(), boxes_[i]);
+            largeBoxes.push_back(boxes_[i]);
         } else {
-            ordered.push_back(boxes_[i]);
+            standardBoxes.push_back(boxes_[i]);
         }
     }
 
-    vector<Box> tempBoxes = ordered;
+    // all the large boxes should go on standard pallets because only 3 large boxes fit on a pallet,
+    // regardless of whether the pallet is standard or oversize (and oversize pallets are heavier)
+    while (largeBoxes.size() > 0) {
+        ShippingContainer pallet = ShippingContainer::makeStandardPallet();
+        int capacity = STANDARD_PALLET_OVERSIZED_BOX_CAPACITY;
+        for (int j = 0; j < capacity && !largeBoxes.empty(); ++j) {
+            pallet.addBox(largeBoxes.back());
+            largeBoxes.pop_back();
+        }
+        // if there is still space on the pallet, fill it with standard boxes
+        // (this will only happen if the number of large boxes isn't divisible by 3)
+        if (pallet.getContents().size() < capacity) {
+            while (!standardBoxes.empty() && pallet.getContents().size() < capacity) {
+                pallet.addBox(standardBoxes.back());
+                standardBoxes.pop_back();
+            }
+        }
+        pallets_.push_back(std::move(pallet));
+    }
+
+    // standard boxes could go on either standard or oversize pallets
+    vector<Box> tempBoxes = standardBoxes;
     int remaining = tempBoxes.size();
 
     while (remaining > 0) {
@@ -170,20 +192,16 @@ void PackingInteractor::packIntoPallets() {
             : std::numeric_limits<float>::infinity();
 
         ShippingContainer pallet;
-        int capacity = 0;
-
+        
         if (useStandard < useOversized || remaining < OVERSIZE_PALLET_STANDARD_BOX_CAPACITY) {
             pallet = ShippingContainer::makeStandardPallet();
         } else {
             pallet = ShippingContainer::makeOversizePallet();
         }
 
-        capacity = pallet.getStandardBoxCapacity();
+        int capacity = pallet.getStandardBoxCapacity(); // everything from here on out is standard boxes
 
         for (int j = 0; j < capacity && !tempBoxes.empty(); ++j) {
-            if (tempBoxes.back().getBoxType() == BoxType::LARGE_BOX) {
-                capacity = pallet.getOversizedBoxCapacity();
-            }
             pallet.addBox(tempBoxes.back());
             tempBoxes.pop_back();
         }
