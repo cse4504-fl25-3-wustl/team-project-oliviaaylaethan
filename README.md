@@ -371,3 +371,22 @@ Using GitHub releases? Download the appropriate file, then skip to step 5!
             - 48" x 50" (quantity 120)
          - This means every other piece of art is qualifies as standard_size_pieces
             - 470 - 100 - 120 = 250
+              
+- ## test_cases/stress_tests/all/test2/expected_output.json
+   - EXPECTS: "custom_piece_count": 200
+   - CORRECT: "custom_piece_count": 0
+   - Reason (see "About custom pieces" for more information):
+      - As long as at least ONE dimension of an art piece is 36.5" or less, it will fit in a standard size box (assuming the other dimension is <= 88")
+      - The only piece sizes given for this input are 33x43 and 32x56
+      - 33 <= 36.5"
+      - 32 <= 36.5"
+      - 43 <= 88"
+      - 56 <= 88"
+   - OTHER TYPOS:
+      - README calls for "67 standard boxes" and "11 large pallets"
+      - EXPECTED OUTPUT: 
+         - "large_box_count": 11
+         - "oversized_pallet_count": 0
+      - SHOULD BE:
+         - "large_box_count": 0
+         - "oversized_pallet_count": 11
